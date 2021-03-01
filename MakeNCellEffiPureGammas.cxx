@@ -8,6 +8,7 @@
 #include "TString.h"
 #include "TH2.h"
 #include "TF1.h"
+#include "TSystem.h"
 #include "TLegend.h"
 #include "TColor.h"
 #include "TFile.h"
@@ -18,7 +19,11 @@
 #include <TLorentzVector.h>
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <random>
 #include <fstream>
+#include <sys/stat.h>
+#include <unistd.h>
 
 using std::cerr;
 using std::endl;
@@ -87,7 +92,7 @@ struct Event{
 class DataTree{
   public:
     DataTree();
-    DataTree(bool mc, TString Period = "13TeV", bool light = true);
+    DataTree(bool mc, TString Period = "13TeV", bool light = true, int skipping = 0);
     ~DataTree();
 
     unsigned int GetNClusInEvt(unsigned int i);
@@ -116,13 +121,13 @@ class DataTree{
   private:
 
     Event Evt;
-    bool fdebug = false;
+    int fdebug = 0;
     bool fDoLight = true;
 
-  static constexpr int fnEMCalGapsPhi = 12;
-  static constexpr int fnEMCalGapsEta = 3;
-  std::array<float, fnEMCalGapsPhi> fEMCalGapsPhi = {1.4, 1.75, 2.1, 2.45, 2.8, 3.15, 3.27, 4.55, 4.9, 5.25, 5.6, 5.72};
-  std::array<float, fnEMCalGapsEta> fEMCalGapsEta = {-0.65, 0, 0.65};
+    static constexpr int fnEMCalGapsPhi = 12;
+    static constexpr int fnEMCalGapsEta = 3;
+    std::array<float, fnEMCalGapsPhi> fEMCalGapsPhi = {1.4, 1.75, 2.1, 2.45, 2.8, 3.15, 3.27, 4.55, 4.9, 5.25, 5.6, 5.72};
+    std::array<float, fnEMCalGapsEta> fEMCalGapsEta = {-0.65, 0, 0.65};
 
   Float_t FunctionNL_8TeV_MC(float energy){
     Double_t fNonLinearityParams[5];
@@ -153,7 +158,7 @@ class DataTree{
 
   Float_t FunctionNL_OfficialTB_100MeV_MC_V2(Float_t e){// 1.5% shift instead of 5% to make the scale correct
     Double_t funcParams[5] = {1.09357, 0.0192266, 0.291993, 370.927, 694.656};
-    return ( 0.965 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
+    return ( 0.98 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
   }
   // Float_t FunctionNL_OfficialTB_100MeV_MC_V2(Float_t e){
   //   Double_t funcParams[5] = {1.09357, 0.0192266, 0.291993, 370.927, 694.656};
@@ -167,11 +172,17 @@ class DataTree{
   Float_t FunctionNL_OfficialTB_100MeV_Data_V2(Float_t e){ // 1.5% shift instead of 5% to make the scale correct
     Double_t funcParams[5] = {1.91897, 0.0264988, 0.965663, -187.501, 2762.51};
     return ( 1.015 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
+    // return ( 1.0505 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
   }
   // Float_t FunctionNL_OfficialTB_100MeV_Data_V2(Float_t e){
   //   Double_t funcParams[5] = {1.91897, 0.0264988, 0.965663, -187.501, 2762.51};
   //   return ( 1.0505 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
   // }
+
+  inline bool fileExists (const std::string& name) {
+  struct stat buffer;
+  return (stat (name.c_str(), &buffer) == 0);
+}
 
   //--------------------------------------
   //--- Switch between energies
@@ -195,6 +206,9 @@ class DataTree{
     Int_t Cluster_NumCells;
     float Cluster_CellsID[50];
     bool isEMC = false;
+
+    bool fDoSkipping = false;
+    int SkippingFrac = 1;
 
 
     // MC stuff
@@ -258,6 +272,11 @@ class DataTree{
     TH2F* hNCellVsEGammasNLTrueOnlyHighClus = nullptr;
     TH2F* hNCellVsEGammasNLTrueElecOnlyHighClus = nullptr;
 
+    TH2F* hNCellVsEGammasOnlyLowClus = nullptr;
+    TH2F* hNCellVsEGammasNLOnlyLowClus = nullptr;
+    TH2F* hNCellVsEGammasNLTrueOnlyLowClus = nullptr;
+    TH2F* hNCellVsEGammasNLTrueElecOnlyLowClus = nullptr;
+
     TH2F* hNCellVsEGammasSideBandOnlyHighClus = nullptr;
     TH2F* hNCellVsEGammasNLSideBandOnlyHighClus = nullptr;
     TH2F* hNCellVsEGammasNLTrueSideBandOnlyHighClus = nullptr;
@@ -282,12 +301,18 @@ class DataTree{
     TH2F* hInvMassVsPtCC = nullptr;
     TH2F* hInvMassVsHighGammaPt = nullptr;
     TH2F* hInvMassVsHighGammaPtBack = nullptr;
+    TH2F* hInvMassVsLowGammaPtBack = nullptr;
     TH2F* hInvMassVsPtHigh = nullptr;
     TH2F* hInvMassVsPtHighGamma = nullptr;
     TH2F* hInvMassVsPtHighElec = nullptr;
+    TH2F* hInvMassVsPtLow = nullptr;
+    TH2F* hInvMassVsPtLowGamma = nullptr;
+    TH2F* hInvMassVsPtLowElec = nullptr;
     TH2F* hInvMassVsPtHigh1cell = nullptr;
     TH2F* hInvMassVsPtHigh2cell = nullptr;
     TH2F* hInvMassVsPtHigh3cell = nullptr;
+
+    TH2F* hInvMassVsPtDoubleCount = nullptr;
 
     //--------------------------------------
     //--- NCell vs. E for electron clusters
@@ -309,6 +334,7 @@ class DataTree{
     std::vector<unsigned int> vecGoodGammas;
     std::vector<unsigned int> vecGoodGammasLeft;
     std::vector<unsigned int> vecGoodGammasOnlyHigh;
+    std::vector<unsigned int> vecGoodGammasOnlyLow;
     std::vector<unsigned int> vecGoodGammasSideBandOnlyHigh;
     std::vector<unsigned int> vecGoodGammasWide;
     std::vector<unsigned int> vecGoodGammasSideBand;
@@ -340,54 +366,82 @@ DataTree::~DataTree(){
 
 }
 //----------------------------
-DataTree::DataTree(bool mc, TString Period, bool light){
+DataTree::DataTree(bool mc, TString Period, bool light, int skipping){
   isMC = mc;
   fDoLight = light;
-  if(Period.Contains("13TeV")) period = 0;
-  else if(Period.Contains("8TeV")) period = 1;
+  SkippingFrac = skipping;
+  if(skipping > 0) fDoSkipping = true;
+  if(Period.Contains("13TeVNomB")) period = 0;
+  else if(Period.Contains("13TeVLowB")) period = 1;
+  else if(Period.Contains("8TeV")) period = 2;
 
   //--------------------------------------
   //--- Put together input files
   //--------------------------------------
 
-  // TString path = "/home/joshua/Downloads/AnalysisResults_data.root";
-  // if(isMC) path = "/home/joshua/Downloads/AnalysisResults.root";
-  //------------------------ 13TeV ------------------------------------//
+  //------------------------ 13TeV nomB (18m)------------------------------------//
   if(period == 0){
-    TString path = "/media/joshua/external_drive/Data/2020_10_05_Tree/data/AnalysisResults.root";
-    if(isMC) path = "/media/joshua/external_drive/Data/2020_10_05_Tree/MC/AnalysisResults.root";
-    cerr<<__LINE__<<endl;
-    dataFile = new TFile(path);
-    cerr<<__LINE__<<endl;
-    T = new TChain("ClusterQA_00010113_4117900050020000000");
-    std::vector<int> runs = {285471, 285481, 285486, 285496, 285497, 285545, 285550, 285557, 285575, 285576, 285577, 285578, 285599, 285601, 285602, 285603, 285639, 285640, 285641, 285642, 285643, 285662, 285663, 285664, 285666, 285697, 285698, 285722, 285753, 285754, 285755, 285777, 285778, 285781, 285804, 285810, 285811, 285812, 285830, 285851, 285869, 285893, 285917, 285946, 285957, 285958};
+
+    TString NameTree = "ClusterQA_00010113_4117900050020000000";
+    // if(fDoLight) NameTree = "2ClusterTree";
+    T = new TChain(NameTree);
+    // std::vector<int> runs = {285471};
+    std::vector<int> runs = {290323, 290324, 290327, 290350, 290374, 290375, 290376, 290399, 290401, 290411, 290412, 290425, 290426, 290427, 290428, 290456, 290458, 290459, 290469, 290499, 290500, 290538, 290539, 290540, 290544, 290549, 290550, 290553, 290588, 290590, 290612, 290613, 290614, 290615, 290627, 290632, 290645, 290658, 290660, 290665, 290687, 290689, 290692, 290696, 290699, 290721, 290742, 290764, 290766, 290769, 290774, 290787, 290790, 290841, 290843, 290846, 290848, 290860, 290862, 290886, 290887, 290892, 290894, 290895, 290932, 290935, 290941, 290943, 290944, 290948, 290974, 290975, 290976, 290979, 290980, 291002, 291003, 291004, 291005, 291035, 291037, 291041, 291065, 291066, 291069, 291093, 291100, 291101, 291110, 291111, 291116, 291143, 291188, 291209, 291240, 291257, 291262, 291263, 291265, 291266, 291282, 291283, 291284, 291285, 291286, 291360, 291361, 291362, 291373, 291375, 291377, 291397, 291399, 291402, 291416, 291417, 291419, 291420, 291424, 291446, 291447, 291453, 291456, 291457, 291481, 291482, 291484, 291485, 291590, 291614, 291615, 291618, 291622, 291624, 291626, 291657, 291661, 291665, 291690, 291692, 291694, 291697, 291698, 291702, 291706, 291729, 291755, 291756, 291760, 291768, 291769, 291795, 291796, 291803, 291942, 291943, 291944, 291945, 291946, 291948, 291953, 291976, 291977, 291982, 292012, 292040, 292060, 292061, 292062, 292067, 292075, 292080, 292081, 292106, 292107, 292108, 292109, 292114, 292115, 292140, 292160, 292161, 292162, 292163, 292164, 292166, 292167, 292168, 292192, 292218, 292240, 292242, 292265, 292270, 292273, 292274, 292298, 292397, 292398, 292405, 292406, 292428, 292429, 292430, 292432, 292434, 292456, 292457, 292460, 292461, 292495, 292496, 292497, 292500, 292521, 292523, 292524, 292526, 292553, 292554, 292557, 292559, 292560, 292563, 292584, 292586, 292693, 292695, 292696, 292698, 292701, 292704, 292737, 292739, 292747, 292748, 292750, 292803, 292804, 292809, 292810, 292811, 292831, 292832, 292836, 292839, 292832, 292836, 292839};
+    auto rng = std::default_random_engine {};
+    std::shuffle(std::begin(runs), std::end(runs), rng);
     if(isMC){
       for(const int& i : runs){
-        T->Add(Form("/media/joshua/external_drive/Data/2021_01_18_pp13TeVlowBTree/LHC18/LHC18h1_fast/%i/AnalysisResults.root",i));
+        if(!fileExists(Form("/media/joshua/Elements/Data/2021_02_23_18m_Tree/MC/%i/AnalysisResults.root",i))) continue;
+        T->Add(Form("/media/joshua/Elements/Data/2021_02_23_18m_Tree/MC/%i/AnalysisResults.root",i));
       }
     } else {
       for(const int& i : runs){
-        T->Add(Form("/media/joshua/external_drive/Data/2021_01_18_pp13TeVlowBTree/LHC18/LHC18c_child1/%i/AnalysisResults.root", i));
+        if(!fileExists(Form("/media/joshua/Elements/Data/2021_02_23_18m_Tree/data/%i/AnalysisResults.root",i))) continue;
+        T->Add(Form("/media/joshua/Elements/Data/2021_02_23_18m_Tree/data/%i/AnalysisResults.root", i));
+      }
+    }
+  }
+  //------------------------ 13TeV lowB (18c) ------------------------------------//
+  if(period == 1){
+
+    TString NameTree = "ClusterQA_00010113_4117900050020000000";
+    // if(fDoLight) NameTree = "2ClusterTree";
+    T = new TChain(NameTree);
+    // std::vector<int> runs = {285471};
+    std::vector<int> runs = {285471, 285481, 285486, 285496, 285497, 285545, 285550, 285557, 285575, 285576, 285577, 285578, 285599, 285601, 285602, 285603, 285639, 285640, 285641, 285642, 285643, 285662, 285663, 285664, 285666, 285697, 285698, 285722, 285753, 285754, 285755, 285777, 285778, 285781, 285804, 285810, 285811, 285812, 285830, 285851, 285869, 285893, 285917, 285946, 285957, 285958};
+    auto rng = std::default_random_engine {};
+    std::shuffle(std::begin(runs), std::end(runs), rng);
+    if(isMC){
+      for(const int& i : runs){
+        if(!fDoLight) T->Add(Form("/media/joshua/external_drive/Data/2021_01_18_pp13TeVlowBTree/LHC18/LHC18h1_fast/%i/AnalysisResults.root",i));
+        else T->Add(Form("/media/joshua/external_drive/Data/2021_01_18_pp13TeVlowBTree/LHC18/LHC18h1_fast/%i/SkimmedTree.root",i));
+      }
+    } else {
+      for(const int& i : runs){
+        if(!fDoLight) T->Add(Form("/media/joshua/external_drive/Data/2021_01_18_pp13TeVlowBTree/LHC18/LHC18c_child1/%i/AnalysisResults.root", i));
+        else T->Add(Form("/media/joshua/external_drive/Data/2021_01_18_pp13TeVlowBTree/LHC18/LHC18c_child1/%i/SkimmedTree.root", i));
       }
     }
   }
 
   //------------------------ 8TeV ------------------------------------//
-  else if(period == 1){
-    TString path = "/media/joshua/Elements/Data/2021_01_27_8TeVTree/data/183913/AnalysisResults.root";
-    if(isMC) path = "/media/joshua/Elements/Data/2021_01_27_8TeVTree/MC/183913/AnalysisResults.root";
-    cerr<<__LINE__<<endl;
-    dataFile = new TFile(path);
-    cerr<<__LINE__<<endl;
-    T = new TChain("ClusterQA_00010113_4117900050020000000");
+  else if(period == 2){
+    TString NameTree = "ClusterQA_00010113_4117900050020000000";
+    // if(fDoLight) NameTree = "2ClusterTree";
+    T = new TChain(NameTree);
     std::vector<int> runs = {183916, 183932, 183933, 183934, 183935, 183936, 183937, 183938, 183942, 183946, 184126, 184127, 184131, 184132, 184134, 184135, 184137, 184138, 184140, 184144, 184145, 184147, 184183, 184188, 184208, 184209, 184210, 184215, 184216, 184371, 184383, 184389, 184673, 184678, 184682, 184687, 184784, 184786, 185029, 185031, 185116, 185126, 185127, 185132, 185133, 185134, 185157, 185160, 185164, 185189, 185196, 185198, 185203, 185206, 185208, 185217, 185221, 185282, 185284, 185289, 185291, 185292, 185293, 185296, 185299, 185300, 185302, 185303, 185349, 185350, 185351, 185356, 185359, 185360, 185361, 185362, 185363, 185368, 185371, 185375, 185378, 185461, 185465, 185474, 185582, 185583, 185588, 185589, 185659, 185687, 185738, 185764, 185765, 185768, 185775, 185776, 185778, 185784, 186007, 186009, 186011, 186163, 186164, 186165, 186167, 186205, 186208, 186319, 186320};
+    if(!isMC) runs = { 183913, 183916, 183932, 183933, 183934, 183935, 183936, 183937, 183938, 183942, 184126, 184127, 184131, 184132, 184134, 184135, 184137, 184138, 184140, 184144, 184145, 184183, 184188, 184208, 184209, 184210, 184216, 184371, 184383, 184389, 184673, 184678, 184682, 184687, 184784, 184786, 185029, 185031, 185116, 185126, 185127, 185132, 185133, 185134, 185157, 185160, 185164, 185189, 185196, 185198, 185203, 185206, 185208, 185217, 185221, 185282, 185284, 185291, 185292, 185293, 185296, 185299, 185300, 185302, 185303, 185349, 185351, 185356, 185359, 185360, 185361, 185362, 185363, 185368, 185371, 185375, 185378, 185461, 185465, 185474, 185582, 185583, 185588, 185589, 185659, 185687, 185738, 185764, 185765, 185768, 185775, 185776, 185778, 185784, 186007, 186009, 186011, 186163, 186164, 186165, 186167, 186205, 186208, 186319, 186320, 186668, 186688, 186689, 186690, 186692, 186694, 186811, 186814, 186938, 186939, 186966, 186969, 186990, 186992, 186994, 187143, 187145, 187146, 187147, 187148, 187149, 187150, 187151, 187152, 187202, 187203, 187339, 187340, 187341, 187487, 187488, 187489, 187510, 187623, 187624, 187627, 187656, 187698, 187739, 187749, 187783, 187785, 187791, 187796, 188093, 188101, 189306, 189310, 189315, 189316, 189350, 189351, 189352, 189353, 189400, 189407, 189409, 189410, 189411, 189577, 189578, 189602, 189603, 189605, 189610, 189611, 189612, 189616, 189621, 189623, 189647, 189648, 189650, 189654, 189656, 189658, 189659, 189696, 189697, 189698, 190150, 190209, 190210, 190212, 190213, 190214, 190215, 190216, 190240, 190303, 190305, 190307, 190337, 190338, 190340, 190341, 190342, 190344, 190386, 190388, 190389, 190390, 190392, 190393, 190416, 190417, 190418, 190419, 190421, 190422, 190424, 190425, 190895, 190898, 190903, 190904, 190968, 190970, 190974, 190975, 190979, 190981, 190983, 190984, 191129, 191227, 191229, 191230, 191231, 191245, 191247, 191248, 191450, 191451, 192072, 192073, 192075, 192128, 192136, 192140, 192141, 192172, 192174, 192177, 192194, 192197, 192200, 192201, 192202, 192205, 192246, 192344, 192347, 192348, 192349, 192415, 192417, 192453, 192461, 192468, 192471, 192492, 192499, 192505, 192510, 192535, 192542, 192548, 192551, 192729, 192731, 192732};
+    auto rng = std::default_random_engine {};
+    std::shuffle(std::begin(runs), std::end(runs), rng);
     if(isMC){
       for(const int& i : runs){
-        T->Add(Form("/media/joshua/Elements/Data/2021_01_27_8TeVTree/MC/%i/AnalysisResults.root",i));
+        if(!fDoLight) T->Add(Form("/media/joshua/Elements/Data/2021_01_27_8TeVTree/MC/%i/AnalysisResults.root",i));
+        else T->Add(Form("/media/joshua/Elements/Data/2021_01_27_8TeVTree/MC/%i/SkimmedTree.root",i));
       }
     } else {
       for(const int& i : runs){
-        T->Add(Form("/media/joshua/Elements/Data/2021_01_27_8TeVTree/data/%i/AnalysisResults.root", i));
+        if(!fDoLight) T->Add(Form("/media/joshua/Elements/Data/2021_01_27_8TeVTree/data2/%i/AnalysisResults.root", i));
+        else T->Add(Form("/media/joshua/Elements/Data/2021_01_27_8TeVTree/data2/%i/SkimmedTree.root", i));
       }
     }
   }
@@ -397,7 +451,7 @@ DataTree::DataTree(bool mc, TString Period, bool light){
   //--------------------------------------
 
   // ClusterQA_00000113_4117900050020000000
-  T->Print();
+  // T->Print();
 
   T->SetBranchAddress("Cluster_E", &energy);
   cerr<<__LINE__<<endl;
@@ -406,7 +460,7 @@ DataTree::DataTree(bool mc, TString Period, bool light){
   T->SetBranchAddress("Cluster_Phi", &phi);
   T->SetBranchAddress("Cluster_Cells_E", CellEnergy);
   T->SetBranchAddress("Cluster_NumCells", &Cluster_NumCells);
-  T->SetBranchAddress("Cluster_Cells_ID", &Cluster_CellsID);
+  T->SetBranchAddress("Cluster_Cells_ID", Cluster_CellsID);
   T->SetBranchAddress("Event_Vertex_X", &vertexZ);
 
   if(isMC)T->SetBranchAddress("Cluster_MC_FirstLabel", &MCLabel);
@@ -414,19 +468,19 @@ DataTree::DataTree(bool mc, TString Period, bool light){
 
 
   T->SetBranchAddress("Surrounding_NCells", &Surrounding_Cells_N);
-  T->SetBranchAddress("Surrounding_Cells_R", &Surrounding_Cells_R);
-  T->SetBranchAddress("Surrounding_Cells_E", &Surrounding_Cells_E);
-  T->SetBranchAddress("Surrounding_Cells_ID", &Surrounding_Cells_ID);
-  T->SetBranchAddress("Surrounding_Cells_RelativeEta", &Surrounding_Cells_relEta);
-  T->SetBranchAddress("Surrounding_Cells_RelativePhi", &Surrounding_Cells_relPhi);
+  T->SetBranchAddress("Surrounding_Cells_R", Surrounding_Cells_R);
+  T->SetBranchAddress("Surrounding_Cells_E", Surrounding_Cells_E);
+  T->SetBranchAddress("Surrounding_Cells_ID", Surrounding_Cells_ID);
+  T->SetBranchAddress("Surrounding_Cells_RelativeEta", Surrounding_Cells_relEta);
+  T->SetBranchAddress("Surrounding_Cells_RelativePhi", Surrounding_Cells_relPhi);
 
   T->SetBranchAddress("Surrounding_NTracks", &Surrounding_Tracks_N);
-  T->SetBranchAddress("Surrounding_Tracks_R", &Surrounding_Tracks_R);
-  T->SetBranchAddress("Surrounding_Tracks_P", &Surrounding_Tracks_P);
-  T->SetBranchAddress("Surrounding_Tracks_RelativeEta", &Surrounding_Tracks_relEta);
-  T->SetBranchAddress("Surrounding_Tracks_RelativePhi", &Surrounding_Tracks_relPhi);
-  T->SetBranchAddress("Surrounding_Tracks_nSigdEdxE", &Surrounding_Tracks_nSigdEdx);
-  T->SetBranchAddress("Surrounding_Tracks_V0Flag", &Surrounding_Tracks_IsV0);
+  T->SetBranchAddress("Surrounding_Tracks_R", Surrounding_Tracks_R);
+  T->SetBranchAddress("Surrounding_Tracks_P", Surrounding_Tracks_P);
+  T->SetBranchAddress("Surrounding_Tracks_RelativeEta", Surrounding_Tracks_relEta);
+  T->SetBranchAddress("Surrounding_Tracks_RelativePhi", Surrounding_Tracks_relPhi);
+  T->SetBranchAddress("Surrounding_Tracks_nSigdEdxE", Surrounding_Tracks_nSigdEdx);
+  T->SetBranchAddress("Surrounding_Tracks_V0Flag", Surrounding_Tracks_IsV0);
   if(isMC){
     T->SetBranchAddress("Mother_MC_Label", &ClusterPDG);
   }
@@ -463,6 +517,11 @@ void DataTree::CreateHistos(){
   hNCellVsEGammasNLTrueOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
   hNCellVsEGammasNLTrueElecOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
   cerr<<__LINE__<<endl;
+  hNCellVsEGammasOnlyLowClus = new TH2F("hNCellVsEGammasOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasNLOnlyLowClus = new TH2F("hNCellVsEGammasNLOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasNLTrueOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasNLTrueElecOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
+  cerr<<__LINE__<<endl;
   hNCellVsEGammasSideBandOnlyHighClus = new TH2F("hNCellVsEGammasSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
   hNCellVsEGammasNLSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
   hNCellVsEGammasNLTrueSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
@@ -486,9 +545,15 @@ void DataTree::CreateHistos(){
   hInvMassVsPtHigh2cell = new TH2F("hInvMassVsPtHigh2cell", "", 500, 0, 1., 200, 0, 20);
   hInvMassVsPtHigh3cell = new TH2F("hInvMassVsPtHigh3cell", "", 500, 0, 1., 200, 0, 20);
 
+  hInvMassVsPtDoubleCount = new TH2F("hInvMassVsPtDoubleCount", "", 500, 0, 1., 200, 0, 20);
+
+  hInvMassVsPtLowGamma = new TH2F("hInvMassVsPtLowGamma", "", 500, 0, 1., 200, 0, 20);
+  hInvMassVsPtLowElec = new TH2F("hInvMassVsPtLowElec", "", 500, 0, 1., 200, 0, 20);
+  hInvMassVsPtLow = new TH2F("hInvMassVsPtLow", "", 500, 0, 1., 200, 0, 20);
 
   hInvMassVsHighGammaPt = new TH2F("hInvMassVsHighGammaPt", "", 500, 0, 1., 200, 0, 20);
   hInvMassVsHighGammaPtBack = new TH2F("hInvMassVsHighGammaPtBack", "", 500, 0, 1., 200, 0, 20);
+  hInvMassVsLowGammaPtBack = new TH2F("hInvMassVsLowGammaPtBack", "", 500, 0, 1., 200, 0, 20);
   hHitmap = new TH2F("hHitmap", "", 160, -0.8, 0.8, 126*2, 0, 6.2);
   hClusE = new TH1F("hClusE", "", nBinsE, arrEbins );
   hClusENL = new TH1F("hClusENL", "", nBinsE, arrEbins );
@@ -502,7 +567,6 @@ void DataTree::CreateHistos(){
 Cluster *DataTree::GetCluster(unsigned int i){
   T->GetEvent(i);
   Cluster *tmp;
-  if(fdebug)cout<<__LINE__<<endl;
   if(!isMC){
       tmp = new Cluster(applyNL(energy, Cluster_NumCells), eta, phi, Cluster_NumCells , CellEnergy, Cluster_CellsID,
       Surrounding_Cells_N, Surrounding_Cells_E, Surrounding_Cells_R, Surrounding_Cells_ID,
@@ -514,7 +578,6 @@ Cluster *DataTree::GetCluster(unsigned int i){
       Surrounding_Tracks_N, Surrounding_Tracks_P, Surrounding_Tracks_R, Surrounding_Tracks_IsV0,
       isMC, ClusterPDG, MCLabel);
   }
-  if(fdebug)cout<<__LINE__<<endl;
   return tmp;
 }
 
@@ -531,7 +594,6 @@ unsigned int DataTree::GetNClusInEvt(unsigned int i){
   }
   T->GetEvent(i);
   return nClus;
-
 }
 
 //--------------------------------------
@@ -539,12 +601,13 @@ unsigned int DataTree::GetNClusInEvt(unsigned int i){
 //--------------------------------------
 void DataTree::NextEvt(){
   nclus = GetNClusInEvt(currEvt);
+  if(fdebug) cout<<"cluster in evt: "<<nclus<<endl;
   T->GetEvent(currEvt + nclus);
   currEvt += nclus;
   nclus = GetNClusInEvt(currEvt);
-  if(fdebug)cout<<__LINE__<<endl;
+  if(fdebug == 2)cout<<__LINE__<<endl;
   Evt.Reset();
-  if(fdebug)cout<<__LINE__<<endl;
+  if(fdebug == 2)cout<<__LINE__<<endl;
   for(unsigned int i = 0; i < nclus; ++i){
     Evt.InsertCluster(GetCluster(currEvt + i), i);
   }
@@ -558,22 +621,25 @@ void DataTree::Process(unsigned int maxNumClus){
 
   CreateHistos();
   FillMassHists("fMassPos.root");
-  if(fdebug)cerr<<__LINE__<<endl;
-  while(currEvt < maxNumClus && currEvt < T->GetEntries()*0.5){
+  // unsigned int counter = 0;
+  if(fdebug == 2) cerr<<__LINE__<<endl;
+  while(currEvt < maxNumClus && currEvt < T->GetEntries()*0.99){
+    // counter++;
     if(currEvt%10000 == 0) cerr<<currEvt<<" events processed..."<<endl;
-    if(fdebug)cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     NextEvt();
-    if(fdebug)cerr<<__LINE__<<endl;
+    if(fdebug)cout<<"energy: "<<energy<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     GetGammasViaPi0();
-    if(fdebug)cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     FillNCellVsEGammas();
-    if(fdebug)cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     FillHitmap();
-    if(fdebug)cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     if(!fDoLight)FillElectronHist();
-    if(fdebug)cerr<<__LINE__<<endl;
-    if(!fDoLight)FillAllCLusterHist();
-    if(fdebug)cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
+    FillAllCLusterHist();
+    if(fdebug == 2) cerr<<__LINE__<<endl;
   }
 
 }
@@ -590,7 +656,7 @@ inline float DataTree::EtaToTheta(float Eta){
 //--------------------------------------
 std::array<float, 3> DataTree::GetMomVect(unsigned int i){
   // T->GetEvent(i);
-  if(fdebug)cout<<__LINE__<<endl;
+  if(fdebug == 2)cout<<__LINE__<<endl;
   float theta = EtaToTheta(Evt.clus[i]->eta);
   float px = Evt.clus[i]->e * sin(theta) * cos(Evt.clus[i]->phi);
   float py = Evt.clus[i]->e * sin(theta) * sin(Evt.clus[i]->phi);
@@ -612,16 +678,23 @@ void DataTree::GetGammasViaPi0(){
   vecGoodGammasWide.clear();
   // vecGoodGammasWide.resize(0);
   vecGoodGammasOnlyHigh.clear();
+  vecGoodGammasOnlyLow.clear();
   // vecGoodGammasOnlyHigh.resize(0);
   vecGoodGammasSideBandOnlyHigh.clear();
+
+  std::vector<unsigned int> fDoubleCount;
   // vecGoodGammasSideBandOnlyHigh.resize(0);
   if(nclus < 2) return;
-  // cerr<<"startEvt:"<<endl;
+   if(fdebug) cerr<<"startEvt:"<<endl;
   for(unsigned int ig1 = 0; ig1 < nclus; ++ig1){
     // get momentum and energy
+    if(fdebug) cerr<<__LINE__<<endl;
     if(!IsIsolated(ig1)) continue;
+    if(fdebug) cerr<<__LINE__<<endl;
     if(IsTrackMatched(ig1)) continue;
-    if(IsBorderCell(ig1, 3)) continue;
+    if(fdebug) cerr<<__LINE__<<endl;
+    // if(IsBorderCell(ig1, 3)) continue;
+    if(fdebug) cerr<<__LINE__<<endl;
     int PDGig1 = Evt.clus[ig1]->ClusterPDG;
     // int PDGig1 = GetClusterPDG(ig1);
     std::array<float, 3> Pg1 = GetMomVect(ig1);
@@ -634,11 +707,12 @@ void DataTree::GetGammasViaPi0(){
     LVg1.SetZ(Pg1[2]);//, Pg1[1], Pg1[2], Eg1);
     LVg1.SetE(Eg1);//, Pg1[1], Pg1[2], Eg1);
     // cerr<<"Mass Photon: "<<LVg1.M()<<endl;
-    // cerr<<__LINE__<<endl;
+    if(fdebug) cerr<<__LINE__<<endl;
     for(unsigned int ig2 = ig1 + 1; ig2 < nclus; ++ig2){
       if(!IsIsolated(ig2)) continue;
       if(IsTrackMatched(ig2)) continue;
-      if(IsBorderCell(ig2, 3)) continue;
+      // if(IsBorderCell(ig2, 3)) continue;
+
       int PDGig2 = Evt.clus[ig2]->ClusterPDG;
       // int PDGig2 = GetClusterPDG(ig2);
       std::array<float, 3> Pg2 = GetMomVect(ig2);
@@ -661,21 +735,31 @@ void DataTree::GetGammasViaPi0(){
       unsigned int ClusNCells = Evt.clus[iclusHigh]->ncells;
       float gammapT = (LVg2.Pt() > LVg1.Pt() ? LVg2.Pt() : LVg1.Pt());
       hInvMassVsHighGammaPt->Fill(Pi0.M(), gammapT);
-
       hInvMassVsPtHigh->Fill(Pi0.M(), gammapT);
+      float gammapTLow = (LVg2.Pt() > LVg1.Pt() ? LVg1.Pt() : LVg2.Pt());
+      hInvMassVsPtLow->Fill(Pi0.M(), gammapTLow);
+
+
+
+
       if(!fDoLight){
 
         if(ClusNCells == 1) hInvMassVsPtHigh1cell->Fill(Pi0.M(), gammapT);
         if(ClusNCells == 2) hInvMassVsPtHigh2cell->Fill(Pi0.M(), gammapT);
         if(ClusNCells > 2) hInvMassVsPtHigh3cell->Fill(Pi0.M(), gammapT);
+
         if(isMC){
           // cerr<<"PDGig1: "<<PDGig1<<"   PDGig2"<<PDGig2<<endl;
           int iPDGHigh = (LVg2.Pt() > LVg1.Pt()) ? PDGig2 : PDGig1;
+          int iPDGLow = (LVg2.Pt() < LVg1.Pt()) ? PDGig2 : PDGig1;
           if(iPDGHigh == 22) hInvMassVsPtHighGamma->Fill(Pi0.M(), gammapT);
           else if(fabs(iPDGHigh) == 11) hInvMassVsPtHighElec->Fill(Pi0.M(), gammapT);
+          if(iPDGLow == 22) hInvMassVsPtLowGamma->Fill(Pi0.M(), gammapT);
+          else if(fabs(iPDGLow) == 11) hInvMassVsPtLowElec->Fill(Pi0.M(), gammapT);
 
         }
       }
+      if(fdebug) cerr<<__LINE__<<endl;
       // check if pi0
       float massPos = 0.12;
       // if(grMass) massPos = grMass->Eval(Pi0.Pt());
@@ -706,8 +790,25 @@ void DataTree::GetGammasViaPi0(){
         vecGoodGammasWide.push_back(ig2);
 
         // only fill higher cluster (suppress conversions?)
-        if(Eg2 > Eg1) vecGoodGammasOnlyHigh.push_back(ig2);
-        else vecGoodGammasOnlyHigh.push_back(ig1);
+        if(Eg2 > Eg1) {
+          vecGoodGammasOnlyHigh.push_back(ig2);
+          vecGoodGammasOnlyLow.push_back(ig1);
+        }
+        else{
+          vecGoodGammasOnlyHigh.push_back(ig1);
+          vecGoodGammasOnlyLow.push_back(ig2);
+        }
+
+        // Double counting
+        if(std::find(fDoubleCount.begin(), fDoubleCount.end(), ig1) != fDoubleCount.end()){
+          hInvMassVsPtDoubleCount->Fill(Pi0.M(), LVg1.Pt());
+        }
+        if(std::find(fDoubleCount.begin(), fDoubleCount.end(), ig2) != fDoubleCount.end()){
+          hInvMassVsPtDoubleCount->Fill(Pi0.M(), LVg2.Pt());
+        }
+        fDoubleCount.push_back(ig1);
+        fDoubleCount.push_back(ig2);
+
       }
 
       //-----------------------------------------------
@@ -723,7 +824,7 @@ void DataTree::GetGammasViaPi0(){
       //-----------------------------------------------
       // rotation background
       //-----------------------------------------------
-
+      if(fdebug) cerr<<__LINE__<<endl;
       // rotate around mother axis
       TVector3 pi0Vec = Pi0.Vect();
       LVg1.Rotate(TMath::Pi()/2., pi0Vec);
@@ -755,6 +856,9 @@ void DataTree::GetGammasViaPi0(){
         hInvMassVsHighGammaPtBack->Fill(BackPi01.M(), (LVg1.Pt() > LVg3.Pt() ? LVg1.Pt() : LVg3.Pt()));
         hInvMassVsHighGammaPtBack->Fill(BackPi01.M(), (LVg2.Pt() > LVg3.Pt() ? LVg2.Pt() : LVg3.Pt()));
 
+        hInvMassVsLowGammaPtBack->Fill(BackPi01.M(), (LVg1.Pt() > LVg3.Pt() ? LVg3.Pt() : LVg1.Pt()));
+        hInvMassVsLowGammaPtBack->Fill(BackPi01.M(), (LVg2.Pt() > LVg3.Pt() ? LVg3.Pt() : LVg2.Pt() ));
+
       }
     }
   }
@@ -767,7 +871,8 @@ void DataTree::FillNCellVsEGammas(){
   if(!fDoLight){
     sort( vecGoodGammas.begin(), vecGoodGammas.end() );
     vecGoodGammas.erase( unique( vecGoodGammas.begin(), vecGoodGammas.end() ), vecGoodGammas.end() );
-    for(unsigned int i = 0; i < vecGoodGammas.size(); ++i){
+    for(auto &i : vecGoodGammas){
+    // for(unsigned int i = 0; i < vecGoodGammas.size(); ++i){
       // T->GetEvent(vecGoodGammas.at(i));
       hNCellVsEGammas->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
       hNCellVsEGammasNL->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
@@ -778,7 +883,8 @@ void DataTree::FillNCellVsEGammas(){
     }
     sort( vecGoodGammasLeft.begin(), vecGoodGammasLeft.end() );
     vecGoodGammasLeft.erase( unique( vecGoodGammasLeft.begin(), vecGoodGammasLeft.end() ), vecGoodGammasLeft.end() );
-    for(unsigned int i = 0; i < vecGoodGammasLeft.size(); ++i){
+    // for(unsigned int i = 0; i < vecGoodGammasLeft.size(); ++i){
+    for(auto &i : vecGoodGammasLeft){
       // T->GetEvent(vecGoodGammasLeft.at(i));
       hNCellVsEGammasLeft->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
       hNCellVsEGammasNLLeft->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
@@ -790,7 +896,8 @@ void DataTree::FillNCellVsEGammas(){
   }
   sort( vecGoodGammasSideBand.begin(), vecGoodGammasSideBand.end() );
   vecGoodGammasSideBand.erase( unique( vecGoodGammasSideBand.begin(), vecGoodGammasSideBand.end() ), vecGoodGammasSideBand.end() );
-  for(unsigned int i = 0; i < vecGoodGammasSideBand.size(); ++i){
+  // for(unsigned int i = 0; i < vecGoodGammasSideBand.size(); ++i){
+  for(auto &i : vecGoodGammasSideBand){
     // T->GetEvent(vecGoodGammasSideBand.at(i));
     hNCellVsEGammasSideBand->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
     hNCellVsEGammasNLSideBand->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
@@ -801,7 +908,8 @@ void DataTree::FillNCellVsEGammas(){
   }
   sort( vecGoodGammasWide.begin(), vecGoodGammasWide.end() );
   vecGoodGammasWide.erase( unique( vecGoodGammasWide.begin(), vecGoodGammasWide.end() ), vecGoodGammasWide.end() );
-  for(unsigned int i = 0; i < vecGoodGammasWide.size(); ++i){
+  // for(unsigned int i = 0; i < vecGoodGammasWide.size(); ++i){
+    for(auto &i : vecGoodGammasWide){
     // T->GetEvent(vecGoodGammasWide.at(i));
     hNCellVsEGammasWide->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
     hNCellVsEGammasNLWide->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
@@ -812,7 +920,8 @@ void DataTree::FillNCellVsEGammas(){
   }
   sort( vecGoodGammasOnlyHigh.begin(), vecGoodGammasOnlyHigh.end() );
   vecGoodGammasOnlyHigh.erase( unique( vecGoodGammasOnlyHigh.begin(), vecGoodGammasOnlyHigh.end() ), vecGoodGammasOnlyHigh.end() );
-  for(unsigned int i = 0; i < vecGoodGammasOnlyHigh.size(); ++i){
+  // for(unsigned int i = 0; i < vecGoodGammasOnlyHigh.size(); ++i){
+    for(auto &i : vecGoodGammasOnlyHigh){
     // T->GetEvent(vecGoodGammasOnlyHigh.at(i));
     hNCellVsEGammasOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
     hNCellVsEGammasNLOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
@@ -821,9 +930,22 @@ void DataTree::FillNCellVsEGammas(){
       if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
     }
   }
+  sort( vecGoodGammasOnlyLow.begin(), vecGoodGammasOnlyLow.end() );
+  vecGoodGammasOnlyLow.erase( unique( vecGoodGammasOnlyLow.begin(), vecGoodGammasOnlyLow.end() ), vecGoodGammasOnlyLow.end() );
+  // for(unsigned int i = 0; i < vecGoodGammasOnlyLow.size(); ++i){
+    for(auto &i : vecGoodGammasOnlyLow){
+    // T->GetEvent(vecGoodGammasOnlyHigh.at(i));
+    hNCellVsEGammasOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
+    hNCellVsEGammasNLOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
+    if(isMC){
+      if(Evt.clus[i]->ClusterPDG == 22) hNCellVsEGammasNLTrueOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
+      if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
+    }
+  }
   sort( vecGoodGammasSideBandOnlyHigh.begin(), vecGoodGammasSideBandOnlyHigh.end() );
   vecGoodGammasSideBandOnlyHigh.erase( unique( vecGoodGammasSideBandOnlyHigh.begin(), vecGoodGammasSideBandOnlyHigh.end() ), vecGoodGammasSideBandOnlyHigh.end() );
-  for(unsigned int i = 0; i < vecGoodGammasSideBandOnlyHigh.size(); ++i){
+  // for(unsigned int i = 0; i < vecGoodGammasSideBandOnlyHigh.size(); ++i){
+    for(auto &i : vecGoodGammasSideBandOnlyHigh){
     // T->GetEvent(vecGoodGammasSideBandOnlyHigh.at(i));
     hNCellVsEGammasSideBandOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
     hNCellVsEGammasNLSideBandOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
@@ -840,18 +962,18 @@ void DataTree::FillNCellVsEGammas(){
 //--------------------------------------
 void DataTree::FillHitmap(){
   for(unsigned int i = 0; i < nclus; ++i){
-    if(fdebug) cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     // T->GetEvent(currEvt + i);
     if(IsBorderCell(i, 3)) continue;
     float theta = EtaToTheta(Evt.clus[i]->eta);
-    if(fdebug) cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     // cerr<<"theta: "<<theta - TMath::Pi()*0.5<<endl;
     hHitmap->Fill(theta - TMath::Pi()*0.5, Evt.clus[i]->phi);
-    if(fdebug) cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     hClusE->Fill(Evt.clus[i]->e);
-    if(fdebug) cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
     hClusENL->Fill(Evt.clus[i]->e);
-    if(fdebug) cerr<<__LINE__<<endl;
+    if(fdebug == 2) cerr<<__LINE__<<endl;
   }
 }
 
@@ -860,6 +982,7 @@ void DataTree::FillHitmap(){
 //--------------------------------------
 bool DataTree::IsIsolated(unsigned int clus){
   // T->GetEvent(clus);
+  if(fdebug) cout<<"Evt.clus[clus]->NsurrCells: "<<Evt.clus[clus]->NsurrCells<<endl;
   for(int i = 0; i <Evt.clus[clus]->NsurrCells; ++i){
     bool isSameCell = false;
     for(int ii = 0; ii < Evt.clus[clus]->ncells; ++ii){
@@ -869,8 +992,9 @@ bool DataTree::IsIsolated(unsigned int clus){
       }
     }
     if(isSameCell) continue;
-
+    if(fdebug) cout<<"Evt.clus[clus]->surrCellsE[i]: "<<Evt.clus[clus]->surrCellsE[i]<<endl;
     if(Evt.clus[clus]->surrCellsE[i] > 0.1){
+      if(fdebug) cout<<"Evt.clus[clus]->surrCellsR[i]: "<<Evt.clus[clus]->surrCellsR[i]<<endl;
       if(Evt.clus[clus]->surrCellsR[i] < 0.003){
         return false;
       }
@@ -942,10 +1066,15 @@ void DataTree::FillAllCLusterHist(){
   for(unsigned int ic = 0; ic < Evt.NClus; ++ic){
     // T->GetEvent(currEvt + ic);
     float Eclus = Evt.clus[ic]->e;
+    if(fdebug) cout<<__LINE__<<endl;
     hNCellVsENL->Fill(Eclus, Evt.clus[ic]->ncells);
+    if(fdebug) cout<<__LINE__<<endl;
     if(!IsTrackMatched(ic)){
+      if(fdebug) cout<<__LINE__<<endl;
       hNCellVsETMNL->Fill(Eclus, Evt.clus[ic]->ncells);
+      if(fdebug) cout<<__LINE__<<endl;
       if(IsClusAcceptedByThreshold(ic, 0.5, 0.1)) hNCellVsETMNLS500A100->Fill(Eclus, Evt.clus[ic]->ncells);
+      if(fdebug) cout<<__LINE__<<endl;
       if(IsClusAcceptedByThreshold(ic, 0.5, 0.105)) hNCellVsETMNLS500A105->Fill(Eclus, Evt.clus[ic]->ncells);
       if(IsClusAcceptedByThreshold(ic, 0.5, 0.11)) hNCellVsETMNLS500A110->Fill(Eclus, Evt.clus[ic]->ncells);
 
@@ -960,14 +1089,20 @@ float DataTree::applyNL(float e, int numcells){
 
   //--------------- pp 13TeV -------------------------
   // if (period == 0){
+
     if(isMC){
       e /= FunctionNL_OfficialTB_100MeV_MC_V2(e);
       // fine tuning based on gaussian fits on PCMEMC in pPb5TeV
       // e /= FunctionNL_kSDM(e, 0.987912, -2.94105, -0.273207) ;  // nom. B
-
-      e /= FunctionNL_kSDM(e, 1.02451, -3.49297, -0.420027); // lowB
-      e /= FunctionNL_kSDM(e, 0.986634, -4.12191, -0.321714);
-      // e /= 1.01;
+      if(period == 1){
+        e /= FunctionNL_kSDM(e, 1.02451, -3.49297, -0.420027); // lowB
+        e /= FunctionNL_kSDM(e, 0.986634, -4.12191, -0.321714);
+        // if(period == 1) e *= 1.035;
+      } else if(period == 0){
+        e /= FunctionNL_kSDM(e, 0.987912, -2.94105, -0.273207);
+      } else if(period == 2){
+        e /= FunctionNL_kSDM(e, 0.987912, -2.94105, -0.273207);
+      }
       if(numcells == 1){ // additional fine tuning for 1 cell clusters
         e /= FunctionNL_kSDM(e,0, -0.002069903, -0.00669839);
         e /= 0.995;
@@ -975,6 +1110,7 @@ float DataTree::applyNL(float e, int numcells){
     } else {
       e /= FunctionNL_OfficialTB_100MeV_Data_V2(e);
     }
+
     return e;
 
 
@@ -1001,10 +1137,14 @@ float DataTree::applyNL(float e, int numcells){
 bool DataTree::IsClusAcceptedByThreshold(unsigned int i, float agg, float thr){
   // T->GetEvent(i);
   bool hasAgg = false;
-  for(int ic = 0; ic < Evt.clus[ic]->ncells; ++ic){
-    if(Evt.clus[ic]->CellEnergy[ic] < thr) return false;
-    if(Evt.clus[ic]->CellEnergy[ic] >= agg) hasAgg = true;
+  if(fdebug) cout<<__LINE__<<endl;
+  for(int ic = 0; ic < Evt.clus[i]->ncells; ++ic){
+    if(fdebug) cout<<__LINE__<<endl;
+    if(Evt.clus[i]->CellEnergy[ic] < thr) return false;
+    if(fdebug) cout<<__LINE__<<endl;
+    if(Evt.clus[i]->CellEnergy[ic] >= agg) hasAgg = true;
   }
+  if(fdebug) cout<<__LINE__<<endl;
   return hasAgg;
 }
 
@@ -1015,11 +1155,16 @@ void DataTree::FillMassHists(TString name){
   TFile f(name);
   //-------------- 13TeV ---------------
   if(period == 0){
+    if(isMC)grMass = (TGraph*) f.Get("MassPos13TeV_nomB_MC");
+    else grMass = (TGraph*) f.Get("MassPos13TeV_nomB_data");
+    fMassPos = (TF1*) f.Get("MassPos13TeVNomB_func");
+    //-------------- 13TeV ---------------
+  } else if(period == 1){
     if(isMC)grMass = (TGraph*) f.Get("MassPos13TeV_MC");
     else grMass = (TGraph*) f.Get("MassPos13TeV_data");
-    fMassPos = (TF1*) f.Get("MassPos13TeV_func");
+    fMassPos = (TF1*) f.Get("MassPos13TeVLowB_func");
     //-------------- 8TeV ---------------
-  } else if (period == 1){
+  } else if (period == 2){
     if(isMC)grMass = (TGraph*) f.Get("MassPos8TeV_MC");
     else grMass = (TGraph*) f.Get("MassPos8TeV_data");
     fMassPos = (TF1*) f.Get("MassPos8TeV_func");
@@ -1031,8 +1176,9 @@ void DataTree::FillMassHists(TString name){
 //--------------------------------------
 void DataTree::WriteToFile(){
 
-  TString filename = "Pi0Tagging_13TeV_02_08.root";
-  if(period ==1) filename = "Pi0Tagging_8TeV_02_08.root";
+  TString filename = "Pi0Tagging_13TeV_nom_02_28_TBNL.root";
+  if(period ==1) filename = "Pi0Tagging_13TeV_low_02_25_TBNL.root";
+  else if(period ==2) filename = "Pi0Tagging_8TeV_02_24_ReverseTBNL.root";
   std::ifstream ftest(filename);
 
   TFile fout(filename, (ftest.good() == 0) ? "Recreate" : "Update");
@@ -1044,12 +1190,17 @@ void DataTree::WriteToFile(){
   hInvMassVsPtBack->Write(Form("hInvMassVsPtBack_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsHighGammaPt->Write(Form("hInvMassVsHighGammaPt_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsHighGammaPtBack->Write(Form("hInvMassVsHighGammaPtBack_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hInvMassVsLowGammaPtBack->Write(Form("hInvMassVsLowGammaPtBack_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hInvMassVsPtLow->Write(Form("hInvMassVsPtLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hInvMassVsPtLowGamma->Write(Form("hInvMassVsPtLowGamma_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hInvMassVsPtLowElec->Write(Form("hInvMassVsPtLowElec_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsPtHigh->Write(Form("hInvMassVsPtHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsPtHighGamma->Write(Form("hInvMassVsPtHighGamma_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsPtHighElec->Write(Form("hInvMassVsPtHighElec_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsPtHigh1cell->Write(Form("hInvMassVsPtHigh1cell_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsPtHigh2cell->Write(Form("hInvMassVsPtHigh2cell_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hInvMassVsPtHigh3cell->Write(Form("hInvMassVsPtHigh3cell_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hInvMassVsPtDoubleCount->Write(Form("hInvMassVsPtDoubleCount_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hNCellVsEGammas->Write(Form("hNCellVsEGammas_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hNCellVsEGammasNL->Write(Form("hNCellVsEGammasNL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hNCellVsEGammasNLTrue->Write(Form("hNCellVsETrueGammasNL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
@@ -1075,6 +1226,11 @@ void DataTree::WriteToFile(){
   hNCellVsEGammasNLTrueOnlyHighClus->Write(Form("hNCellVsETrueGammasNLOnlyHighClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hNCellVsEGammasNLTrueElecOnlyHighClus->Write(Form("hNCellVsEGammasNLTrueElecOnlyHighClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
 
+  hNCellVsEGammasOnlyLowClus->Write(Form("hNCellVsEGammasOnlyLowClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hNCellVsEGammasNLOnlyLowClus->Write(Form("hNCellVsEGammasNLOnlyLowClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hNCellVsEGammasNLTrueOnlyLowClus->Write(Form("hNCellVsETrueGammasNLOnlyLowClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hNCellVsEGammasNLTrueElecOnlyLowClus->Write(Form("hNCellVsEGammasNLTrueElecOnlyLowClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+
   hNCellVsEGammasSideBandOnlyHighClus->Write(Form("hNCellVsEGammasSideBandOnlyHighClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hNCellVsEGammasNLSideBandOnlyHighClus->Write(Form("hNCellVsEGammasNLSideBandOnlyHighClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hNCellVsEGammasNLTrueSideBandOnlyHighClus->Write(Form("hNCellVsETrueGammasNLSideBandOnlyHighClus_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
@@ -1093,6 +1249,7 @@ void DataTree::WriteToFile(){
   hNCellVsENL->Write(Form("hNCellVsENL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   fout.Close();
 
+
 }
 
 
@@ -1100,16 +1257,16 @@ void DataTree::WriteToFile(){
 //--------------------------------------
 //--- Start the thing :)
 //--------------------------------------
-void MakeNCellEffiPureGammas(bool isMC = 1, TString period = "8TeV", bool light = true){
+void MakeNCellEffiPureGammas(bool isMC = 1, TString period = "13TeV", bool light = true, int skip = 0){
   TStopwatch watch;
   watch.Start();
   if(isMC){
-    DataTree myAna(true, period, light);
-    myAna.Process(1e5);
+    DataTree myAna(true, period, light, skip);
+    myAna.Process(2e7);
     myAna.WriteToFile();
   } else {
-    DataTree myAna2(false, period, light);
-    myAna2.Process(1e5);
+    DataTree myAna2(false, period, light, skip);
+    myAna2.Process(5e6);
     myAna2.WriteToFile();
   }
   watch.Stop();
