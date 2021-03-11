@@ -1,17 +1,16 @@
 #include "header.h"
 
-
-class DataTree{
+class SpectraClass{
   public:
-    DataTree();
-    DataTree(bool mc, TString Period = "13TeV", bool light = true, int skipping = 0);
-    ~DataTree();
+    SpectraClass();
+    SpectraClass(bool mc, TString Period = "13TeV", bool light = true, int skipping = 0);
+    ~SpectraClass();
 
     unsigned int GetNClusInEvt(unsigned int i);
     void CreateHistos();
     void Process(unsigned int nclus = 0);
     void NextEvt();
-    void GetGammasViaPi0();
+    void CalculatePi0s(unsigned int kCorrection);
     Cluster *GetCluster(unsigned int i = 0);
     std::array<float, 3> GetMomVect(unsigned int i = 0);
     float GetE(unsigned int i)                          {T->GetEvent(i); return applyNL(energy, Cluster_NumCells);};
@@ -24,12 +23,12 @@ class DataTree{
     bool IsIsolated(unsigned int i);
     bool IsBorderCell(unsigned int clus, unsigned int NCellDist);
     bool IsTrackMatched(unsigned int i);
+    bool IsAcceptedByNCellEffi(unsigned int i, unsigned int kCorrection = 0);
     bool IsExoticClus(unsigned int i, float eThresh = 0.07);
     void FillElectronHist();
     void FillAllCLusterHist();
     float applyNL(float e, int numcells);
     bool IsClusAcceptedByThreshold(unsigned int i, float agg, float thr);
-    void FillMassHists(TString name);
 
   private:
 
@@ -38,6 +37,11 @@ class DataTree{
     bool fDoLight = true;
 
     AliEMCALGeometry * geom = nullptr;
+
+    TRandom randomEng;
+
+    double fNCellEfficiencyParams[10] = {0};
+
 
     static constexpr int fnEMCalGapsPhi = 12;
     static constexpr int fnEMCalGapsEta = 3;
@@ -197,11 +201,6 @@ class DataTree{
     TH2F* hNCellVsEGammasNLTrueSideBandOnlyHighClus = nullptr;
     TH2F* hNCellVsEGammasNLTrueElecSideBandOnlyHighClus = nullptr;
 
-    TH2F* hNCellVsEGammasSideBandOnlyLowClus = nullptr;
-    TH2F* hNCellVsEGammasNLSideBandOnlyLowClus = nullptr;
-    TH2F* hNCellVsEGammasNLTrueSideBandOnlyLowClus = nullptr;
-    TH2F* hNCellVsEGammasNLTrueElecSideBandOnlyLowClus = nullptr;
-
     //--------------------------------------
     //--- TH2 NCell Vs E histograms for clusterizer studies
     //--------------------------------------
@@ -216,32 +215,30 @@ class DataTree{
     //--------------------------------------
     //--- Inv. Mass histograms
     //--------------------------------------
-    TH2F* hInvMassVsPt = nullptr;
-    TH2F* hInvMassVsPtBack = nullptr;
-    TH2F* hInvMassVsPtGG = nullptr;
-    TH2F* hInvMassVsPtGC = nullptr;
-    TH2F* hInvMassVsPtCC = nullptr;
-    TH2F* hInvMassVsPtHadrons = nullptr;
-    TH2F* hInvMassVsHighGammaPt = nullptr;
-    TH2F* hInvMassVsHighGammaPtBack = nullptr;
-    TH2F* hInvMassVsBothGammaPtBack = nullptr;
-    TH2F* hInvMassVsLowGammaPtBack = nullptr;
-    TH2F* hInvMassVsPtHigh = nullptr;
-    TH2F* hInvMassVsPtHighGamma = nullptr;
-    TH2F* hInvMassVsPtHighElec = nullptr;
-    TH2F* hInvMassVsPtBoth = nullptr;
-    TH2F* hInvMassVsPtBothGamma = nullptr;
-    TH2F* hInvMassVsPtBothElec = nullptr;
-    TH2F* hInvMassVsPtLow = nullptr;
-    TH2F* hInvMassVsPtLowGamma = nullptr;
-    TH2F* hInvMassVsPtLowElec = nullptr;
-    TH2F* hInvMassVsPtHigh1cell = nullptr;
-    TH2F* hInvMassVsPtHigh2cell = nullptr;
-    TH2F* hInvMassVsPtHigh3cell = nullptr;
-
-    TH2F* hInvMassVsPtDoubleCount = nullptr;
-
-    TH2F* CorrelationLowHigh = nullptr;
+    std::vector<TH2F*> hInvMassVsPt = {nullptr};
+    std::vector<TH2F*> hInvMassVsPtBack = {nullptr};
+    // TH2F* hInvMassVsPtBack = nullptr;
+    // TH2F* hInvMassVsPtGG = nullptr;
+    // TH2F* hInvMassVsPtGC = nullptr;
+    // TH2F* hInvMassVsPtCC = nullptr;
+    // TH2F* hInvMassVsHighGammaPt = nullptr;
+    // TH2F* hInvMassVsHighGammaPtBack = nullptr;
+    // TH2F* hInvMassVsBothGammaPtBack = nullptr;
+    // TH2F* hInvMassVsLowGammaPtBack = nullptr;
+    // TH2F* hInvMassVsPtHigh = nullptr;
+    // TH2F* hInvMassVsPtHighGamma = nullptr;
+    // TH2F* hInvMassVsPtHighElec = nullptr;
+    // TH2F* hInvMassVsPtBoth = nullptr;
+    // TH2F* hInvMassVsPtBothGamma = nullptr;
+    // TH2F* hInvMassVsPtBothElec = nullptr;
+    // TH2F* hInvMassVsPtLow = nullptr;
+    // TH2F* hInvMassVsPtLowGamma = nullptr;
+    // TH2F* hInvMassVsPtLowElec = nullptr;
+    // TH2F* hInvMassVsPtHigh1cell = nullptr;
+    // TH2F* hInvMassVsPtHigh2cell = nullptr;
+    // TH2F* hInvMassVsPtHigh3cell = nullptr;
+    //
+    // TH2F* hInvMassVsPtDoubleCount = nullptr;
 
     //--------------------------------------
     //--- NCell vs. E for electron clusters
@@ -265,7 +262,6 @@ class DataTree{
     std::vector<unsigned int> vecGoodGammasOnlyHigh;
     std::vector<unsigned int> vecGoodGammasOnlyLow;
     std::vector<unsigned int> vecGoodGammasSideBandOnlyHigh;
-    std::vector<unsigned int> vecGoodGammasSideBandOnlyLow;
     std::vector<unsigned int> vecGoodGammasWide;
     std::vector<unsigned int> vecGoodGammasSideBand;
 
@@ -292,15 +288,15 @@ class DataTree{
 };
 
 //----------------------------
-DataTree::DataTree(){
+SpectraClass::SpectraClass(): randomEng(){
 
 }
 //----------------------------
-DataTree::~DataTree(){
+SpectraClass::~SpectraClass(){
 
 }
 //----------------------------
-DataTree::DataTree(bool mc, TString Period, bool light, int skipping){
+SpectraClass::SpectraClass(bool mc, TString Period, bool light, int skipping): randomEng(){
   isMC = mc;
   fDoLight = light;
   SkippingFrac = skipping;
@@ -308,6 +304,9 @@ DataTree::DataTree(bool mc, TString Period, bool light, int skipping){
   if(Period.Contains("13TeVNomB")) period = 0;
   else if(Period.Contains("13TeVLowB")) period = 1;
   else if(Period.Contains("8TeV")) period = 2;
+
+  hInvMassVsPt.clear();
+  hInvMassVsPtBack.clear();
 
   //--------------------------------------
   //--- Put together input files
@@ -416,105 +415,20 @@ DataTree::DataTree(bool mc, TString Period, bool light, int skipping){
   T->SetBranchAddress("Surrounding_Tracks_nSigdEdxE", Surrounding_Tracks_nSigdEdx);
   T->SetBranchAddress("Surrounding_Tracks_V0Flag", Surrounding_Tracks_IsV0);
   if(isMC){
-    // T->SetBranchAddress("Mother_MC_Label", &ClusterPDG);
-    T->SetBranchAddress("Cluster_MC_FirstLabel", &ClusterPDG);
+    T->SetBranchAddress("Mother_MC_Label", &ClusterPDG);
   }
 }
 
 //--------------------------------------
 //--- Setting up the histos
 //--------------------------------------
-void DataTree::CreateHistos(){
+void SpectraClass::CreateHistos(){
 
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammas = new TH2F("EvsNCell", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNL = new TH2F("EvsNCellNL", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrue = new TH2F("hNCellVsEGammasNLTrue", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElec = new TH2F("hNCellVsEGammasNLTrueElec", "", nBinsE, arrEbins , 20, 0, 20);
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammasLeft = new TH2F("EvsNCellLeft", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLLeft = new TH2F("EvsNCellNLLeft", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueLeft = new TH2F("hNCellVsEGammasNLTrueLeft", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecLeft = new TH2F("hNCellVsEGammasNLTrueElecLeft", "", nBinsE, arrEbins , 20, 0, 20);
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammasWide = new TH2F("EvsNCellWide", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLWide = new TH2F("EvsNCellNLWide", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueWide = new TH2F("hNCellVsEGammasNLTrueWide", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecWide = new TH2F("hNCellVsEGammasNLTrueElecWide", "", nBinsE, arrEbins , 20, 0, 20);
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammasSideBand = new TH2F("EvsNCellSideBand", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLSideBand = new TH2F("EvsNCellNLSideBand", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueSideBand = new TH2F("hNCellVsEGammasNLTrueSideBand", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecSideBand = new TH2F("hNCellVsEGammasNLTrueElecSideBand", "", nBinsE, arrEbins , 20, 0, 20);
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammasOnlyHighClus = new TH2F("hNCellVsEGammasOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLOnlyHighClus = new TH2F("hNCellVsEGammasNLOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammasOnlyLowClus = new TH2F("hNCellVsEGammasOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLOnlyLowClus = new TH2F("hNCellVsEGammasNLOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammasSideBandOnlyHighClus = new TH2F("hNCellVsEGammasSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueElecSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  cerr<<__LINE__<<endl;
-  hNCellVsEGammasSideBandOnlyLowClus = new TH2F("hNCellVsEGammasSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueElecSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-
-  hNCellVsENL = new TH2F("hNCellVsENL_AllClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNL = new TH2F("hNCellVsETMNL_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsENoExotic50 = new TH2F("hNCellVsENoExotic50_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsENoExotic75 = new TH2F("hNCellVsENoExotic75_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS500A100 = new TH2F("hNCellVsETMNLS500A100_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS500A105 = new TH2F("hNCellVsETMNLS500A105_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS500A110 = new TH2F("hNCellVsETMNLS500A110_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hInvMassVsPt = new TH2F("hInvMassVsPt", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtGG = new TH2F("hInvMassVsPtGG", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtGC = new TH2F("hInvMassVsPtGC", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtCC = new TH2F("hInvMassVsPtCC", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtHadrons = new TH2F("hInvMassVsPtHadrons", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtBack = new TH2F("hInvMassVsPtBack", "", 500, 0, 1., 200, 0, 20);
-
-  hInvMassVsPtHigh = new TH2F("hInvMassVsPtHigh", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtHighGamma = new TH2F("hInvMassVsPtHighGamma", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtHighElec = new TH2F("hInvMassVsPtHighElec", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtHigh1cell = new TH2F("hInvMassVsPtHigh1cell", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtHigh2cell = new TH2F("hInvMassVsPtHigh2cell", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtHigh3cell = new TH2F("hInvMassVsPtHigh3cell", "", 500, 0, 1., 200, 0, 20);
-
-  hInvMassVsPtBoth = new TH2F("hInvMassVsPtBoth", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtBothGamma = new TH2F("hInvMassVsPtBothGamma", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtBothElec = new TH2F("hInvMassVsPtBothElec", "", 500, 0, 1., 200, 0, 20);
-
-  hInvMassVsPtDoubleCount = new TH2F("hInvMassVsPtDoubleCount", "", 500, 0, 1., 200, 0, 20);
-
-  CorrelationLowHigh = new TH2F("CorrelationLowHigh", "", 200, 0, 20, 200, 0, 20);
-
-  hInvMassVsPtLowGamma = new TH2F("hInvMassVsPtLowGamma", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtLowElec = new TH2F("hInvMassVsPtLowElec", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsPtLow = new TH2F("hInvMassVsPtLow", "", 500, 0, 1., 200, 0, 20);
-
-  hInvMassVsHighGammaPt = new TH2F("hInvMassVsHighGammaPt", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsHighGammaPtBack = new TH2F("hInvMassVsHighGammaPtBack", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsBothGammaPtBack = new TH2F("hInvMassVsBothGammaPtBack", "", 500, 0, 1., 200, 0, 20);
-  hInvMassVsLowGammaPtBack = new TH2F("hInvMassVsLowGammaPtBack", "", 500, 0, 1., 200, 0, 20);
   hHitmap = new TH2F("hHitmap", "", 160, -0.8, 0.8, 126*2, 0, 6.2);
-  hClusE = new TH1F("hClusE", "", nBinsE, arrEbins );
-  hClusENL = new TH1F("hClusENL", "", nBinsE, arrEbins );
-
-  hNCellVsEelec = new TH2F("hNCellVsEelec", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEelecNL = new TH2F("hNCellVsEelecNL", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEelecNLTrue = new TH2F("hNCellVsEelecNLTrue", "", nBinsE, arrEbins , 20, 0, 20);
 
 }
 
-Cluster *DataTree::GetCluster(unsigned int i){
+Cluster *SpectraClass::GetCluster(unsigned int i){
   T->GetEvent(i);
   // for(int k = 0; k < Surrounding_Tracks_N; k++){
   //   cout<<"Surrounding_Cells_ID["<<k<<"] = "<<Surrounding_Cells_ID[k]<<endl;
@@ -537,7 +451,7 @@ Cluster *DataTree::GetCluster(unsigned int i){
 //--------------------------------------
 //--- get the number of clusters in current event, use he vertex position as an indicator
 //--------------------------------------
-unsigned int DataTree::GetNClusInEvt(unsigned int i){
+unsigned int SpectraClass::GetNClusInEvt(unsigned int i){
   T->GetEvent(i);
   float savedVtx = vertexZ;
   unsigned int nClus = 0;
@@ -552,7 +466,7 @@ unsigned int DataTree::GetNClusInEvt(unsigned int i){
 //--------------------------------------
 //--- Switch to the next event
 //--------------------------------------
-void DataTree::NextEvt(){
+void SpectraClass::NextEvt(){
   nclus = GetNClusInEvt(currEvt);
   if(fdebug) cout<<"cluster in evt: "<<nclus<<endl;
   T->GetEvent(currEvt + nclus);
@@ -569,11 +483,10 @@ void DataTree::NextEvt(){
 //--------------------------------------
 //--- Main function
 //--------------------------------------
-void DataTree::Process(unsigned int maxNumClus){
+void SpectraClass::Process(unsigned int maxNumClus){
   cerr<<"max events: "<<T->GetEntries()<<endl;
 
   CreateHistos();
-  FillMassHists("fMassPos.root");
   // unsigned int counter = 0;
   if(fdebug == 2) cerr<<__LINE__<<endl;
   while(currEvt < maxNumClus && currEvt < T->GetEntries()*0.99){
@@ -583,16 +496,10 @@ void DataTree::Process(unsigned int maxNumClus){
     NextEvt();
     if(fdebug)cout<<"energy: "<<energy<<endl;
     if(fdebug == 2) cerr<<__LINE__<<endl;
-    GetGammasViaPi0();
-    if(fdebug == 2) cerr<<__LINE__<<endl;
-    FillNCellVsEGammas();
-    if(fdebug == 2) cerr<<__LINE__<<endl;
-    FillHitmap();
-    if(fdebug == 2) cerr<<__LINE__<<endl;
-    FillElectronHist();
-    if(fdebug == 2) cerr<<__LINE__<<endl;
-    FillAllCLusterHist();
-    if(fdebug == 2) cerr<<__LINE__<<endl;
+    for(int i = 0; i < 7; ++i){
+      CalculatePi0s(i);
+    }
+
   }
 
 }
@@ -600,14 +507,14 @@ void DataTree::Process(unsigned int maxNumClus){
 //--------------------------------------
 //--- Eta to theta
 //--------------------------------------
-inline float DataTree::EtaToTheta(float Eta){
+inline float SpectraClass::EtaToTheta(float Eta){
  return (float) 2.*atan(exp(-Eta));
 }
 
 //--------------------------------------
 //--- Get Momntum vector from cluster
 //--------------------------------------
-std::array<float, 3> DataTree::GetMomVect(unsigned int i){
+std::array<float, 3> SpectraClass::GetMomVect(unsigned int i){
   // T->GetEvent(i);
   if(fdebug == 2)cout<<__LINE__<<endl;
   float theta = EtaToTheta(Evt.clus[i]->eta);
@@ -621,20 +528,12 @@ std::array<float, 3> DataTree::GetMomVect(unsigned int i){
 //--------------------------------------
 //--- Select photons if the lie in the pi0 mass window together with another cluster
 //--------------------------------------
-void DataTree::GetGammasViaPi0(){
-  vecGoodGammas.clear();
-  // vecGoodGammas.resize(0);
-  vecGoodGammasLeft.clear();
-  // vecGoodGammasLeft.resize(0);
-  vecGoodGammasSideBand.clear();
-  // vecGoodGammasSideBand.resize(0);
-  vecGoodGammasWide.clear();
-  // vecGoodGammasWide.resize(0);
-  vecGoodGammasOnlyHigh.clear();
-  vecGoodGammasOnlyLow.clear();
-  // vecGoodGammasOnlyHigh.resize(0);
-  vecGoodGammasSideBandOnlyHigh.clear();
-  vecGoodGammasSideBandOnlyLow.clear();
+void SpectraClass::CalculatePi0s(unsigned int kCorrection){
+  if(fdebug)cout<<"kCorrection: "<<kCorrection<<"  hInvMassVsPt.size(): "<<hInvMassVsPt.size()<<endl;
+  if(kCorrection >= hInvMassVsPt.size()){
+    hInvMassVsPt.push_back( new TH2F(Form("hInvMassVsPt_%i", kCorrection), Form("hInvMassVsPt_%i", kCorrection), 500, 0, 1., 200, 0, 20));
+    hInvMassVsPtBack.push_back( new TH2F(Form("hInvMassVsPtBack_%i", kCorrection), Form("hInvMassVsPtBack_%i", kCorrection), 500, 0, 1., 200, 0, 20));
+  }
 
   std::vector<unsigned int> fDoubleCount;
   // vecGoodGammasSideBandOnlyHigh.resize(0);
@@ -646,6 +545,8 @@ void DataTree::GetGammasViaPi0(){
     // if(!IsIsolated(ig1)) continue;
     if(fdebug) cerr<<__LINE__<<endl;
     if(IsTrackMatched(ig1)) continue;
+
+    if(!IsAcceptedByNCellEffi(ig1, kCorrection)) continue;
     if(fdebug) cerr<<__LINE__<<endl;
     // if(IsBorderCell(ig1, 3)) continue;
     if(fdebug) cerr<<__LINE__<<endl;
@@ -665,6 +566,8 @@ void DataTree::GetGammasViaPi0(){
     for(unsigned int ig2 = ig1 + 1; ig2 < nclus; ++ig2){
       // if(!IsIsolated(ig2)) continue;
       if(IsTrackMatched(ig2)) continue;
+
+      if(!IsAcceptedByNCellEffi(ig2, kCorrection)) continue;
       // if(IsBorderCell(ig2, 3)) continue;
 
       int PDGig2 = Evt.clus[ig2]->ClusterPDG;
@@ -678,144 +581,9 @@ void DataTree::GetGammasViaPi0(){
       LVg2.SetE(Evt.clus[ig2]->e);
       // combine to mother particle
       TLorentzVector Pi0 = (LVg1 + LVg2);
-
-      // check the opening angle
-      if(LVg1.Angle(LVg2.Vect()) < 0.0202) continue;
-
       // cerr<<Pi0.M()<<endl;
 
-      hInvMassVsPt->Fill(Pi0.M(), Pi0.Pt());
-      // both gammas
-      // get high and low gamma pT
-      float gammapTHigh = (LVg2.Pt() > LVg1.Pt() ? LVg2.Pt() : LVg1.Pt());
-      float gammapTLow = (LVg2.Pt() > LVg1.Pt() ? LVg1.Pt() : LVg2.Pt());
-      if(PDGig1 == PDGig2 && PDGig2 == 22) {
-        hInvMassVsPtGG->Fill(Pi0.M(), Pi0.Pt());
-      }
-      else if( (fabs(PDGig1) == 11 && PDGig2 == 22) || (PDGig1 == 22 && fabs(PDGig2) == 11)) {
-        hInvMassVsPtGC->Fill(Pi0.M(), Pi0.Pt());
-      }
-      else if((PDGig1 == PDGig2) && (fabs(PDGig2) == 11)) {
-        hInvMassVsPtCC->Fill(Pi0.M(), Pi0.Pt());
-      }
-      else{
-        hInvMassVsPtHadrons->Fill(Pi0.M(), Pi0.Pt());
-      }
-
-      hInvMassVsHighGammaPt->Fill(Pi0.M(), gammapTHigh);
-      hInvMassVsPtHigh->Fill(Pi0.M(), gammapTHigh);
-      hInvMassVsPtBoth->Fill(Pi0.M(), gammapTHigh);
-      hInvMassVsPtLow->Fill(Pi0.M(), gammapTLow);
-      hInvMassVsPtBoth->Fill(Pi0.M(), gammapTLow);
-
-      if(Pi0.M() > 0.09 && Pi0.M() < 0.17){
-        CorrelationLowHigh->Fill(gammapTHigh, gammapTLow);
-      }
-
-
-
-
-      if(!fDoLight){
-
-        unsigned int iclusHigh = (LVg2.Pt() > LVg1.Pt()) ? ig2 : ig1;
-        unsigned int ClusNCells = Evt.clus[iclusHigh]->ncells;
-        if(ClusNCells == 1) hInvMassVsPtHigh1cell->Fill(Pi0.M(), gammapTHigh);
-        if(ClusNCells == 2) hInvMassVsPtHigh2cell->Fill(Pi0.M(), gammapTHigh);
-        if(ClusNCells > 2) hInvMassVsPtHigh3cell->Fill(Pi0.M(), gammapTHigh);
-
-        if(isMC){
-          // cerr<<"PDGig1: "<<PDGig1<<"   PDGig2"<<PDGig2<<endl;
-          int iPDGHigh = (LVg2.Pt() > LVg1.Pt()) ? PDGig2 : PDGig1;
-          int iPDGLow = (LVg2.Pt() < LVg1.Pt()) ? PDGig2 : PDGig1;
-          if(iPDGHigh == 22) {
-            hInvMassVsPtHighGamma->Fill(Pi0.M(), gammapTHigh);
-            hInvMassVsPtBothGamma->Fill(Pi0.M(), gammapTHigh);
-          }
-          else if(fabs(iPDGHigh) == 11) {
-            hInvMassVsPtHighElec->Fill(Pi0.M(), gammapTHigh);
-            hInvMassVsPtBothElec->Fill(Pi0.M(), gammapTHigh);
-          }
-          if(iPDGLow == 22) {
-            hInvMassVsPtLowGamma->Fill(Pi0.M(), gammapTLow);
-            hInvMassVsPtBothGamma->Fill(Pi0.M(), gammapTLow);
-          }
-          else if(fabs(iPDGLow) == 11) {
-            hInvMassVsPtLowElec->Fill(Pi0.M(), gammapTLow);
-            hInvMassVsPtBothElec->Fill(Pi0.M(), gammapTLow);
-          }
-
-        }
-      }
-      if(fdebug) cerr<<__LINE__<<endl;
-      // check if pi0
-      float massPos = 0.12;
-      // if(grMass) massPos = grMass->Eval(Pi0.Pt());
-      if(fMassPos) massPos = fMassPos->Eval(Pi0.Pt());
-      // cerr<<Pi0.Pt()<<"\t"<<massPos<<endl;
-      //-----------------------------------------------
-      // Right side of peak
-      //-----------------------------------------------
-      if(!fDoLight){
-        if(Pi0.M() > massPos && Pi0.M() < massPos + 0.02){
-        // if(Pi0.M() > massPos && Pi0.M() < massPos + 0.02){
-          vecGoodGammas.push_back(ig1);
-          vecGoodGammas.push_back(ig2);
-        }
-        //-----------------------------------------------
-        // left side of peak
-        //-----------------------------------------------
-        if(Pi0.M() > massPos - 0.05 && Pi0.M() < massPos){
-        // if(Pi0.M() > 0.1 && Pi0.M() < 0.6){
-          vecGoodGammasLeft.push_back(ig1);
-          vecGoodGammasLeft.push_back(ig2);
-        }
-      }
-      //-----------------------------------------------
-      // both side of peak
-      //-----------------------------------------------
-      if(Pi0.M() > 0.09 && Pi0.M() < 0.17){
-      // if(Pi0.M() > massPos - 0.05 && Pi0.M() < massPos + 0.02){
-        vecGoodGammasWide.push_back(ig1);
-        vecGoodGammasWide.push_back(ig2);
-
-        // only fill higher cluster (suppress conversions?)
-        if(Eg2 > Eg1) {
-          vecGoodGammasOnlyHigh.push_back(ig2);
-          vecGoodGammasOnlyLow.push_back(ig1);
-        }
-        else{
-          vecGoodGammasOnlyHigh.push_back(ig1);
-          vecGoodGammasOnlyLow.push_back(ig2);
-        }
-
-        // Double counting
-        if(std::find(fDoubleCount.begin(), fDoubleCount.end(), ig1) != fDoubleCount.end()){
-          hInvMassVsPtDoubleCount->Fill(Pi0.M(), LVg1.Pt());
-        }
-        if(std::find(fDoubleCount.begin(), fDoubleCount.end(), ig2) != fDoubleCount.end()){
-          hInvMassVsPtDoubleCount->Fill(Pi0.M(), LVg2.Pt());
-        }
-        fDoubleCount.push_back(ig1);
-        fDoubleCount.push_back(ig2);
-
-      }
-
-      //-----------------------------------------------
-      // right side sideband
-      //-----------------------------------------------
-      if(Pi0.M() > 0.2 && Pi0.M() < 0.3){
-      // if(Pi0.M() > massPos + 0.05 && Pi0.M() < massPos + 0.2){
-        vecGoodGammasSideBand.push_back(ig1);
-        vecGoodGammasSideBand.push_back(ig2);
-        if(Eg2 > Eg1) {
-          vecGoodGammasSideBandOnlyHigh.push_back(ig2);
-          vecGoodGammasSideBandOnlyLow.push_back(ig1);
-        }
-        else {
-          vecGoodGammasSideBandOnlyHigh.push_back(ig1);
-          vecGoodGammasSideBandOnlyLow.push_back(ig2);
-        }
-      }
+      hInvMassVsPt.at(kCorrection)->Fill(Pi0.M(), Pi0.Pt());
 
       //-----------------------------------------------
       // rotation background
@@ -829,6 +597,8 @@ void DataTree::GetGammasViaPi0(){
         if(ig3 == ig2 || ig3 == ig1) continue;
         // if(!IsIsolated(ig3)) continue;
         if(IsTrackMatched(ig3)) continue;
+
+        if(!IsAcceptedByNCellEffi(ig3, kCorrection)) continue;
         // int PDGig3 = GetClusterPDG(currEvt+ig3);
         std::array<float, 3> Pg3 = GetMomVect(ig3);
         // float Eg3 = GetE(ig3);
@@ -844,141 +614,20 @@ void DataTree::GetGammasViaPi0(){
         // combine to mother particle
         TLorentzVector BackPi01 = (LVg1 + LVg3);
         TLorentzVector BackPi02 = (LVg2 + LVg3);
-
-        bool isAcc1 = (LVg1.Angle(LVg3.Vect()) > 0.0202) ? true : false;
-        bool isAcc2 = (LVg2.Angle(LVg3.Vect()) > 0.0202) ? true : false;
         // cerr<<Pi0.M()<<endl;
 
-        if(isAcc1) hInvMassVsPtBack->Fill(BackPi01.M(), BackPi01.Pt());
-        if(isAcc2) hInvMassVsPtBack->Fill(BackPi02.M(), BackPi02.Pt());
-
-        if(isAcc1) {
-          hInvMassVsHighGammaPtBack->Fill(BackPi01.M(), (LVg1.Pt() > LVg3.Pt() ? LVg1.Pt() : LVg3.Pt()));
-          hInvMassVsLowGammaPtBack->Fill(BackPi01.M(), (LVg1.Pt() > LVg3.Pt() ? LVg3.Pt() : LVg1.Pt()));
-          hInvMassVsBothGammaPtBack->Fill(BackPi01.M(), (LVg1.Pt() > LVg3.Pt() ? LVg3.Pt() : LVg1.Pt()));
-          hInvMassVsBothGammaPtBack->Fill(BackPi01.M(), (LVg1.Pt() > LVg3.Pt() ? LVg1.Pt() : LVg3.Pt()));
-        }
-        if(isAcc2) {
-          hInvMassVsHighGammaPtBack->Fill(BackPi02.M(), (LVg2.Pt() > LVg3.Pt() ? LVg2.Pt() : LVg3.Pt()));
-          hInvMassVsLowGammaPtBack->Fill(BackPi02.M(), (LVg2.Pt() > LVg3.Pt() ? LVg3.Pt() : LVg2.Pt() ));
-          hInvMassVsBothGammaPtBack->Fill(BackPi02.M(), (LVg2.Pt() > LVg3.Pt() ? LVg2.Pt() : LVg3.Pt()));
-          hInvMassVsBothGammaPtBack->Fill(BackPi02.M(), (LVg2.Pt() > LVg3.Pt() ? LVg3.Pt() : LVg2.Pt() ));
-        }
+        hInvMassVsPtBack.at(kCorrection)->Fill(BackPi01.M(), BackPi01.Pt());
+        hInvMassVsPtBack.at(kCorrection)->Fill(BackPi02.M(), BackPi02.Pt());
 
       }
     }
   }
-}
-
-//--------------------------------------
-//--- Fill the histograms from the vectors for each event
-//--------------------------------------
-void DataTree::FillNCellVsEGammas(){
-  if(!fDoLight){
-    sort( vecGoodGammas.begin(), vecGoodGammas.end() );
-    vecGoodGammas.erase( unique( vecGoodGammas.begin(), vecGoodGammas.end() ), vecGoodGammas.end() );
-    for(auto &i : vecGoodGammas){
-    // for(unsigned int i = 0; i < vecGoodGammas.size(); ++i){
-      // T->GetEvent(vecGoodGammas.at(i));
-      hNCellVsEGammas->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      hNCellVsEGammasNL->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(isMC){
-        if(Evt.clus[i]->ClusterPDG == 22) hNCellVsEGammasNLTrue->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-        if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElec->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      }
-    }
-    sort( vecGoodGammasLeft.begin(), vecGoodGammasLeft.end() );
-    vecGoodGammasLeft.erase( unique( vecGoodGammasLeft.begin(), vecGoodGammasLeft.end() ), vecGoodGammasLeft.end() );
-    // for(unsigned int i = 0; i < vecGoodGammasLeft.size(); ++i){
-    for(auto &i : vecGoodGammasLeft){
-      // T->GetEvent(vecGoodGammasLeft.at(i));
-      hNCellVsEGammasLeft->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      hNCellVsEGammasNLLeft->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(isMC){
-        if(Evt.clus[i]->ClusterPDG == 22) hNCellVsEGammasNLTrueLeft->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-        if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecLeft->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      }
-    }
-  }
-  sort( vecGoodGammasSideBand.begin(), vecGoodGammasSideBand.end() );
-  vecGoodGammasSideBand.erase( unique( vecGoodGammasSideBand.begin(), vecGoodGammasSideBand.end() ), vecGoodGammasSideBand.end() );
-  // for(unsigned int i = 0; i < vecGoodGammasSideBand.size(); ++i){
-  for(auto &i : vecGoodGammasSideBand){
-    // T->GetEvent(vecGoodGammasSideBand.at(i));
-    hNCellVsEGammasSideBand->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    hNCellVsEGammasNLSideBand->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    if(isMC){
-      if(Evt.clus[i]->ClusterPDG == 22) hNCellVsEGammasNLTrueSideBand->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecSideBand->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    }
-  }
-  sort( vecGoodGammasWide.begin(), vecGoodGammasWide.end() );
-  vecGoodGammasWide.erase( unique( vecGoodGammasWide.begin(), vecGoodGammasWide.end() ), vecGoodGammasWide.end() );
-  // for(unsigned int i = 0; i < vecGoodGammasWide.size(); ++i){
-    for(auto &i : vecGoodGammasWide){
-    // T->GetEvent(vecGoodGammasWide.at(i));
-    hNCellVsEGammasWide->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    hNCellVsEGammasNLWide->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    if(isMC){
-      if(Evt.clus[i]->ClusterPDG == 22) hNCellVsEGammasNLTrueWide->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecWide->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    }
-  }
-  sort( vecGoodGammasOnlyHigh.begin(), vecGoodGammasOnlyHigh.end() );
-  vecGoodGammasOnlyHigh.erase( unique( vecGoodGammasOnlyHigh.begin(), vecGoodGammasOnlyHigh.end() ), vecGoodGammasOnlyHigh.end() );
-  // for(unsigned int i = 0; i < vecGoodGammasOnlyHigh.size(); ++i){
-    for(auto &i : vecGoodGammasOnlyHigh){
-    // T->GetEvent(vecGoodGammasOnlyHigh.at(i));
-    hNCellVsEGammasOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    hNCellVsEGammasNLOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    if(isMC){
-      if(Evt.clus[i]->ClusterPDG == 22) hNCellVsEGammasNLTrueOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    }
-  }
-  sort( vecGoodGammasOnlyLow.begin(), vecGoodGammasOnlyLow.end() );
-  vecGoodGammasOnlyLow.erase( unique( vecGoodGammasOnlyLow.begin(), vecGoodGammasOnlyLow.end() ), vecGoodGammasOnlyLow.end() );
-  // for(unsigned int i = 0; i < vecGoodGammasOnlyLow.size(); ++i){
-    for(auto &i : vecGoodGammasOnlyLow){
-    // T->GetEvent(vecGoodGammasOnlyHigh.at(i));
-    hNCellVsEGammasOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    hNCellVsEGammasNLOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    if(isMC){
-      if(Evt.clus[i]->ClusterPDG == 22) hNCellVsEGammasNLTrueOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    }
-  }
-  sort( vecGoodGammasSideBandOnlyHigh.begin(), vecGoodGammasSideBandOnlyHigh.end() );
-  vecGoodGammasSideBandOnlyHigh.erase( unique( vecGoodGammasSideBandOnlyHigh.begin(), vecGoodGammasSideBandOnlyHigh.end() ), vecGoodGammasSideBandOnlyHigh.end() );
-  // for(unsigned int i = 0; i < vecGoodGammasSideBandOnlyHigh.size(); ++i){
-    for(auto &i : vecGoodGammasSideBandOnlyHigh){
-    // T->GetEvent(vecGoodGammasSideBandOnlyHigh.at(i));
-    hNCellVsEGammasSideBandOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    hNCellVsEGammasNLSideBandOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    if(isMC){
-      if(fabs(Evt.clus[i]->ClusterPDG == 22)) hNCellVsEGammasNLTrueSideBandOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecSideBandOnlyHighClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    }
-  }
-  sort( vecGoodGammasSideBandOnlyLow.begin(), vecGoodGammasSideBandOnlyLow.end() );
-  vecGoodGammasSideBandOnlyLow.erase( unique( vecGoodGammasSideBandOnlyLow.begin(), vecGoodGammasSideBandOnlyLow.end() ), vecGoodGammasSideBandOnlyLow.end() );
-  // for(unsigned int i = 0; i < vecGoodGammasSideBandOnlyLow.size(); ++i){
-    for(auto &i : vecGoodGammasSideBandOnlyLow){
-    // T->GetEvent(vecGoodGammasSideBandOnlyHigh.at(i));
-    hNCellVsEGammasSideBandOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    hNCellVsEGammasNLSideBandOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    if(isMC){
-      if(fabs(Evt.clus[i]->ClusterPDG == 22)) hNCellVsEGammasNLTrueSideBandOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-      if(fabs(Evt.clus[i]->ClusterPDG) == 11) hNCellVsEGammasNLTrueElecSideBandOnlyLowClus->Fill(Evt.clus[i]->e, Evt.clus[i]->ncells);
-    }
-  }
-
 }
 
 //--------------------------------------
 //--- Hitmap
 //--------------------------------------
-void DataTree::FillHitmap(){
+void SpectraClass::FillHitmap(){
   for(unsigned int i = 0; i < nclus; ++i){
     if(fdebug == 2) cerr<<__LINE__<<endl;
     // T->GetEvent(currEvt + i);
@@ -995,10 +644,138 @@ void DataTree::FillHitmap(){
   }
 }
 
+
+//--------------------------------------
+// return true if 1 cell cluster is accepted, return true for all 2+ cell clusters
+//--------------------------------------
+bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrection){
+  if(Evt.clus[clus]->ncells >= 2) return true;
+
+  int clusPDG = Evt.clus[clus]->ClusterPDG;
+
+  float randNr = randomEng.Rndm();
+
+  switch(kCorrection){
+    case 0: //kNoCorrection:
+    {
+      return false;
+    }
+    case 1: //kAcceptAll:
+    {
+      return true;
+    }
+    case 2: //kNCeAllClusters:
+    {
+      // based on all clusters in data and MC
+      // data clusters influenced by exotics above 2 GeV
+      fNCellEfficiencyParams[0] = 2.71596e-01;
+      fNCellEfficiencyParams[1] = 1.80393;
+      fNCellEfficiencyParams[2] = 6.50026e-01;
+      // printf("kNCeAllClusters\n");
+      Float_t val = fNCellEfficiencyParams[0]*exp(
+                    -0.5*((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
+                    ((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+      if(randNr < val) return kTRUE;
+      else return kFALSE;
+      break;
+    }
+
+    case 3: //kNCeTestBeam:
+    {
+      // based on test beam measurements
+      // should behave like pure photon clusters
+      fNCellEfficiencyParams[0] = 0.213184;
+      fNCellEfficiencyParams[1] = -0.0580118;
+      Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+      // printf("kNCeTestBeam\n");
+      if(randNr < val) return kTRUE;
+      else return kFALSE;
+      break;
+    }
+
+    case 4: //kNCeGammaAndElec:
+    {
+      // based on clusters which are part of a cluster pair with a mass of: [M(Pi0) - 0.05;M(Pi0) + 0.02]
+      // mostly photon clusters and electron(conversion) clusters (purity about 95%)
+      // exotics should be nearly cancled by that
+      fNCellEfficiencyParams[0] = 0.0901375;
+      fNCellEfficiencyParams[1] = 1.28118;
+      fNCellEfficiencyParams[2] = 0.583403;
+      Float_t val = fNCellEfficiencyParams[0]*exp(
+                    -0.5*((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
+                    ((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+
+      // printf("kNCeGammaAndElec\n");
+      if(randNr < val) return kTRUE;
+      else return kFALSE;
+      break;
+    }
+
+    case 5: //kNCeGamma and Elec separated:
+    {
+      // apply TB on Gamma clusters and electron correction for electrons
+      if(clusPDG == 22){ // photons, TB
+        // based on test beam measurements
+        // should behave like pure photon clusters
+        fNCellEfficiencyParams[0] = 0.213184;
+        fNCellEfficiencyParams[1] = -0.0580118;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+        // printf("kNCeTestBeam\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+
+      } else if (fabs(clusPDG) == 11){
+        // based on test beam measurements
+        // should behave like pure photon clusters
+        fNCellEfficiencyParams[0] = 6.86301e-02;
+        fNCellEfficiencyParams[1] = 6.23158e-02;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+        // printf("kNCeTestBeam\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+
+
+      }
+
+      break;
+    }
+
+    case 6: //kNCeGamma and Elec separated 2:
+    {
+      if (fabs(clusPDG) == 22){
+      // apply kNCeGammaAndElec on Gamma clusters and electron correction for electrons
+      fNCellEfficiencyParams[0] = 0.0901375;
+      fNCellEfficiencyParams[1] = 1.28118;
+      fNCellEfficiencyParams[2] = 0.583403;
+      Float_t val = fNCellEfficiencyParams[0]*exp(
+                    -0.5*((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
+                    ((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+
+      // printf("kNCeGammaAndElec\n");
+      if(randNr < val) return kTRUE;
+      else return kFALSE;
+
+    } else if (fabs(clusPDG) == 11){
+      // based on test beam measurements
+      // should behave like pure photon clusters
+      fNCellEfficiencyParams[0] = 6.86301e-02;
+      fNCellEfficiencyParams[1] = 6.23158e-02;
+      Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+      // printf("kNCeTestBeam\n");
+      if(randNr < val) return kTRUE;
+      else return kFALSE;
+
+
+    }
+    }
+
+  }
+  return false;
+}
 //--------------------------------------
 // return true if cell is isolated, false if its not isolated
 //--------------------------------------
-bool DataTree::IsIsolated(unsigned int clus){
+bool SpectraClass::IsIsolated(unsigned int clus){
   // T->GetEvent(clus);
   if(fdebug) cout<<"Evt.clus[clus]->NsurrCells: "<<Evt.clus[clus]->NsurrCells<<endl;
   for(int i = 0; i <Evt.clus[clus]->NsurrCells; ++i){
@@ -1013,7 +790,7 @@ bool DataTree::IsIsolated(unsigned int clus){
     if(fdebug) cout<<"Evt.clus[clus]->surrCellsE[i]: "<<Evt.clus[clus]->surrCellsE[i]<<endl;
     if(Evt.clus[clus]->surrCellsE[i] > 0.1){
       if(fdebug) cout<<"Evt.clus[clus]->surrCellsR[i]: "<<Evt.clus[clus]->surrCellsR[i]<<endl;
-      if(Evt.clus[clus]->surrCellsR[i] < 0.02){
+      if(Evt.clus[clus]->surrCellsR[i] < 0.01){
         return false;
       }
     }
@@ -1024,7 +801,7 @@ bool DataTree::IsIsolated(unsigned int clus){
 //--------------------------------------
 // return true if cell is less than NCells away from SM border
 //--------------------------------------
-bool DataTree::IsBorderCell(unsigned int clus, unsigned int NCellDist){
+bool SpectraClass::IsBorderCell(unsigned int clus, unsigned int NCellDist){
   // T->GetEvent(clus);
   float etaphiDist = NCellDist * 0.013;
   for(int ie = 0; ie < fnEMCalGapsEta; ++ie){
@@ -1039,7 +816,7 @@ bool DataTree::IsBorderCell(unsigned int clus, unsigned int NCellDist){
 //-----------------------------------------------------
 // return true if cluster is matched with track
 //-----------------------------------------------------
-bool DataTree::IsTrackMatched(unsigned int clus){
+bool SpectraClass::IsTrackMatched(unsigned int clus){
   // T->GetEvent(clus);
   for(int i = 0; i <Evt.clus[clus]->NsurrTracks; ++i){
     // if(Surrounding_Tracks_P[i] > 0.1){
@@ -1054,36 +831,22 @@ bool DataTree::IsTrackMatched(unsigned int clus){
 //-----------------------------------------------------
 // Fill pure electron hists (V0 tracks)
 //-----------------------------------------------------
-void DataTree::FillElectronHist(){
+void SpectraClass::FillElectronHist(){
 
   for(unsigned int ic = 0; ic < Evt.NClus; ++ic){
     // T->GetEvent(currEvt + ic);
-
-    unsigned int ntrack = 0;
     for(int i = 0; i <Evt.clus[ic]->NsurrTracks; ++i){
-      if(Evt.clus[ic]->surrTracksR[i] < 12./430){
-        ntrack++;
-      }
-    }
-    for(int i = 0; i <Evt.clus[ic]->NsurrTracks; ++i){
-      if(Evt.clus[ic]->surrTracksR[i] < 6./430){
-        // has to be in electron band and cluster e and track p have to match within 10%
-        if(fabs(Evt.clus[ic]->surrTracksnSig[i]) < 3 && fabs((Evt.clus[ic]->surrTracksP[i]/Evt.clus[ic]->e) - 1) < 0.1  ){
-          if(Evt.clus[ic]->surrTracksIsV0[i] == true){
-            // if(fabs(Surrounding_Tracks_nSigdEdx[i]) < 2){
-              // hNCellVsEelec->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
-              hNCellVsEelecNL->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
-            // }
+      if(Evt.clus[ic]->surrTracksR[i] < 0.02){
+        if(Evt.clus[ic]->surrTracksIsV0[i] == true){
+          // if(fabs(Surrounding_Tracks_nSigdEdx[i]) < 2){
+            // hNCellVsEelec->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
+            hNCellVsEelecNL->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
             if(isMC){
-              // cout<<"ntrack: "<<ntrack<<endl;
-              // cout<<"Evt.clus[ic]->ClusterPDG: "<<Evt.clus[ic]->ClusterPDG<<endl;
-              // cout<<"Evt.clus[ic]->surrTracksP[i]/Evt.clus[ic]->e = "<<Evt.clus[ic]->surrTracksP[i]/Evt.clus[ic]->e<<endl;
-              // cout<<"Evt.clus[ic]->surrTracksnSig[i] = "<<Evt.clus[ic]->surrTracksnSig[i]<<endl;
               if(fabs(Evt.clus[ic]->ClusterPDG) == 11){
                 hNCellVsEelecNLTrue->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
               }
             }
-          }
+          // }
         }
       }
     }
@@ -1094,7 +857,7 @@ void DataTree::FillElectronHist(){
 // Check if the cluster has a cell with at least eThresh next to it
 // If not its considered an exotic cluster
 //-----------------------------------------------------
-bool DataTree::IsExoticClus(unsigned int ic, float eThresh){
+bool SpectraClass::IsExoticClus(unsigned int ic, float eThresh){
 
   if(Evt.clus[ic]->e < 3) return false;
 
@@ -1203,7 +966,7 @@ bool DataTree::IsExoticClus(unsigned int ic, float eThresh){
 //-----------------------------------------------------
 // FIll all clusters
 //-----------------------------------------------------
-void DataTree::FillAllCLusterHist(){
+void SpectraClass::FillAllCLusterHist(){
 
   for(unsigned int ic = 0; ic < Evt.NClus; ++ic){
     // T->GetEvent(currEvt + ic);
@@ -1234,7 +997,7 @@ void DataTree::FillAllCLusterHist(){
 //-----------------------------------------------------
 // apply NonLinearity
 //-----------------------------------------------------
-float DataTree::applyNL(float e, int numcells){
+float SpectraClass::applyNL(float e, int numcells){
 
   //--------------- pp 13TeV -------------------------
   // if (period == 0){
@@ -1287,7 +1050,7 @@ float DataTree::applyNL(float e, int numcells){
 //--------------------------------------
 //--- check if cluster passes aggregation and seed cuts
 //--------------------------------------
-bool DataTree::IsClusAcceptedByThreshold(unsigned int i, float agg, float thr){
+bool SpectraClass::IsClusAcceptedByThreshold(unsigned int i, float agg, float thr){
   // T->GetEvent(i);
   bool hasAgg = false;
   if(fdebug) cout<<__LINE__<<endl;
@@ -1301,127 +1064,25 @@ bool DataTree::IsClusAcceptedByThreshold(unsigned int i, float agg, float thr){
   return hasAgg;
 }
 
-//--------------------------------------
-//--- Fill Mass hists
-//--------------------------------------
-void DataTree::FillMassHists(TString name){
-  TFile f(name);
-  //-------------- 13TeV ---------------
-  if(period == 0){
-    if(isMC)grMass = (TGraph*) f.Get("MassPos13TeV_nomB_MC");
-    else grMass = (TGraph*) f.Get("MassPos13TeV_nomB_data");
-    fMassPos = (TF1*) f.Get("MassPos13TeVNomB_func");
-    //-------------- 13TeV ---------------
-  } else if(period == 1){
-    if(isMC)grMass = (TGraph*) f.Get("MassPos13TeV_MC");
-    else grMass = (TGraph*) f.Get("MassPos13TeV_data");
-    fMassPos = (TF1*) f.Get("MassPos13TeVLowB_func");
-    //-------------- 8TeV ---------------
-  } else if (period == 2){
-    if(isMC)grMass = (TGraph*) f.Get("MassPos8TeV_MC");
-    else grMass = (TGraph*) f.Get("MassPos8TeV_data");
-    fMassPos = (TF1*) f.Get("MassPos8TeV_func");
-  }
-}
 
 //--------------------------------------
 //--- Write everything to file
 //--------------------------------------
-void DataTree::WriteToFile(){
+void SpectraClass::WriteToFile(){
 
-  TString filename = "Pi0Tagging_13TeV_nom_03_11_Iso02_TBNL.root";
-  if(period ==1) filename = "Pi0Tagging_13TeV_low_03_10_TBNL.root";
-  else if(period ==2) filename = "Pi0Tagging_8TeV_03_08_ShaperTBNL.root";
+  TString filename = "InvMassCorrected_13TeV_nom_03_05_noIso_TBNL.root";
+  if(period ==1) filename = "InvMassCorrected_13TeV_low_03_25_TBNL.root";
+  else if(period ==2) filename = "InvMassCorrected_8TeV_03_08_ShaperTBNL.root";
   std::ifstream ftest(filename);
 
   TFile fout(filename, (ftest.good() == 0) ? "Recreate" : "Update");
   fout.cd();
-  hInvMassVsPt->Write(Form("hInvMassVsPt_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtGG->Write(Form("hInvMassVsPtGG_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtGC->Write(Form("hInvMassVsPtGC_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtCC->Write(Form("hInvMassVsPtCC_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtHadrons->Write(Form("hInvMassVsPtHadrons_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  cout<<hInvMassVsPt.size()<<endl;
+  for(unsigned int i = 0; i < hInvMassVsPt.size(); ++i){
+    hInvMassVsPt.at(i)->Write(Form("hInvMassVsPt_%i_%s", i, (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+    hInvMassVsPtBack.at(i)->Write(Form("hInvMassVsPtBack_%i_%s", i,  (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
 
-  hInvMassVsPtBack->Write(Form("hInvMassVsPtBack_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  // high / low gamma pt
-  // hInvMassVsHighGammaPt->Write(Form("hInvMassVsGammaPtHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtLow->Write(Form("hInvMassVsPtLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtHigh->Write(Form("hInvMassVsPtHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtBoth->Write(Form("hInvMassVsPtBoth_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  // seperated to electrosn/gammas
-  hInvMassVsPtLowGamma->Write(Form("hInvMassVsPtGammaLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtLowElec->Write(Form("hInvMassVsPtElecLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtHighGamma->Write(Form("hInvMassVsPtGammaHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtHighElec->Write(Form("hInvMassVsPtElecHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtBothGamma->Write(Form("hInvMassVsPtGammaBoth_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtBothElec->Write(Form("hInvMassVsPtElecBoth_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  CorrelationLowHigh->Write(Form("CorrelationLowHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  // background
-  hInvMassVsHighGammaPtBack->Write(Form("hInvMassVsGammaPtBackHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsLowGammaPtBack->Write(Form("hInvMassVsGammaPtBackLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsBothGammaPtBack->Write(Form("hInvMassVsGammaPtBackBoth_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hInvMassVsPtHigh1cell->Write(Form("hInvMassVsPtHigh1cell_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtHigh2cell->Write(Form("hInvMassVsPtHigh2cell_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtHigh3cell->Write(Form("hInvMassVsPtHigh3cell_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hInvMassVsPtDoubleCount->Write(Form("hInvMassVsPtDoubleCount_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammas->Write(Form("hNCellVsEGammasRight_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNL->Write(Form("hNCellVsEGammasNLRight_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrue->Write(Form("hNCellVsETrueGammasNLRight_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElec->Write(Form("hNCellVsEGammasNLTrueElecRight_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammasLeft->Write(Form("hNCellVsEGammasLeft_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLLeft->Write(Form("hNCellVsEGammasNLLeft_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueLeft->Write(Form("hNCellVsETrueGammasNLLeft_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElecLeft->Write(Form("hNCellVsEGammasNLTrueElecLeft_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammasWide->Write(Form("hNCellVsEGammasWide_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLWide->Write(Form("hNCellVsEGammasNLWide_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueWide->Write(Form("hNCellVsETrueGammasNLWide_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElecWide->Write(Form("hNCellVsEGammasNLTrueElecWide_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammasSideBand->Write(Form("hNCellVsEGammasSideBand_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLSideBand->Write(Form("hNCellVsEGammasNLSideBand_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueSideBand->Write(Form("hNCellVsETrueGammasNLSideBand_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElecSideBand->Write(Form("hNCellVsEGammasNLTrueElecSideBand_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammasOnlyHighClus->Write(Form("hNCellVsEGammasHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLOnlyHighClus->Write(Form("hNCellVsEGammasNLHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueOnlyHighClus->Write(Form("hNCellVsETrueGammasNLHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElecOnlyHighClus->Write(Form("hNCellVsEGammasNLTrueElecHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammasOnlyLowClus->Write(Form("hNCellVsEGammasLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLOnlyLowClus->Write(Form("hNCellVsEGammasNLLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueOnlyLowClus->Write(Form("hNCellVsETrueGammasNLLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElecOnlyLowClus->Write(Form("hNCellVsEGammasNLTrueElecLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammasSideBandOnlyHighClus->Write(Form("hNCellVsEGammasSideBandHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLSideBandOnlyHighClus->Write(Form("hNCellVsEGammasNLSideBandHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueSideBandOnlyHighClus->Write(Form("hNCellVsETrueGammasNLSideBandHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElecSideBandOnlyHighClus->Write(Form("hNCellVsEGammasNLTrueElecSideBandHigh_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hNCellVsEGammasSideBandOnlyLowClus->Write(Form("hNCellVsEGammasSideBandLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLSideBandOnlyLowClus->Write(Form("hNCellVsEGammasNLSideBandLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueSideBandOnlyLowClus->Write(Form("hNCellVsETrueGammasNLSideBandLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEGammasNLTrueElecSideBandOnlyLowClus->Write(Form("hNCellVsEGammasNLTrueElecSideBandLow_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-
-  hHitmap->Write(Form("hHitmap_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hClusE->Write(Form("hClusE_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hClusENL->Write(Form("hClusENL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEelec->Write(Form("hNCellVsEelec_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEelecNL->Write(Form("hNCellVsEelecNL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsEelecNLTrue->Write(Form("hNCellVsTrueEelecNL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsETMNL->Write(Form("hNCellVsETMNL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsENoExotic50->Write(Form("hNCellVsENoExotic50_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsENoExotic75->Write(Form("hNCellVsENoExotic75_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsETMNLS500A100->Write(Form("hNCellVsETMNLS500A100_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsETMNLS500A105->Write(Form("hNCellVsETMNLS500A105_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsETMNLS500A110->Write(Form("hNCellVsETMNLS500A110_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
-  hNCellVsENL->Write(Form("hNCellVsENL_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  }
   fout.Close();
 
 
@@ -1432,16 +1093,16 @@ void DataTree::WriteToFile(){
 //--------------------------------------
 //--- Start the thing :)
 //--------------------------------------
-void MakeNCellEffiPureGammas(bool isMC = 1, TString period = "13TeVNomB", bool light = false, int skip = 0){
+void MakeInvMassSpectraCorected(bool isMC = 1, TString period = "13TeVNomB", bool light = false, int skip = 0){
   TStopwatch watch;
   watch.Start();
   unsigned int nEvt = 1e7;
   if(isMC){
-    DataTree myAna(true, period, light, skip);
+    SpectraClass myAna(true, period, light, skip);
     myAna.Process(nEvt*2.5);
     myAna.WriteToFile();
   } else {
-    DataTree myAna2(false, period, light, skip);
+    SpectraClass myAna2(false, period, light, skip);
     myAna2.Process(nEvt);
     myAna2.WriteToFile();
   }

@@ -3,9 +3,9 @@
 
 void GetPeakPos(TString period = "8TeV"){
 
-  TString name = "Pi0Tagging_8TeV_02_24_ReverseTBNL.root";
+  TString name = "Pi0Tagging_8TeV_03_08_ShaperTBNL.root";
   if(period.Contains("13TeVLowB")) name = "Pi0Tagging_13TeV_low_02_24_TBNL.root";
-  if(period.Contains("13TeVNomB")) name = "Pi0Tagging_13TeV_nom_02_25_TBNL.root";
+  if(period.Contains("13TeVNomB")) name = "Pi0Tagging_13TeV_nom_03_11_Iso02_TBNL.root";
   TFile *fdata = TFile::Open(name, "Update");
 
   TH2F* hdata = (TH2F*) fdata->Get("hInvMassVsPt_data");
@@ -158,7 +158,7 @@ void GetPeakPos(TString period = "8TeV"){
   }
   else {
     drawLatexAdd("pp #sqrt{s} = 8 TeV", 0.17,0.92,0.044,kFALSE);
-    Can.SaveAs(Form("PeakPos8TeV/PeakPosReverseNL%s.png", period.Data()));
+    Can.SaveAs(Form("PeakPos8TeV/PeakPosNoShaper%s.png", period.Data()));
   }
 
 }

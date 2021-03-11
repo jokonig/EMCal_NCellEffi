@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# root files
+*.root
+
+#pictures
+*.png
+*.pdf

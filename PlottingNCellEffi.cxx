@@ -2,6 +2,18 @@
 // #include "/home/joshua/PCG_Software/Plotting/Plotting_Class.h"
 #include "TGraphErrors.h"
 
+// Fit to describe the NCellEffi
+Double_t func1(Double_t *x, Double_t *par)
+{
+Double_t a = par[0];
+Double_t b = par[1];
+Double_t c = par[2];
+
+Double_t res1 = TMath::Exp(a - TMath::Power((x[0]-b)/c,2));
+Double_t res = 1-par[3]*TMath::Exp(- res1);
+
+return res;
+}
 
 class Effi{
 
@@ -37,12 +49,17 @@ public:
   void PlotEffi_HighAndWideRWSBSub();    // Effi Plot with clusters in pi0 mass range (wide and only high ) with RW and SB sub
   void PlotEffi_HighAndWideRWSBSub_Light();    // Effi Plot with clusters in pi0 mass range (wide and only high ) with RW and SB sub
   void PlotEffi_HighAndWideRWSBSub_Smoothed();    // Effi Plot with clusters in pi0 mass range (wide smoothed vs unsmoothed ) with RW and SB sub
+  void PlotEffi_WideOnlySBSub();    // Effi Plot with clusters in pi0 mass range (wide smoothed vs unsmoothed ) with RW and SB sub
+  void PlotEffi_WideSBSubGammaAndConv();    // Effi Plot with clusters in pi0 mass range wide, photons and conversions with reweighting
   void PlotEffi_HighAndWide_Light();    // Effi Plot with clusters in pi0 mass range (wide and only high ) without RW and SB sub
+  void PlotEffi_WideSmoothed();    // Effi Plot with clusters in pi0 mass range (wide and smoothed ) without RW and SB sub
+  void PlotEffi_Electrons();    // Effi Plot with clusters in pi0 mass range (wide and smoothed ) without RW and SB sub
 
   // Ratio Plots
   void PlotRatio_GammasAndRW();   // Plot ratio with TB + all clusters + gammas (right) + gammas (right) reweighted
   void PlotRatio_GammasAndRWLeft();   // Plot ratio with TB + all clusters + gammas (right) + gammas (right) reweighted
   void PlotRatio_GammasAndRWWide();   // Plot ratio with TB + all clusters + gammas (right) + gammas (right) reweighted
+  void PlotRatio_GammasAndConvRWWide();   // Plot ratio with TB + gammas and conversions in wide range
   void PlotRatio_GammasAndRWHigh();   // Plot ratio with TB + all clusters + gammas (right) + gammas (right) reweighted
   void PlotRatio_GammasAndRWHighMCSBSub();   // Plot ratio with TB + all clusters + gammas (right) + gammas (right) reweighted
   void PlotRatio_SBGammasAndRW();   // Plot ratio with TB + all clusters + gammas (right) + gammas (right) reweighted
@@ -52,8 +69,13 @@ public:
   void PlotCorr_GammasAndRW();   // Plot correction factor with TB + all clusters + gammas (right) + gammas (right) reweighted
   void PlotCorr_GammasAndRW_Left();   // Plot correction factor with TB + all clusters + gammas (left) + gammas (left) reweighted
   void PlotCorr_GammasAndRW_Wide();   // Plot correction factor with TB + all clusters + gammas (left) + gammas (left) reweighted
+  void PlotCorr_GammasAndConv_Wide();   // Plot correction factor with TB gammas and conversions in wide range
   void PlotCorr_GammasAndRW_High();   // Plot correction factor with TB + all clusters + gammas (left) + gammas (left) reweighted
   void PlotCorr_HighAllMethods();   // Plot correction factor with TB + all clusters + gammas (left) + gammas (left) reweighted
+  void PlotCorr_Electrons();   // Plot correction factor with TB + electrons
+
+  // Fitting of CorrPlots
+  void FitCorr_GammasWide();      // Fitting of correction with
 
   // Purity
   void PlotPurity();
@@ -153,13 +175,20 @@ private:
   TH2F* hNCellVsEGammasNLHigh_RW_MCSBSub_data = nullptr;
   TH2F* hNCellVsEGammasNLSB_RW_data = nullptr;
   TH2F* hNCellVsEGammasNLSBHigh_RW_data = nullptr;
+  // conversions only
+  TH2F* hNCellVsEConversionsNLWide_RW_data = nullptr;
 
   TH2F* hNCellVsEGammasNL_RW_MC = nullptr;
   TH2F* hNCellVsEGammasNLLeft_RW_MC = nullptr;
   TH2F* hNCellVsEGammasNLHigh_RW_MC = nullptr;
+  TH2F* hNCellVsEGammasNLWide_RW_MC = nullptr;
   TH2F* hNCellVsEGammasNLWide_RW_SBSub_MC = nullptr;
   TH2F* hNCellVsEGammasNLHigh_RW_SBSub_MC = nullptr;
   TH2F* hNCellVsEGammasNLSBHigh_RW_MC = nullptr;
+
+  // electron clusters
+  TH2F* hNCellVsEelecNL_data = nullptr;
+  TH2F* hNCellVsEelecNL_MC = nullptr;
 
   // TH2F* hNCellVsTrueEelecNL_data = nullptr;
 
@@ -191,6 +220,12 @@ private:
   TH1D* hNCell_GammasWide_Effi_MC = nullptr;
   TH1D* hNCell_GammasWide_Effi_Ratio = nullptr;
   TH1D* hNCell_GammasWide_Effi_Corr = nullptr;
+
+  // gammas wide
+  TH1D* hNCell_GammasWide_Smoothed_Effi_data = nullptr;
+  TH1D* hNCell_GammasWide_Smoothed_Effi_MC = nullptr;
+  TH1D* hNCell_GammasWide_Smoothed_Effi_Ratio = nullptr;
+  TH1D* hNCell_GammasWide_Smoothed_Effi_Corr = nullptr;
 
   // gammas SideBand
   TH1D* hNCell_GammasSB_Effi_data = nullptr;
@@ -235,11 +270,17 @@ private:
   TH1D* hNCell_GammasLeft_RW_Effi_Ratio = nullptr;
   TH1D* hNCell_GammasLeft_RW_Effi_Corr = nullptr;
 
-  // gammas reweighted left
+  // gammas reweighted wide
   TH1D* hNCell_GammasWide_RW_Effi_data = nullptr;
   TH1D* hNCell_GammasWide_RW_Effi_MC = nullptr;
   TH1D* hNCell_GammasWide_RW_Effi_Ratio = nullptr;
   TH1D* hNCell_GammasWide_RW_Effi_Corr = nullptr;
+
+  // conversions reweighted wide
+  TH1D* hNCell_ConversionsWide_RW_Effi_data = nullptr;
+  TH1D* hNCell_ConversionsWide_RW_Effi_MC = nullptr;
+  TH1D* hNCell_ConversionsWide_RW_Effi_Ratio = nullptr;
+  TH1D* hNCell_ConversionsWide_RW_Effi_Corr = nullptr;
 
   // gammas reweighted Sideband
   TH1D* hNCell_GammasSB_RW_Effi_data = nullptr;
@@ -277,11 +318,25 @@ private:
   TH1D* hNCell_GammasWide_RW_SBSub_Effi_Ratio = nullptr;
   TH1D* hNCell_GammasWide_RW_SBSub_Effi_Corr = nullptr;
 
+  // gammas both clus Sideband subtracted
+  TH1D* hNCell_GammasWide_SBSub_Effi_data = nullptr;
+  TH1D* hNCell_GammasWide_SBSub_Effi_MC = nullptr;
+  TH1D* hNCell_GammasWide_SBSub_Effi_Ratio = nullptr;
+  TH1D* hNCell_GammasWide_SBSub_Effi_Corr = nullptr;
+
   // gammas reweighted both clus Sideband subtracted SMOOTHED
   TH1D* hNCell_GammasWide_RW_SBSub_Smoothed_Effi_data = nullptr;
   TH1D* hNCell_GammasWide_RW_SBSub_Smoothed_Effi_MC = nullptr;
   TH1D* hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Ratio = nullptr;
   TH1D* hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr = nullptr;
+
+  // electron histograms
+  TH1D* hNCell_Electrons_Effi_data = nullptr;
+  TH1D* hNCell_Electrons_Effi_MC = nullptr;
+  TH1D* hNCell_Electrons_Effi_Ratio = nullptr;
+  TH1D* hNCell_Electrons_Effi_Corr = nullptr;
+
+
 
   TH1D* hGammaPurity = nullptr;
   TH1D* hGammaPurityLeft = nullptr;
@@ -454,51 +509,132 @@ void Effi::LoadTB(){
 
 void Effi::FillHistos(){
   hNCellVsETMNL_data = (TH2F*) fdata->Get("hNCellVsETMNL_data");
+  hNCellVsETMNL_data ->Sumw2();
+  hNCellVsETMNL_data ->SetDirectory(0);
   hNCellVsETMNL_MC = (TH2F*) fdata->Get("hNCellVsETMNL_MC");
+  hNCellVsETMNL_MC->Sumw2();
+  hNCellVsETMNL_MC->SetDirectory(0);
 
   hNCellVsETMNLS500A100_data = (TH2F*) fdata->Get("hNCellVsETMNLS500A100_data");
+  hNCellVsETMNLS500A100_data ->Sumw2();
+  hNCellVsETMNLS500A100_data ->SetDirectory(0);
   hNCellVsETMNLS500A100_MC = (TH2F*) fdata->Get("hNCellVsETMNLS500A100_MC");
+  hNCellVsETMNLS500A100_MC ->Sumw2();
+  hNCellVsETMNLS500A100_MC ->SetDirectory(0);
 
   hNCellVsETMNLS500A105_data = (TH2F*) fdata->Get("hNCellVsETMNLS500A105_data");
+  hNCellVsETMNLS500A105_data ->Sumw2();
+  hNCellVsETMNLS500A105_data ->SetDirectory(0);
   hNCellVsETMNLS500A105_MC = (TH2F*) fdata->Get("hNCellVsETMNLS500A105_MC");
+  hNCellVsETMNLS500A105_MC->Sumw2();
+  hNCellVsETMNLS500A105_MC->SetDirectory(0);
 
   hNCellVsETMNLS500A110_data = (TH2F*) fdata->Get("hNCellVsETMNLS500A110_data");
+  hNCellVsETMNLS500A110_data ->Sumw2();
+  hNCellVsETMNLS500A110_data ->SetDirectory(0);
   hNCellVsETMNLS500A110_MC = (TH2F*) fdata->Get("hNCellVsETMNLS500A110_MC");
+  hNCellVsETMNLS500A110_MC ->Sumw2();
+  hNCellVsETMNLS500A110_MC ->SetDirectory(0);
 
   hNCellVsEGammasNL_data = (TH2F*) fdata->Get("hNCellVsEGammasNL_data");
+  hNCellVsEGammasNL_data ->Sumw2();
+  hNCellVsEGammasNL_data ->SetDirectory(0);
   hNCellVsEGammasNL_MC = (TH2F*) fdata->Get("hNCellVsEGammasNL_MC");
+  hNCellVsEGammasNL_MC ->Sumw2();
+  hNCellVsEGammasNL_MC ->SetDirectory(0);
   hNCellVsETrueGammasNL_MC = (TH2F*) fdata->Get("hNCellVsETrueGammasNL_MC");
+  hNCellVsETrueGammasNL_MC ->Sumw2();
+  hNCellVsETrueGammasNL_MC ->SetDirectory(0);
   hNCellVsEGammasNLTrueElec_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLTrueElec_MC");
+  hNCellVsEGammasNLTrueElec_MC ->Sumw2();
+  hNCellVsEGammasNLTrueElec_MC ->SetDirectory(0);
 
   hNCellVsEGammasNLLeft_data = (TH2F*) fdata->Get("hNCellVsEGammasNLLeft_data");
+  hNCellVsEGammasNLLeft_data ->Sumw2();
+  hNCellVsEGammasNLLeft_data ->SetDirectory(0);
   hNCellVsEGammasNLLeft_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLLeft_MC");
+  hNCellVsEGammasNLLeft_MC ->Sumw2();
+  hNCellVsEGammasNLLeft_MC ->SetDirectory(0);
   hNCellVsETrueGammasNLLeft_MC = (TH2F*) fdata->Get("hNCellVsETrueGammasNLLeft_MC");
+  hNCellVsETrueGammasNLLeft_MC ->Sumw2();
+  hNCellVsETrueGammasNLLeft_MC ->SetDirectory(0);
   hNCellVsEGammasNLTrueElecLeft_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLTrueElecLeft_MC");
+  hNCellVsEGammasNLTrueElecLeft_MC ->Sumw2();
+  hNCellVsEGammasNLTrueElecLeft_MC ->SetDirectory(0);
 
   hNCellVsEGammasNLWide_data = (TH2F*) fdata->Get("hNCellVsEGammasNLWide_data");
+  hNCellVsEGammasNLWide_data ->Sumw2();
+  hNCellVsEGammasNLWide_data ->SetDirectory(0);
   hNCellVsEGammasNLWide_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLWide_MC");
+  hNCellVsEGammasNLWide_MC->Sumw2();
+  hNCellVsEGammasNLWide_MC->SetDirectory(0);
   hNCellVsETrueGammasNLWide_MC = (TH2F*) fdata->Get("hNCellVsETrueGammasNLWide_MC");
+  hNCellVsETrueGammasNLWide_MC ->Sumw2();
+  hNCellVsETrueGammasNLWide_MC ->SetDirectory(0);
   hNCellVsEGammasNLTrueElecWide_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLTrueElecWide_MC");
+  hNCellVsEGammasNLTrueElecWide_MC ->Sumw2();
+  hNCellVsEGammasNLTrueElecWide_MC ->SetDirectory(0);
 
   hNCellVsEGammasNLSB_data = (TH2F*) fdata->Get("hNCellVsEGammasNLSideBand_data");
+  hNCellVsEGammasNLSB_data ->Sumw2();
+  hNCellVsEGammasNLSB_data ->SetDirectory(0);
   hNCellVsEGammasNLSB_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLSideBand_MC");
+  hNCellVsEGammasNLSB_MC ->Sumw2();
+  hNCellVsEGammasNLSB_MC ->SetDirectory(0);
   hNCellVsETrueGammasNLSB_MC = (TH2F*) fdata->Get("hNCellVsETrueGammasNLSideBand_MC");
+  hNCellVsETrueGammasNLSB_MC ->Sumw2();
+  hNCellVsETrueGammasNLSB_MC ->SetDirectory(0);
   hNCellVsEGammasNLTrueElecSB_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLTrueElecSideBand_MC");
+  hNCellVsEGammasNLTrueElecSB_MC->Sumw2();
+  hNCellVsEGammasNLTrueElecSB_MC->SetDirectory(0);
 
   hNCellVsEGammasNLSBHigh_data = (TH2F*) fdata->Get("hNCellVsEGammasNLSideBandOnlyHighClus_data");
+  hNCellVsEGammasNLSBHigh_data ->Sumw2();
+  hNCellVsEGammasNLSBHigh_data ->SetDirectory(0);
   hNCellVsEGammasNLSBHigh_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLSideBandOnlyHighClus_MC");
+  hNCellVsEGammasNLSBHigh_MC ->Sumw2();
+  hNCellVsEGammasNLSBHigh_MC ->SetDirectory(0);
   hNCellVsETrueGammasNLSBHigh_MC = (TH2F*) fdata->Get("hNCellVsETrueGammasNLSideBandOnlyHighClus_MC");
+  hNCellVsETrueGammasNLSBHigh_MC ->Sumw2();
+  hNCellVsETrueGammasNLSBHigh_MC ->SetDirectory(0);
   hNCellVsEGammasNLTrueElecSBHigh_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLTrueElecSideBandOnlyHighClus_MC");
+  hNCellVsEGammasNLTrueElecSBHigh_MC ->Sumw2();
+  hNCellVsEGammasNLTrueElecSBHigh_MC ->SetDirectory(0);
 
   hNCellVsEGammasNLHigh_data = (TH2F*) fdata->Get("hNCellVsEGammasNLOnlyHighClus_data");
+  hNCellVsEGammasNLHigh_data ->Sumw2();
+  hNCellVsEGammasNLHigh_data ->SetDirectory(0);
   hNCellVsEGammasNLHigh_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLOnlyHighClus_MC");
+  hNCellVsEGammasNLHigh_MC ->Sumw2();
+  hNCellVsEGammasNLHigh_MC ->SetDirectory(0);
   hNCellVsETrueGammasNLHigh_MC = (TH2F*) fdata->Get("hNCellVsETrueGammasNLOnlyHighClus_MC");
+  hNCellVsETrueGammasNLHigh_MC ->Sumw2();
+  hNCellVsETrueGammasNLHigh_MC ->SetDirectory(0);
   hNCellVsEGammasNLTrueElecHigh_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLTrueElecOnlyHighClus_MC");
+  hNCellVsEGammasNLTrueElecHigh_MC->Sumw2();
+  hNCellVsEGammasNLTrueElecHigh_MC->SetDirectory(0);
 
   hNCellVsEGammasNLLow_data = (TH2F*) fdata->Get("hNCellVsEGammasNLOnlyLowClus_data");
+  hNCellVsEGammasNLLow_data ->Sumw2();
+  hNCellVsEGammasNLLow_data ->SetDirectory(0);
   hNCellVsEGammasNLLow_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLOnlyLowClus_MC");
+  hNCellVsEGammasNLLow_MC ->Sumw2();
+  hNCellVsEGammasNLLow_MC ->SetDirectory(0);
   hNCellVsETrueGammasNLLow_MC = (TH2F*) fdata->Get("hNCellVsETrueGammasNLOnlyLowClus_MC");
+  hNCellVsETrueGammasNLLow_MC ->Sumw2();
+  hNCellVsETrueGammasNLLow_MC ->SetDirectory(0);
   hNCellVsEGammasNLTrueElecLow_MC = (TH2F*) fdata->Get("hNCellVsEGammasNLTrueElecOnlyLowClus_MC");
+  hNCellVsEGammasNLTrueElecLow_MC ->Sumw2();
+  hNCellVsEGammasNLTrueElecLow_MC ->SetDirectory(0);
+
+
+
+  hNCellVsEelecNL_data = (TH2F*) fdata->Get("hNCellVsEelecNL_data");
+  hNCellVsEelecNL_data ->Sumw2();
+  hNCellVsEelecNL_data ->SetDirectory(0);
+  hNCellVsEelecNL_MC = (TH2F*) fdata->Get("hNCellVsTrueEelecNL_MC");
+  hNCellVsEelecNL_MC ->Sumw2();
+  hNCellVsEelecNL_MC ->SetDirectory(0);
 
 
   // int reb = 4;
@@ -546,13 +682,20 @@ void Effi::FillCorrHistos(){
 
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
   // gammas Wide
+  // should be used for corrections on gammas + electrons
+
+  GetEffiHists(hNCellVsEGammasNLWide_data, hNCellVsEGammasNLWide_MC, hNCell_GammasWide_Smoothed_Effi_data, hNCell_GammasWide_Smoothed_Effi_MC, hNCell_GammasWide_Smoothed_Effi_Ratio, hNCell_GammasWide_Smoothed_Effi_Corr, true);
   GetEffiHists(hNCellVsEGammasNLWide_data, hNCellVsEGammasNLWide_MC, hNCell_GammasWide_Effi_data, hNCell_GammasWide_Effi_MC, hNCell_GammasWide_Effi_Ratio, hNCell_GammasWide_Effi_Corr);
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
   // gammas wide reweighted
-  GetEffiHists(hNCellVsEGammasNLWide_RW_data, hNCellVsETrueGammasNLWide_MC, hNCell_GammasWide_RW_Effi_data, hNCell_GammasWide_RW_Effi_MC, hNCell_GammasWide_RW_Effi_Ratio, hNCell_GammasWide_RW_Effi_Corr);
+  GetEffiHists(hNCellVsEGammasNLWide_RW_data, /*hNCellVsETrueGammasNLWide_MC*/hNCellVsEGammasNLWide_RW_MC, hNCell_GammasWide_RW_Effi_data, hNCell_GammasWide_RW_Effi_MC, hNCell_GammasWide_RW_Effi_Ratio, hNCell_GammasWide_RW_Effi_Corr);
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
 
+  // conversions wide reweighted
+  GetEffiHists(hNCellVsEConversionsNLWide_RW_data, hNCellVsEGammasNLTrueElecWide_MC, hNCell_ConversionsWide_RW_Effi_data, hNCell_ConversionsWide_RW_Effi_MC, hNCell_ConversionsWide_RW_Effi_Ratio, hNCell_ConversionsWide_RW_Effi_Corr);
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
+
+
   // gammas Side band
   GetEffiHists(hNCellVsEGammasNLSB_data, hNCellVsEGammasNLSB_MC, hNCell_GammasSB_Effi_data, hNCell_GammasSB_Effi_MC, hNCell_GammasSB_Effi_Ratio, hNCell_GammasSB_Effi_Corr);
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
@@ -582,15 +725,23 @@ void Effi::FillCorrHistos(){
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
 
   // gammas low and high wide reweighted sideband subtracted
-  GetEffiHists(hNCellVsEGammasNLWide_RW_SBSub_data, hNCellVsEGammasNLWide_RW_SBSub_MC, hNCell_GammasWide_RW_SBSub_Effi_data, hNCell_GammasWide_RW_SBSub_Effi_MC, hNCell_GammasWide_RW_SBSub_Effi_Ratio, hNCell_GammasWide_RW_SBSub_Effi_Corr);
+  GetEffiHists(hNCellVsEGammasNLWide_RW_SBSub_data, /*hNCellVsETrueGammasNLWide_MC*/hNCellVsEGammasNLWide_RW_SBSub_MC, hNCell_GammasWide_RW_SBSub_Effi_data, hNCell_GammasWide_RW_SBSub_Effi_MC, hNCell_GammasWide_RW_SBSub_Effi_Ratio, hNCell_GammasWide_RW_SBSub_Effi_Corr);
+  cout<<"FillCorrHistos: "<<__LINE__<<endl;
+  // gammas wide only sideband subtracted
+  GetEffiHists(hNCellVsEGammasNLWide_SBSub_data, hNCellVsEGammasNLWide_SBSub_MC, hNCell_GammasWide_SBSub_Effi_data, hNCell_GammasWide_SBSub_Effi_MC, hNCell_GammasWide_SBSub_Effi_Ratio, hNCell_GammasWide_SBSub_Effi_Corr);
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
   // gammas low and high wide reweighted sideband subtracted SMOOTHED
-  GetEffiHists(hNCellVsEGammasNLWide_RW_SBSub_data, hNCellVsEGammasNLWide_RW_SBSub_MC, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_data, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_MC, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Ratio, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr, true);
+  GetEffiHists(hNCellVsEGammasNLWide_RW_SBSub_data, hNCellVsETrueGammasNLWide_MC, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_data, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_MC, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Ratio, hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr, true);
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
 
   // gammas Low
   GetEffiHists(hNCellVsEGammasNLLow_data, hNCellVsEGammasNLLow_MC, hNCell_GammasLow_Effi_data, hNCell_GammasLow_Effi_MC, hNCell_GammasLow_Effi_Ratio, hNCell_GammasLow_Effi_Corr);
   cout<<"FillCorrHistos: "<<__LINE__<<endl;
+
+  // electron hists
+  GetEffiHists(hNCellVsEelecNL_data, hNCellVsEelecNL_MC, hNCell_Electrons_Effi_data, hNCell_Electrons_Effi_MC, hNCell_Electrons_Effi_Ratio, hNCell_Electrons_Effi_Corr);
+  cout<<"FillCorrHistos: "<<__LINE__<<endl;
+
 
   // true gamma in pi0 range?
   GetTrueHists(hNCellVsETrueGammasNL_MC, hNCell_TrueGammas_Effi_MC, "trueGammas");
@@ -616,14 +767,16 @@ void Effi::DoSBSubtraction(){
   // MC high gamma
   cout<<"hInvMassVsPtHigh_MC->Integrl(): "<<hNCellVsEGammasNLSBHigh_MC->Integral()<<endl;
   hInvMassVsPtHigh_MC->Write();
+
+
   hNCellVsEGammasNLHigh_SBSub_MC = SubtractSidebandBack( hInvMassVsPtHigh_MC, hInvMassVsHighGammaPtBack_MC , hNCellVsEGammasNLSBHigh_MC , hNCellVsEGammasNLHigh_MC);
   // hNCellVsEGammasNLHigh_SBSub_MC = (TH2F*) hNCellVsEGammasNLHigh_MC->Clone("hNCellVsEGammasNLHigh_SBSub_MC");
   // data high gamma
-  hNCellVsEGammasNLHigh_MCSBSub_data = SubtractSidebandBack( hInvMassVsPtHigh_data, hInvMassVsHighGammaPtBack_data , hNCellVsEGammasNLSBHigh_MC , hNCellVsEGammasNLHigh_data);
+  hNCellVsEGammasNLHigh_MCSBSub_data = SubtractSidebandBack( hInvMassVsPtHigh_MC, hInvMassVsHighGammaPtBack_MC , hNCellVsEGammasNLSBHigh_MC , hNCellVsEGammasNLHigh_MC);
   // data wide gamma
-  hNCellVsEGammasNLWide_SBSub_data = SubtractSidebandBack( hInvMassVsPtWide_data, hInvMassVsWideGammaPtBack_data , hNCellVsEGammasNLSB_data , hNCellVsEGammasNL_data);
+  hNCellVsEGammasNLWide_SBSub_data = SubtractSidebandBack( hInvMassVsPtWide_data, hInvMassVsWideGammaPtBack_data , hNCellVsEGammasNLSB_data , hNCellVsEGammasNLWide_data);
   // MC wide gamma
-  hNCellVsEGammasNLWide_SBSub_MC = SubtractSidebandBack( hInvMassVsPtWide_MC, hInvMassVsWideGammaPtBack_MC , hNCellVsEGammasNLSB_MC , hNCellVsEGammasNL_MC);
+  hNCellVsEGammasNLWide_SBSub_MC = SubtractSidebandBack( hInvMassVsPtWide_MC, hInvMassVsWideGammaPtBack_MC , hNCellVsEGammasNLSB_MC , hNCellVsEGammasNLWide_MC);
 
 }
 
@@ -791,11 +944,17 @@ void Effi::SetOtherHistos(){
 
 
   hInvMassVsPt_MC = (TH2F*) fdata->Get("hInvMassVsPt_MC");
+  hInvMassVsPt_MC->Sumw2();
   hInvMassVsPtBack_MC = (TH2F*) fdata->Get("hInvMassVsPtBack_MC");
+  hInvMassVsPtBack_MC->Sumw2();
   hInvMassVsPt_data = (TH2F*) fdata->Get("hInvMassVsPt_data");
+  hInvMassVsPt_data->Sumw2();
   hInvMassVsPtGG = (TH2F*) fdata->Get("hInvMassVsPtGG_MC");
+  hInvMassVsPtGG->Sumw2();
   hInvMassVsPtGC = (TH2F*) fdata->Get("hInvMassVsPtGC_MC");
+  hInvMassVsPtGC->Sumw2();
   hInvMassVsPtCC = (TH2F*) fdata->Get("hInvMassVsPtCC_MC");
+  hInvMassVsPtCC->Sumw2();
   float minpt = 2.;
   float maxpt = 3.;
   hInvMassVsPt_Slice = (TH1D*) hInvMassVsPt_MC->ProjectionX("hInvMassVsPt_Slice", hInvMassVsPt_MC->GetYaxis()->FindBin(minpt), hInvMassVsPt_MC->GetYaxis()->FindBin(maxpt));
@@ -807,29 +966,51 @@ void Effi::SetOtherHistos(){
 
   // load background hists
   hInvMassVsPtBack_data = (TH2F*) fdata->Get("hInvMassVsPtBack_data");
+  hInvMassVsPtBack_data->Sumw2();
+  hInvMassVsPtBack_data = (TH2F*) fdata->Get("hInvMassVsPtBack_data");
+  hInvMassVsPtBack_data->Sumw2();
   hInvMassVsPtBack_MC = (TH2F*) fdata->Get("hInvMassVsPtBack_MC");
+  hInvMassVsPtBack_MC->Sumw2();
 
 
   hInvMassVsPtHigh_MC = (TH2F*) fdata->Get("hInvMassVsPtHigh_MC");
+  hInvMassVsPtHigh_MC->Sumw2();
   hInvMassVsHighGammaPtBack_MC = (TH2F*) fdata->Get("hInvMassVsHighGammaPtBack_MC");
+  hInvMassVsHighGammaPtBack_MC->Sumw2();
   hInvMassVsPtHighGamma_MC = (TH2F*) fdata->Get("hInvMassVsPtHighGamma_MC");
+  hInvMassVsPtHighGamma_MC->Sumw2();
   hInvMassVsPtHighElec_MC = (TH2F*) fdata->Get("hInvMassVsPtHighElec_MC");
+  hInvMassVsPtHighElec_MC ->Sumw2();
   hInvMassVsPtHigh1cell_MC = (TH2F*) fdata->Get("hInvMassVsPtHigh1cell_MC");
+  hInvMassVsPtHigh1cell_MC->Sumw2();
   hInvMassVsPtHigh2cell_MC = (TH2F*) fdata->Get("hInvMassVsPtHigh2cell_MC");
+  hInvMassVsPtHigh2cell_MC ->Sumw2();
   hInvMassVsPtHigh3cell_MC = (TH2F*) fdata->Get("hInvMassVsPtHigh3cell_MC");
+  hInvMassVsPtHigh3cell_MC ->Sumw2();
   hInvMassVsPtHigh_data = (TH2F*) fdata->Get("hInvMassVsPtHigh_data");
+  hInvMassVsPtHigh_data->Sumw2();
   hInvMassVsHighGammaPtBack_data = (TH2F*) fdata->Get("hInvMassVsHighGammaPtBack_data");
+  hInvMassVsHighGammaPtBack_data->Sumw2();
   hInvMassVsPtHigh1cell_data = (TH2F*) fdata->Get("hInvMassVsPtHigh1cell_data");
+  hInvMassVsPtHigh1cell_data ->Sumw2();
   hInvMassVsPtHigh2cell_data = (TH2F*) fdata->Get("hInvMassVsPtHigh2cell_data");
+  hInvMassVsPtHigh2cell_data->Sumw2();
   hInvMassVsPtHigh3cell_data = (TH2F*) fdata->Get("hInvMassVsPtHigh3cell_data");
+  hInvMassVsPtHigh3cell_data->Sumw2();
 
   // histos for low and high = wide
   hInvMassVsPtWide_MC = (TH2F*) fdata->Get("hInvMassVsPtLow_MC");
+  hInvMassVsPtWide_MC->Sumw2();
   hInvMassVsWideGammaPtBack_MC = (TH2F*) fdata->Get("hInvMassVsLowGammaPtBack_MC");
+  hInvMassVsWideGammaPtBack_MC ->Sumw2();
   hInvMassVsPtWideGamma_MC = (TH2F*) fdata->Get("hInvMassVsPtLowGamma_MC");
+  hInvMassVsPtWideGamma_MC ->Sumw2();
   hInvMassVsPtWideElec_MC = (TH2F*) fdata->Get("hInvMassVsPtLowElec_MC");
+  hInvMassVsPtWideElec_MC ->Sumw2();
   hInvMassVsPtWide_data = (TH2F*) fdata->Get("hInvMassVsPtLow_data");
+  hInvMassVsPtWide_data ->Sumw2();
   hInvMassVsWideGammaPtBack_data = (TH2F*) fdata->Get("hInvMassVsLowGammaPtBack_data");
+  hInvMassVsWideGammaPtBack_data->Sumw2();
 
   // add high stuff
   hInvMassVsPtWide_MC->Add(hInvMassVsPtHigh_MC);
@@ -881,19 +1062,35 @@ void Effi::GetEffiHists(TH2F *hdata2d, TH2F *hMC2d, TH1D *&hEffiData,  TH1D *&hE
   // smoothing on effi histos
   if(doSmooth){
     // logistisches wachstum
-    TF1 * func = new TF1("func", "2./(1+exp(-[0]*(x - [1]))) - 1", 0.7, 5);
-    func->SetParameters(1, 1);
-    func->SetParLimits(0, 0.0001, 10000);
+    // TF1 * func = new TF1("func", "[2]/(1+exp(-[0]*(x - [1]))) - [2] + 1", 0.7, 3);
+    TF1 * func = new TF1("func", func1, 1., 8, 4);
+    func->SetParameter(0, 2.8);
+    func->SetParameter(1, 9.5);
+    func->SetParameter(2, 9.9);
+    func->SetParameter(3, 970);
+    // TF1 * func = new TF1("func", "-(x-[0])^([1])", 0.7, 5);
+    // func->SetParameters(1, 1);
+    // func->SetParLimits(1, -100, -1);
+    // func->SetParameters(0.1, 1);
+    // func->SetParLimits(1, -100, -1);
     // fit data and take values from fit
+    // TFile outfile("fNCellEffi_InPi0Range.root", "Recreate");
+    // outfile.cd();
+    // hEffiData->Write("data");
+    // hEffiMC->Write("MC");
+
     hEffiData->Fit(func, "MR0");
-    for(int i = 1; i <= hEffiData->GetNbinsX(); ++i){
+    // func->Write("func_data");
+    for(int i = 5; i <= hEffiData->GetNbinsX(); ++i){
       hEffiData->SetBinContent(i, func->Eval(hEffiData->GetBinCenter(i)));
     }
-    // same for MC
+
     hEffiMC->Fit(func, "MR0");
-    for(int i = 1; i <= hEffiMC->GetNbinsX(); ++i){
+    // func->Write("func_MC");
+    for(int i = 5; i <= hEffiMC->GetNbinsX(); ++i){
       hEffiMC->SetBinContent(i, func->Eval(hEffiMC->GetBinCenter(i)));
     }
+    // outfile.Close();
   }
 
 
@@ -967,6 +1164,46 @@ void Effi::GetHistReweighted(){
   hNCellVsEGammasNLWide_RW_data->Add(hElecFracWide, -1);
 
 
+  hNCellVsEGammasNLWide_RW_MC = (TH2F*) hNCellVsEGammasNLWide_MC->Clone("hNCellVsEGammasNLWide_RW_MC");
+  hNCellVsEGammasNLWide_RW_MC->Add(hNCellVsEGammasNLTrueElecWide_MC, -1);
+
+
+
+  hNCellVsEGammasNLWide_RW_SBSub_data = (TH2F*) hNCellVsEGammasNLWide_SBSub_data->Clone("hNCellVsEGammasNLWide_RW_SBSub_data");
+  // get electron fraction
+  // was there from before
+  TH2F* hElecFracWide2 = (TH2F*) hNCellVsEGammasNLTrueElecWide_MC->Clone("hElecFracWide2");
+  // hElecFracWide2->Divide(hNCellVsEGammasNLWide_SBSub_MC);
+  // hElecFracWide2->Multiply(hNCellVsEGammasNLWide_SBSub_data);
+  hElecFracWide2->Scale(hNCellVsEGammasNLWide_SBSub_data->Integral()/hNCellVsEGammasNLWide_SBSub_MC->Integral());
+  hNCellVsEGammasNLWide_RW_SBSub_data->Add(hElecFracWide2, -1);
+  //
+  // TFile *fout = new TFile("fStrangeHists.root", "recreate");
+  // fout->cd();
+  // hNCellVsEGammasNLWide_data->Write("hNCellVsEGammasNLWide_SBSub_data");
+  // hNCellVsEGammasNLTrueElecWide_MC->Write("hNCellVsEGammasNLTrueElecWide_MC");
+  // hNCellVsEGammasNLWide_MC->Write("hNCellVsEGammasNLWide_MC");
+  // hNCellVsEGammasNLWide_RW_SBSub_data->Write("hNCellVsEGammasNLWide_RW_SBSub_data");
+  // fout->Close();
+
+
+  hNCellVsEGammasNLWide_RW_SBSub_MC = (TH2F*) hNCellVsEGammasNLWide_SBSub_MC->Clone("hNCellVsEGammasNLWide_RW_SBSub_MC");
+  // get electron fraction
+  TH2F* hElecFracWideMC = (TH2F*) hNCellVsEGammasNLTrueElecWide_MC->Clone("hElecFracWideMC");
+  // hElecFracWideMC->Divide(hNCellVsEGammasNLWide_SBSub_MC);
+  // hElecFracWideMC->Multiply(hNCellVsEGammasNLWide_SBSub_MC);
+  hNCellVsEGammasNLWide_RW_SBSub_MC->Add(hElecFracWideMC, -1);
+
+
+// reweight to get the conversion contribution
+  hNCellVsEConversionsNLWide_RW_data = (TH2F*) hNCellVsEGammasNLWide_data->Clone("hNCellVsEConversionsNLWide_RW_data");
+  // get photon fraction
+  TH2F* hGammaFracWide = (TH2F*) hNCellVsETrueGammasNLWide_MC->Clone("hGammaFracWide");
+  hGammaFracWide->Divide(hNCellVsEGammasNLWide_MC);
+  hGammaFracWide->Multiply(hNCellVsEGammasNLWide_data);
+  hNCellVsEConversionsNLWide_RW_data->Add(hGammaFracWide, -1);
+
+
   hNCellVsEGammasNLSB_RW_data = (TH2F*) hNCellVsEGammasNLSB_data->Clone("hNCellVsEGammasNLSB_RW_data");
   // get electron fraction
   TH2F* hElecFracSB = (TH2F*) hNCellVsEGammasNLTrueElecSB_MC->Clone("hElecFracSB");
@@ -1021,25 +1258,9 @@ void Effi::GetHistReweighted(){
   //
 
 
-  hNCellVsEGammasNLWide_RW_SBSub_data = (TH2F*) hNCellVsEGammasNLWide_SBSub_data->Clone("hNCellVsEGammasNLWide_RW_SBSub_data");
-  // get electron fraction
-  // was there from before
-  // TH2F* hElecFracHigh = (TH2F*) hNCellVsEGammasNLTrueElecHihNCellVsEGammasNLHigh_SBSub_datagh_MC->Clone("hElecFracHigh");
-  // hElecFracWide->Divide(hNCellVsEGammasNLWide_MC);
-  // hElecFracWide->Multiply(hNCellVsEGammasNLWide_data);
-  // hNCellVsEGammasNLWide_RW_SBSub_data->Add(hElecFracWide, -1);
-
-
-  hNCellVsEGammasNLWide_RW_SBSub_MC = (TH2F*) hNCellVsEGammasNLWide_SBSub_MC->Clone("hNCellVsEGammasNLWide_RW_SBSub_MC");
-  // get electron fraction
-  // TH2F* hElecFracHigh = (TH2F*) hNCellVsEGammasNLTrueElecHigh_MC->Clone("hElecFracHigh");
-  // hElecFracHigh->Divide(hNCellVsEGammasNLHigh_MC);
-  // hElecFracHigh->Multiply(hNCellVsEGammasNLHigh_data);
-  hNCellVsEGammasNLWide_RW_SBSub_MC->Add(hElecFracWide, -1);
-
 
   // hNCellVsEGammasNLWide_RW_MCSBSub_data = (TH2F*) hNCellVsEGammasNLWide_MCSBSub_data->Clone("hNCellVsEGammasNLWide_RW_MCSBSub_data");
-  // get electron fraction
+  // // get electron fraction
   // TH2F* hElecFracHigh = (TH2F*) hNCellVsEGammasNLTrueElecHigh_MC->Clone("hElecFracHigh");
   // hElecFracWide->Divide(hNCellVsEGammasNLWide_MC);
   // hElecFracWide->Multiply(hNCellVsEGammasNLWide_data);
@@ -1144,6 +1365,12 @@ void Effi::SetPlotting(){
   DrawSetMarker(hNCell_GammasWide_Effi_Ratio, 34, 2, colGammaWide, colGammaWide);
   DrawSetMarker(hNCell_GammasWide_Effi_Corr, 34, 2, colGammaWide, colGammaWide);
 
+  int colGammaWideSmoothed = kMagenta - 7;
+  DrawSetMarker(hNCell_GammasWide_Smoothed_Effi_data, 34, 2, colGammaWideSmoothed, colGammaWideSmoothed);
+  DrawSetMarker(hNCell_GammasWide_Smoothed_Effi_MC, 8, 3, colGammaWideSmoothed, colGammaWideSmoothed); //hNCell_GammasWide_Effi_MC->SetFillColor(kGreen - 6);
+  DrawSetMarker(hNCell_GammasWide_Smoothed_Effi_Ratio, 34, 2, colGammaWideSmoothed, colGammaWideSmoothed);
+  DrawSetMarker(hNCell_GammasWide_Smoothed_Effi_Corr, 34, 2, colGammaWideSmoothed, colGammaWideSmoothed);
+
   int colGammaHigh = kYellow  - 2;
   DrawSetMarker(hNCell_GammasHigh_Effi_data, 21, 2, colGammaHigh, colGammaHigh);
   DrawSetMarker(hNCell_GammasHigh_Effi_MC, 9, 3, colGammaHigh, colGammaHigh); //hNCell_GammasLeft_Effi_MC->SetFillColor(kGreen - 6);
@@ -1190,6 +1417,13 @@ void Effi::SetPlotting(){
   DrawSetMarker(hNCell_GammasWide_RW_SBSub_Effi_Corr, 25, 2, colGammaRWWideSBSub, colGammaRWWideSBSub);
 
 
+  int colGammaWideSBSub = kBlue - 7;
+  DrawSetMarker(hNCell_GammasWide_SBSub_Effi_data, 25, 2, colGammaWideSBSub, colGammaWideSBSub);
+  DrawSetMarker(hNCell_GammasWide_SBSub_Effi_MC, 8, 3, colGammaWideSBSub, colGammaWideSBSub); //hNCell_GammasLeft_Effi_MC->SetFillColor(kGreen - 6);
+  DrawSetMarker(hNCell_GammasWide_SBSub_Effi_Ratio, 25, 2, colGammaWideSBSub, colGammaWideSBSub);
+  DrawSetMarker(hNCell_GammasWide_SBSub_Effi_Corr, 25, 2, colGammaWideSBSub, colGammaWideSBSub);
+
+
 
   int colGammaRWWideSBSub_Smoothed = kGreen + 3;
   DrawSetMarker(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_data, 28, 2, colGammaRWWideSBSub_Smoothed, colGammaRWWideSBSub_Smoothed);
@@ -1221,6 +1455,18 @@ void Effi::SetPlotting(){
   DrawSetMarker(hNCell_GammasWide_RW_Effi_MC, 7, 3.4, colGammaRWWide, colGammaRWWide); //hNCell_GammasWide_RW_Effi_MC->SetFillColor(colGammaRW);
   DrawSetMarker(hNCell_GammasWide_RW_Effi_Ratio, 33, 2.4, colGammaRWWide, colGammaRWWide);
   DrawSetMarker(hNCell_GammasWide_RW_Effi_Corr, 33, 2.4, colGammaRWWide, colGammaRWWide);
+
+  int colConvRWWide = kBlue + 7;
+  DrawSetMarker(hNCell_ConversionsWide_RW_Effi_data, 28, 2.4, colConvRWWide, colConvRWWide);
+  DrawSetMarker(hNCell_ConversionsWide_RW_Effi_MC, 5, 3.4, colConvRWWide, colConvRWWide); //hNCell_GammasWide_RW_Effi_MC->SetFillColor(colGammaRW);
+  DrawSetMarker(hNCell_ConversionsWide_RW_Effi_Ratio, 28, 2.4, colConvRWWide, colConvRWWide);
+  DrawSetMarker(hNCell_ConversionsWide_RW_Effi_Corr, 28, 2.4, colConvRWWide, colConvRWWide);
+
+  int colElectrons = kBlue + 7;
+  DrawSetMarker(hNCell_Electrons_Effi_data, 28, 2.4, colElectrons, colElectrons);
+  DrawSetMarker(hNCell_Electrons_Effi_MC, 5, 3.4, colConvRWWide, colElectrons); //hNCell_GammasWide_RW_Effi_MC->SetFillColor(colGammaRW);
+  DrawSetMarker(hNCell_Electrons_Effi_Ratio, 28, 2.4, colElectrons, colElectrons);
+  DrawSetMarker(hNCell_Electrons_Effi_Corr, 28, 2.4, colElectrons, colElectrons);
 
 
   DrawSetMarker(hGammaPurity, 1, 3.4, kRed + 2, kRed + 2);
@@ -1566,6 +1812,48 @@ void Effi::PlotEffi_HighAndWideRWSBSub(){
 
 }
 
+void Effi::PlotEffi_WideSBSubGammaAndConv(){
+  hDummyCan->cd();
+  hDummyEffi->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_data->Draw("same,p");
+  grTB_MC->Draw("same,l");
+
+  hNCell_GammasWide_Effi_data->Draw("same,p");
+  hNCell_GammasWide_RW_Effi_data->Draw("same,p");
+  hNCell_ConversionsWide_RW_Effi_data->Draw("same,p");
+
+  hNCell_GammasWide_Effi_MC->Draw("same,histc");
+  hNCell_GammasWide_RW_Effi_MC->Draw("same,histc");
+  hNCell_ConversionsWide_RW_Effi_MC->Draw("same,histc");
+  // hNCell_TrueGammas_Effi_MC->Draw("same,p");
+  // hNCell_TrueElec_Effi_MC->Draw("same,p");
+
+  cout<<"hNCell_GammasWide_RW_Effi_data->GetBinContent(7) = "<<hNCell_GammasWide_RW_Effi_data->GetBinContent(7)<<endl;
+  cout<<"hNCell_ConversionsWide_RW_Effi_data->GetBinContent(7) = "<<hNCell_ConversionsWide_RW_Effi_data->GetBinContent(7)<<endl;
+  cout<<"hNCell_GammasWide_RW_Effi_MC->GetBinContent(7) = "<<hNCell_GammasWide_RW_Effi_MC->GetBinContent(7)<<endl;
+  cout<<"hNCell_ConversionsWide_RW_Effi_MC->GetBinContent(7) = "<<hNCell_ConversionsWide_RW_Effi_MC->GetBinContent(7)<<endl;
+
+  // hNCell_Gammas_Effi_MC->Draw("same,E3");
+
+  TLegend *leg = GetAndSetLegend2(0.55, 0.16, 0.95, 0.44, 40);
+  leg->AddEntry(hNCell_GammasWide_Effi_data, "P2, data, #gamma + #gamma_{conv}, wide, SB Sub", "p");
+  leg->AddEntry(hNCell_GammasWide_RW_Effi_data, "P2, data, #gamma, wide, SB Sub", "p");
+  leg->AddEntry(hNCell_GammasWide_RW_Effi_MC, "P2, MC, #gamma, wide, SB Sub", "l");
+  leg->AddEntry(hNCell_GammasWide_Effi_MC, "P2, MC, #gamma + #gamma_{conv}, wide, SB Sub", "l");
+  leg->AddEntry(hNCell_ConversionsWide_RW_Effi_data, "P2, data, #gamma_{conv}, wide, SB Sub", "p");
+  leg->AddEntry(hNCell_ConversionsWide_RW_Effi_MC, "P2, MC, #gamma_{conv}, wide, SB Sub", "l");
+  leg->AddEntry(grTB_data, "TB, data, e^{#pm} (B=0T)", "p");
+  leg->AddEntry(grTB_MC, "TB, MC, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s/%s/Effi_GammaAndConv_WideComp.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+
+}
+
 void Effi::PlotEffi_HighAndWideRWSBSub_Smoothed(){
   hDummyCan->cd();
   hDummyEffi->Draw();
@@ -1585,8 +1873,8 @@ void Effi::PlotEffi_HighAndWideRWSBSub_Smoothed(){
 
   leg->AddEntry(hNCell_GammasWide_RW_SBSub_Effi_data, "P2, data, #gamma RW SB sub", "p");
   leg->AddEntry(hNCell_GammasWide_RW_SBSub_Effi_MC, "P2, MC, #gamma RW SB sub", "l");
-  leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_data, "P2, data, #gamma RW SB sub", "p");
-  leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_MC, "P2, MC, #gamma RW SB sub", "l");
+  leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_data, "P2, data, #gamma RW SB sub, smoothed", "p");
+  leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_MC, "P2, MC, #gamma RW SB sub, smoothed", "l");
   leg->AddEntry(grTB_data, "TB, data, e^{#pm} (B=0T)", "p");
   leg->AddEntry(grTB_MC, "TB, MC, e^{#pm} (B=0T)", "l");
   leg->Draw("same");
@@ -1595,6 +1883,38 @@ void Effi::PlotEffi_HighAndWideRWSBSub_Smoothed(){
   drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
   drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s/%s/Effi_GammaAndTB_SmoothedComp.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+
+}
+
+void Effi::PlotEffi_WideOnlySBSub(){
+  hDummyCan->cd();
+  hDummyEffi->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_data->Draw("same,p");
+  grTB_MC->Draw("same,l");
+
+  hNCell_GammasWide_SBSub_Effi_data->Draw("same,p");
+  hNCell_GammasWide_RW_SBSub_Effi_data->Draw("same,p");
+
+  hNCell_GammasWide_SBSub_Effi_MC->Draw("same,histc");
+  hNCell_GammasWide_RW_SBSub_Effi_MC->Draw("same,histc");
+
+  // hNCell_Gammas_Effi_MC->Draw("same,E3");
+
+  TLegend *leg = GetAndSetLegend2(0.55, 0.16, 0.95, 0.44, 40);
+
+  leg->AddEntry(hNCell_GammasWide_SBSub_Effi_data, "P2, data, #gamma SB sub", "p");
+  leg->AddEntry(hNCell_GammasWide_RW_SBSub_Effi_data, "P2, data, #gamma RW SB sub", "p");
+  leg->AddEntry(hNCell_GammasWide_SBSub_Effi_MC, "P2, MC, #gamma SB sub", "l");
+  leg->AddEntry(hNCell_GammasWide_RW_SBSub_Effi_MC, "P2, MC, #gamma RW SB sub", "l");
+  leg->AddEntry(grTB_data, "TB, data, e^{#pm} (B=0T)", "p");
+  leg->AddEntry(grTB_MC, "TB, MC, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s/%s/Effi_GammaAndTB_OnlySBSub.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
 
 }
 
@@ -1633,7 +1953,6 @@ void Effi::PlotEffi_HighAndWideRWSBSub_Light(){
   drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
   drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s/%s/Effi_GammaAndTB_HighAndWideComp_Light.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
-
 }
 
 void Effi::PlotEffi_HighAndWide_Light(){
@@ -1673,6 +1992,57 @@ void Effi::PlotEffi_HighAndWide_Light(){
   drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
   drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s/%s/Effi_GammaAndTB_Comp_Light.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+
+}
+
+void Effi::PlotEffi_WideSmoothed(){
+  hDummyCan->cd();
+  hDummyEffi->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_data->Draw("same,p");
+  grTB_MC->Draw("same,l");
+  hNCell_GammasWide_Effi_data->Draw("same,p");
+  hNCell_GammasWide_Effi_MC->Draw("same,histc");
+  hNCell_GammasWide_Smoothed_Effi_data->Draw("same,p");
+  hNCell_GammasWide_Smoothed_Effi_MC->Draw("same,histc");
+
+
+  TLegend *leg = GetAndSetLegend2(0.45, 0.16, 0.95, 0.46, 40);
+  leg->AddEntry(hNCell_GammasWide_Effi_data, "P2, data", "p");
+  leg->AddEntry(hNCell_GammasWide_Effi_MC, "P2, MC", "l");
+  leg->AddEntry(hNCell_GammasWide_Smoothed_Effi_data, "P2, data, smoothed", "p");
+  leg->AddEntry(hNCell_GammasWide_Smoothed_Effi_MC, "P2, MC, smoothed", "l");
+  leg->AddEntry(grTB_data, "TB, data, e^{#pm} (B=0T)", "p");
+  leg->AddEntry(grTB_MC, "TB, MC, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s/%s/Effi_GammaAndTB_Smoothed.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+
+}
+
+void Effi::PlotEffi_Electrons(){
+  hDummyCan->cd();
+  hDummyEffi->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_data->Draw("same,p");
+  grTB_MC->Draw("same,l");
+  hNCell_Electrons_Effi_data->Draw("same,p");
+  hNCell_Electrons_Effi_MC->Draw("same,histc");
+
+
+  TLegend *leg = GetAndSetLegend2(0.45, 0.16, 0.95, 0.46, 40);
+  leg->AddEntry(hNCell_Electrons_Effi_data, "P2, data, electrons", "p");
+  leg->AddEntry(hNCell_Electrons_Effi_MC, "P2, MC, electrons", "l");
+  leg->AddEntry(grTB_data, "TB, data, e^{#pm} (B=0T)", "p");
+  leg->AddEntry(grTB_MC, "TB, MC, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("electron clusters selected via. track matching",0.15,0.92,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s/%s/Effi_Electrons.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
 
 }
 
@@ -1808,13 +2178,15 @@ void Effi::PlotRatio_GammasAndRWWide(){
 
   hNCell_AllClus_Effi_Ratio->Draw("same,p");
   hNCell_GammasWide_Effi_Ratio->Draw("same,p");
+  hNCell_GammasWide_Smoothed_Effi_Ratio->Draw("same,p");
   hNCell_GammasWide_RW_Effi_Ratio->Draw("same,p");
   hNCell_GammasWide_RW_SBSub_Effi_Ratio->Draw("same,p");
   hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Ratio->Draw("same,p");
 
-  TLegend *leg = GetAndSetLegend2(0.65, 0.66, 0.95, 0.84, 40);
+  TLegend *leg = GetAndSetLegend2(0.5, 0.6, 0.95, 0.82, 40);
   leg->AddEntry(hNCell_AllClus_Effi_Ratio, "P2, data, all clus", "p");
   leg->AddEntry(hNCell_GammasWide_Effi_Ratio, "P2, data, #gamma", "p");
+  leg->AddEntry(hNCell_GammasWide_Smoothed_Effi_Ratio, "P2, data, #gamma, smoothed", "p");
   leg->AddEntry(hNCell_GammasWide_RW_Effi_Ratio, "P2, data, RW #gamma", "p");
   leg->AddEntry(hNCell_GammasWide_RW_SBSub_Effi_Ratio, "P2, data, RW, SB sub #gamma", "p");
   leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Ratio, "P2, data, RW, SB sub #gamma, smoothed", "p");
@@ -1826,6 +2198,28 @@ void Effi::PlotRatio_GammasAndRWWide(){
   drawLatexAdd(" M_{#pi^{0}} < M_{#gamma#gamma} - 0.05 < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
   // drawLatexAdd(" only higher #gamma",0.15,0.82,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s/%s/Ratio_GammaAndTB_Reweighted_SBSub_Wide.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+}
+
+void Effi::PlotRatio_GammasAndConvRWWide(){
+  hDummyCan->cd();
+  hDummyRatio->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_Ratio->Draw("same,p");
+
+  hNCell_GammasWide_RW_Effi_Ratio->Draw("same,p");
+  hNCell_ConversionsWide_RW_Effi_Ratio->Draw("same,p");
+
+  TLegend *leg = GetAndSetLegend2(0.65, 0.66, 0.95, 0.84, 40);
+  leg->AddEntry(hNCell_GammasWide_RW_Effi_Ratio, "P2, data, RW #gamma", "p");
+  leg->AddEntry(hNCell_ConversionsWide_RW_Effi_Ratio, "P2, data, RW #gamma_{conv}", "p");
+  leg->AddEntry(grTB_Ratio, "TB, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(" M_{#pi^{0}} < M_{#gamma#gamma} - 0.05 < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
+  // drawLatexAdd(" only higher #gamma",0.15,0.82,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s/%s/Ratio_GammaAndConv_Reweighted_Wide.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
 }
 
 void Effi::PlotRatio_GammasAndRWHighMCSBSub(){
@@ -1912,16 +2306,18 @@ void Effi::PlotCorr_GammasAndRW_Wide(){
 
   hNCell_AllClus_Effi_Corr->Draw("same,p");
   hNCell_GammasWide_Effi_Corr->Draw("same,p");
+  hNCell_GammasWide_Smoothed_Effi_Corr->Draw("same,p");
   hNCell_GammasWide_RW_Effi_Corr->Draw("same,p");
   hNCell_GammasWide_RW_SBSub_Effi_Corr->Draw("same,p");
-  hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr->Draw("same,p");
+  // hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr->Draw("same,p");
 
   TLegend *leg = GetAndSetLegend2(0.15, 0.5, 0.35, 0.7, 40);
   leg->AddEntry(hNCell_AllClus_Effi_Corr, "P2, data, all clus", "p");
   leg->AddEntry(hNCell_GammasWide_Effi_Corr, "P2, data, #gamma", "p");
+  leg->AddEntry(hNCell_GammasWide_Smoothed_Effi_Corr, "P2, data, #gamma, smoothed", "p");
   leg->AddEntry(hNCell_GammasWide_RW_Effi_Corr, "P2, data, RW #gamma", "p");
   leg->AddEntry(hNCell_GammasWide_RW_SBSub_Effi_Corr, "P2, data, RW SB sub. #gamma", "p");
-  leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr, "P2, data, RW SB sub. #gamma, smoothed", "p");
+  // leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr, "P2, data, RW SB sub. #gamma, smoothed", "p");
   leg->AddEntry(grTB_Corr, "TB, e^{#pm} (B=0T)", "l");
   leg->Draw("same");
 
@@ -1930,6 +2326,32 @@ void Effi::PlotCorr_GammasAndRW_Wide(){
   drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
   // drawLatexAdd(" #gamma reweighted!",0.15,0.82,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s/%s/Corr_GammaWideAndTB_Reweighted_SBSub.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+}
+
+
+
+void Effi::PlotCorr_GammasAndConv_Wide(){
+  hDummyCan->cd();
+  hDummyCorr->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_Corr->Draw("same,p");
+
+  hNCell_GammasWide_RW_Effi_Corr->Draw("same,p");
+  hNCell_ConversionsWide_RW_Effi_Corr->Draw("same,p");
+  hNCell_AllClus_Effi_Corr->Draw("same,p");
+
+  TLegend *leg = GetAndSetLegend2(0.15, 0.5, 0.35, 0.7, 40);
+  leg->AddEntry(hNCell_GammasWide_RW_Effi_Corr, "P2, data, RW #gamma", "p");
+  leg->AddEntry(hNCell_ConversionsWide_RW_Effi_Corr, "P2, data, RW #gamma_{conv}", "p");
+  // leg->AddEntry(hNCell_GammasWide_RW_SBSub_Smoothed_Effi_Corr, "P2, data, RW SB sub. #gamma, smoothed", "p");
+  leg->AddEntry(grTB_Corr, "TB, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
+  // drawLatexAdd(" #gamma reweighted!",0.15,0.82,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s/%s/Corr_GammaAndConv_Wide_Reweighted.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
 }
 
 
@@ -1980,6 +2402,23 @@ void Effi::PlotCorr_HighAllMethods(){
   drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
   drawLatexAdd(" Only higher #gamma selected",0.15,0.82,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s/%s/Corr_GammaHighAndTB_AllMethods.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+}
+
+void Effi::PlotCorr_Electrons(){
+  hDummyCan->cd();
+  hDummyCorr->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_Corr->Draw("same,p");
+
+  hNCell_Electrons_Effi_Corr->Draw("same,p");
+
+  TLegend *leg = GetAndSetLegend2(0.15, 0.5, 0.35, 0.7, 40);
+  leg->AddEntry(hNCell_Electrons_Effi_Corr, "P2, e^{#pm}", "p");
+  leg->AddEntry(grTB_Corr, "TB, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s/%s/Corr_Electrons.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
 }
 
 
@@ -2070,16 +2509,16 @@ void Effi::PlotExampleBin(){
 
   hInvMassVsPt_Slice->Draw("same,p");
   hInvMassBackVsPt_Slice->Draw("same,p");
-  hInvMassVsPtGG_Slice->Draw("same");
-  hInvMassVsPtGC_Slice->Draw("same");
-  hInvMassVsPtCC_Slice->Draw("same");
+  hInvMassVsPtGG_Slice->Draw("same,histc");
+  hInvMassVsPtGC_Slice->Draw("same,histc");
+  hInvMassVsPtCC_Slice->Draw("same,histc");
 
   TH1F* hMCTrueSum = (TH1F*) hInvMassVsPtGG_Slice->Clone("hMCTrueSum");
   hMCTrueSum->Add(hInvMassVsPtGC_Slice);
   hMCTrueSum->Add(hInvMassVsPtCC_Slice);
   DrawSetMarker(hMCTrueSum, 2, 3.4, kBlue + 2, kBlue + 2);
 
-  hMCTrueSum->Draw("same");
+  hMCTrueSum->Draw("same,histc");
 
   TFile fmasspos("fMassPos.root");
   TString name = "MassPos8TeV_func";
@@ -2384,7 +2823,7 @@ void Effi::PlotNCellDistr(){
 
 
   hDummyCan->cd();
-  hDummyCan->SetLogy();
+  // hDummyCan->SetLogy();
   hS500A100Data_all->Draw("p");
   hS500A100Data_2cell->Draw("same,hist");
   hS500A100MC_all->Draw("same,p");
@@ -2402,6 +2841,54 @@ void Effi::PlotNCellDistr(){
 }
 
 
+void Effi::FitCorr_GammasWide(){
+    if(!hNCell_GammasWide_Effi_Corr){
+      cout<<"hNCell_GammasWide_Effi_Corr does not exit... returning\n";
+    }
+    TF1 *funcGaus = new TF1("funcGaus", "gaus(0)", 0, 5);
+    TF1 *funcLinear = new TF1("funcLinear", "pol1(0)", 0, 5);
+    hNCell_GammasWide_Effi_Corr->Fit(funcGaus, "MR0");
+    hNCell_GammasWide_Effi_Corr->Fit(funcLinear, "MR0");
+    cout<<"###############################################"<<endl;
+    cout<<"#### Printing parameters for gaussian fit #####"<<endl;
+    cout<<"### Applied to gammas + conv. in wide range ###"<<endl;
+    for(int i = 0; i < 3; ++i){
+      cout<<"param["<<i<<"] = "<<funcGaus->GetParameter(i)<<endl;
+    }
+    cout<<"###############################################"<<endl;
+    cout<<"##### Printing parameters for linear fit ######"<<endl;
+    cout<<"### Applied to gammas + conv. in wide range ###"<<endl;
+    for(int i = 0; i < 2; ++i){
+      cout<<"param["<<i<<"] = "<<funcLinear->GetParameter(i)<<endl;
+    }
+    cout<<"###############################################"<<endl;
+
+    hDummyCan->cd();
+    hDummyCorr->Draw();
+    DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+    hNCell_GammasWide_Effi_Corr->Draw("same,p");
+    funcGaus->Draw("same");
+    funcLinear->SetLineColor(kOrange + 2);
+    funcLinear->Draw("same");
+
+    TLegend *leg = GetAndSetLegend2(0.15, 0.5, 0.35, 0.7, 40);
+    leg->AddEntry(hNCell_GammasWide_Effi_Corr, "P2 data", "p");
+    leg->AddEntry(funcGaus, "gaussian fit", "l");
+    leg->AddEntry(funcLinear, "linear fit", "l");
+    leg->Draw("same");
+
+    drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+    drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
+    drawLatexAdd(" M_{#pi^{0}} - 0.05 < M_{#gamma#gamma} < M_{#pi^{0}} + 0.02 (GeV/#it{c}^{2})",0.15,0.87,textSizeLabelsRel,kFALSE);
+
+    hDummyCan->SaveAs(Form("%s/%s/Fit_GammasWide_Gaus.%s", fPeriod.Data(), fsuffix.Data(), fsuffix.Data()));
+
+
+
+
+}
+
+
 
 
 void PlottingNCellEffi(){
@@ -2410,7 +2897,8 @@ void PlottingNCellEffi(){
 
     gSystem->Exec("mkdir -p 13TeVNomB/pdf");
     gSystem->Exec("mkdir -p 13TeVNomB/png");
-    Effi plot("Pi0Tagging_13TeV_nom_02_28_TBNL.root", "13TeVNomB", "pdf");
+    // Effi plot("Pi0Tagging_13TeV_nom_02_28_TBNL.root", "13TeVNomB", "pdf");
+    Effi plot("Pi0Tagging_13TeV_nom_03_10_noIso_TBNL.root", "13TeVNomB", "pdf");
     plot.FillHistos();
     plot.SetOtherHistos();
     plot.DoSBSubtraction();
@@ -2430,6 +2918,7 @@ void PlottingNCellEffi(){
     plot.PlotRatio_GammasAndRW();
     plot.PlotRatio_GammasAndRWLeft();
     plot.PlotRatio_GammasAndRWWide();
+    plot.PlotRatio_GammasAndConvRWWide();
     plot.PlotRatio_GammasAndRWHigh();
     plot.PlotRatio_GammasAndRWHighMCSBSub();
     // plot.PlotRatio_GammasAndRWWide();
@@ -2439,12 +2928,18 @@ void PlottingNCellEffi(){
     plot.PlotEffi_HighAndWideRWSBSub();
     plot.PlotEffi_HighAndWideRWSBSub_Light();
     plot.PlotEffi_HighAndWideRWSBSub_Smoothed();
+    plot.PlotEffi_WideOnlySBSub();
+    plot.PlotEffi_WideSBSubGammaAndConv();
     plot.PlotEffi_HighAndWide_Light();
+    plot.PlotEffi_WideSmoothed();
+    plot.PlotEffi_Electrons();
     plot.PlotCorr_GammasAndRW();
     plot.PlotCorr_GammasAndRW_Left();
     plot.PlotCorr_GammasAndRW_Wide();
+    plot.PlotCorr_GammasAndConv_Wide();
     plot.PlotCorr_GammasAndRW_High();
     plot.PlotCorr_HighAllMethods();
+    plot.PlotCorr_Electrons();
     plot.PlotPurity();
     plot.PlotPurity2();
     plot.PlotExampleBin();
@@ -2452,6 +2947,7 @@ void PlottingNCellEffi(){
     plot.PlotNCellRatios();
     plot.PlotFraction1cell();
     plot.PlotNCellDistr();
+    plot.FitCorr_GammasWide();
   }
 
   // gSystem->Exec("mkdir -p 13TeVLowB/pdf");
