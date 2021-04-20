@@ -13,7 +13,7 @@ class SpectraClass{
     void CalculatePi0s(unsigned int kCorrection);
     Cluster *GetCluster(unsigned int i = 0);
     std::array<float, 3> GetMomVect(unsigned int i = 0);
-    float GetE(unsigned int i)                          {T->GetEvent(i); return applyNL(energy, Cluster_NumCells);};
+    float GetE(unsigned int i)                          {T->GetEvent(i); return applyNL(fenergy, Cluster_NumCells);};
     int GetClusterPDG(unsigned int i)                          {T->GetEvent(i); if(isMC == 0){ return 0;} else { return ClusterPDG;};};
     unsigned int GetClusNCells(unsigned int i)          {T->GetEvent(i); return   Cluster_NumCells;};
     inline float EtaToTheta(float eta = 0);
@@ -77,7 +77,7 @@ class SpectraClass{
 
   Float_t FunctionNL_OfficialTB_100MeV_MC_V2(Float_t e){// 1.5% shift instead of 5% to make the scale correct
     Double_t funcParams[5] = {1.09357, 0.0192266, 0.291993, 370.927, 694.656};
-    return ( 0.98 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
+    return ( 1.00 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
   }
   // Float_t FunctionNL_OfficialTB_100MeV_MC_V2(Float_t e){
   //   Double_t funcParams[5] = {1.09357, 0.0192266, 0.291993, 370.927, 694.656};
@@ -118,7 +118,7 @@ class SpectraClass{
     //--------------------------------------
     //--- Cluster properties from tree
     //--------------------------------------
-    float energy;
+    float fenergy;
     float eta;
     float phi;
     float *CellEnergy = new float[100];
@@ -386,7 +386,7 @@ SpectraClass::SpectraClass(bool mc, TString Period, bool light, int skipping): r
   // ClusterQA_00000113_4117900050020000000
   // T->Print();
 
-  T->SetBranchAddress("Cluster_E", &energy);
+  T->SetBranchAddress("Cluster_E", &fenergy);
   cerr<<__LINE__<<endl;
   T->SetBranchAddress("Cluster_IsEMCAL", &isEMC);
   T->SetBranchAddress("Cluster_Eta", &eta);
@@ -435,12 +435,12 @@ Cluster *SpectraClass::GetCluster(unsigned int i){
   // }
   Cluster *tmp;
   if(!isMC){
-      tmp = new Cluster(applyNL(energy, Cluster_NumCells), eta, phi, Cluster_NumCells , CellEnergy, Cluster_CellsID,
+      tmp = new Cluster(applyNL(fenergy, Cluster_NumCells), eta, phi, Cluster_NumCells , CellEnergy, Cluster_CellsID,
       Surrounding_Cells_N, Surrounding_Cells_E, Surrounding_Cells_R, Surrounding_Cells_ID,
       Surrounding_Tracks_N, Surrounding_Tracks_P, Surrounding_Tracks_R, Surrounding_Tracks_nSigdEdx, Surrounding_Tracks_IsV0,
       false, 0, 0);
   } else {
-      tmp = new Cluster(applyNL(energy, Cluster_NumCells), eta, phi, Cluster_NumCells , CellEnergy, Cluster_CellsID,
+      tmp = new Cluster(applyNL(fenergy, Cluster_NumCells), eta, phi, Cluster_NumCells , CellEnergy, Cluster_CellsID,
       Surrounding_Cells_N, Surrounding_Cells_E, Surrounding_Cells_R, Surrounding_Cells_ID,
       Surrounding_Tracks_N, Surrounding_Tracks_P, Surrounding_Tracks_R, Surrounding_Tracks_nSigdEdx, Surrounding_Tracks_IsV0,
       isMC, ClusterPDG, MCLabel);
@@ -494,9 +494,9 @@ void SpectraClass::Process(unsigned int maxNumClus){
     if(currEvt%10000 == 0) cerr<<currEvt<<" events processed..."<<endl;
     if(fdebug == 2) cerr<<__LINE__<<endl;
     NextEvt();
-    if(fdebug)cout<<"energy: "<<energy<<endl;
+    if(fdebug)cout<<"energy: "<<fenergy<<endl;
     if(fdebug == 2) cerr<<__LINE__<<endl;
-    for(int i = 0; i < 7; ++i){
+    for(int i = 0; i < 10; ++i){
       CalculatePi0s(i);
     }
 
@@ -652,6 +652,7 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
   if(Evt.clus[clus]->ncells >= 2) return true;
 
   int clusPDG = Evt.clus[clus]->ClusterPDG;
+  float clusE = Evt.clus[clus]->e;
 
   float randNr = randomEng.Rndm();
 
@@ -673,8 +674,8 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
       fNCellEfficiencyParams[2] = 6.50026e-01;
       // printf("kNCeAllClusters\n");
       Float_t val = fNCellEfficiencyParams[0]*exp(
-                    -0.5*((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
-                    ((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+                    -0.5*((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
+                    ((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
       if(randNr < val) return kTRUE;
       else return kFALSE;
       break;
@@ -684,9 +685,9 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
     {
       // based on test beam measurements
       // should behave like pure photon clusters
-      fNCellEfficiencyParams[0] = 0.213184;
-      fNCellEfficiencyParams[1] = -0.0580118;
-      Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+      fNCellEfficiencyParams[0] = -4.23138e-02;
+      fNCellEfficiencyParams[1] = 1.95466e-01;
+      Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
       // printf("kNCeTestBeam\n");
       if(randNr < val) return kTRUE;
       else return kFALSE;
@@ -702,8 +703,8 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
       fNCellEfficiencyParams[1] = 1.28118;
       fNCellEfficiencyParams[2] = 0.583403;
       Float_t val = fNCellEfficiencyParams[0]*exp(
-                    -0.5*((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
-                    ((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+                    -0.5*((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
+                    ((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
 
       // printf("kNCeGammaAndElec\n");
       if(randNr < val) return kTRUE;
@@ -711,15 +712,15 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
       break;
     }
 
-    case 5: //kNCeGamma and Elec separated:
+    case 5: //TB and Elec separated:
     {
       // apply TB on Gamma clusters and electron correction for electrons
       if(clusPDG == 22){ // photons, TB
         // based on test beam measurements
         // should behave like pure photon clusters
-        fNCellEfficiencyParams[0] = 0.213184;
-        fNCellEfficiencyParams[1] = -0.0580118;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+        fNCellEfficiencyParams[0] = -4.23138e-02;
+        fNCellEfficiencyParams[1] = 1.95466e-01;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
         // printf("kNCeTestBeam\n");
         if(randNr < val) return kTRUE;
         else return kFALSE;
@@ -729,7 +730,7 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
         // should behave like pure photon clusters
         fNCellEfficiencyParams[0] = 6.86301e-02;
         fNCellEfficiencyParams[1] = 6.23158e-02;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
         // printf("kNCeTestBeam\n");
         if(randNr < val) return kTRUE;
         else return kFALSE;
@@ -748,8 +749,8 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
       fNCellEfficiencyParams[1] = 1.28118;
       fNCellEfficiencyParams[2] = 0.583403;
       Float_t val = fNCellEfficiencyParams[0]*exp(
-                    -0.5*((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
-                    ((energy-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+                    -0.5*((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
+                    ((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
 
       // printf("kNCeGammaAndElec\n");
       if(randNr < val) return kTRUE;
@@ -760,13 +761,84 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
       // should behave like pure photon clusters
       fNCellEfficiencyParams[0] = 6.86301e-02;
       fNCellEfficiencyParams[1] = 6.23158e-02;
-      Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*energy;
+      Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
       // printf("kNCeTestBeam\n");
       if(randNr < val) return kTRUE;
       else return kFALSE;
 
 
     }
+    }
+
+    case 7: //kNCeGamma and Elec separated:
+    {
+      // apply TB on Gamma clusters and electron correction for electrons
+      if(clusPDG == 22){ // photons, TB
+        // from file Pi0Tagging_13TeV_nom_03_17_Iso02_TBNL_noScale_MCScaled_1cellFT
+        //
+        fNCellEfficiencyParams[0] = 5.72153e-02;
+        fNCellEfficiencyParams[1] = 4.19831e-02;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
+        // printf("kNCeTestBeam\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+
+      } else if (fabs(clusPDG) == 11){
+        // based on test beam measurements
+        // should behave like pure photon clusters
+        fNCellEfficiencyParams[0] = 6.86301e-02;
+        fNCellEfficiencyParams[1] = 6.23158e-02;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
+        // printf("kNCeTestBeam\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+
+
+      }
+
+      break;
+    }
+    case 8: //kNCeGamma and Elec separated:
+    {
+      // apply TB on Gamma clusters and electron correction for electrons
+      if(clusPDG == 22){ // photons, TB
+        // from file Pi0Tagging_13TeV_nom_03_17_Iso02_TBNL_noScale_MCScaled_1cellFT
+        //
+        fNCellEfficiencyParams[0] = 1.84654e-02;
+        fNCellEfficiencyParams[1] = 4.46480e-02;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
+        // printf("kNCeTestBeam\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+
+      } else if (fabs(clusPDG) == 11){
+        // based on test beam measurements
+        // should behave like pure photon clusters
+        fNCellEfficiencyParams[0] = 6.86301e-02;
+        fNCellEfficiencyParams[1] = 6.23158e-02;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
+        // printf("kNCeTestBeam\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+
+
+      }
+
+      break;
+    }
+    case 9: //kNCeGamma linear fit
+    {
+        // from file Pi0Tagging_13TeV_nom_03_24_TrueVsRec_1cellFT_dataAndMC
+        //
+        fNCellEfficiencyParams[0] = 7.46288e-02;
+        fNCellEfficiencyParams[1] = -9.89379e-03;
+        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
+        // printf("kNCeTestBeam\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+
+
+      break;
     }
 
   }
@@ -1070,7 +1142,7 @@ bool SpectraClass::IsClusAcceptedByThreshold(unsigned int i, float agg, float th
 //--------------------------------------
 void SpectraClass::WriteToFile(){
 
-  TString filename = "InvMassCorrected_13TeV_nom_03_05_noIso_TBNL.root";
+  TString filename = "InvMassCorrected_13TeV_nom_03_25_TBNL.root";
   if(period ==1) filename = "InvMassCorrected_13TeV_low_03_25_TBNL.root";
   else if(period ==2) filename = "InvMassCorrected_8TeV_03_08_ShaperTBNL.root";
   std::ifstream ftest(filename);
