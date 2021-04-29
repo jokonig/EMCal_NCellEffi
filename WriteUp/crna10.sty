@@ -1,0 +1,130 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Name:     CRNA10.STY                                           %
+%  Version:  1.04,  29 Aug 1991                                   %
+%  Purpose:  Set LaTeX parameters for CERN article in 10 points   %
+%                                                                 %
+%  This files is based on the NTG10.STY from the Dutch            %
+%                                                                 %
+%  CERN mods: Michel Goossens CN/AS                               %
+%  Last mod : 29 Aug 1991  mg                                     %
+%                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+\def\styleversion{1.04}\def\styledate{28 August 1991}
+\typeout{Substyle 'CRNA10'. Version <\styleversion>, <\styledate>}
+ 
+\lineskip 1pt            % \lineskip is 1pt for all font sizes.
+\normallineskip 1pt
+\def\baselinestretch{1}
+\def\@normalsize{\@setsize\normalsize{12pt}\xpt\@xpt
+\abovedisplayskip 10pt plus2pt minus5pt%
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus3pt%
+\belowdisplayshortskip 6pt plus3pt minus3pt}
+ 
+\def\small{\@setsize\small{11pt}\ixpt\@ixpt
+\abovedisplayskip 8.5pt plus 3pt minus 4pt
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus2pt
+\belowdisplayshortskip 4pt plus2pt minus 2pt}
+ 
+\def\footnotesize{\@setsize\footnotesize{9.5pt}\viiipt\@viiipt
+\abovedisplayskip 6pt plus 2pt minus 4pt%
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus 1pt
+\belowdisplayshortskip 3pt plus 1pt minus 2pt}
+ 
+\def\scriptsize{\@setsize\scriptsize{8pt}\viipt\@viipt}
+\def\tiny{\@setsize\tiny{6pt}\vpt\@vpt}
+\def\large{\@setsize\large{14pt}\xiipt\@xiipt}
+\def\Large{\@setsize\Large{18pt}\xivpt\@xivpt}
+\def\LARGE{\@setsize\LARGE{22pt}\xviipt\@xviipt}
+\def\huge{\@setsize\huge{25pt}\xxpt\@xxpt}
+\def\Huge{\@setsize\Huge{30pt}\xxvpt\@xxvpt}
+\normalsize  % Choose the normalsize font.
+ 
+ 
+\if@twoside                 % Values for two-sided printing:
+   \oddsidemargin   44pt    %   Left margin on odd-numbered pages.
+   \evensidemargin  82pt    %   Left margin on even-numbered pages.
+   \marginparwidth 107pt    %   Width of marginal notes.
+\else                       % Values for one-sided printing:
+   \oddsidemargin   63pt    %   Note that \oddsidemargin = \evensidemargin
+   \evensidemargin  63pt
+   \marginparwidth  90pt
+\fi
+\marginparsep 11pt          % Horizontal space between outer margin and
+                            % marginal note
+ 
+                         % Top of page:
+\topmargin 27pt          %    Nominal distance from top of page to top of
+                         %    box containing running head.
+\headheight 12pt         %    Height of box containing running head.
+\headsep 25pt            %    Space between running head and text.
+                         % Bottom of page:
+\footskip 30pt           %    Distance from baseline of box containing foot
+                         %    to baseline of last line of text.
+ 
+ 
+\textheight = 43\baselineskip
+\advance\textheight by \topskip
+\textwidth 345pt         % Width of text line.
+                         % For two-column mode:
+\columnsep 10pt          %    Space between columns
+\columnseprule 0pt       %    Width of rule between columns.
+ 
+ 
+ 
+                      % footnote = height of normal \footnotesize strut,
+                      % so no extra space between footnotes.
+ 
+\skip\footins 9pt plus 4pt minus 2pt  % Space between last line of text and
+                                      % top of first footnote.
+ 
+\floatsep 12pt plus 2pt minus 2pt        % Space between adjacent floats moved
+                                         % to top or bottom of text page.
+\textfloatsep 20pt plus 2pt minus 4pt    % Space between main text and floats
+                                         % at top or bottom of page.
+\intextsep 12pt plus 2pt minus 2pt       % Space between in-text figures and
+                                         % text.
+\@maxsep 20pt                            % The maximum of \floatsep,
+                                         % \textfloatsep and \intextsep (minus
+                                         % the stretch and shrink).
+\dblfloatsep 12pt plus 2pt minus 2pt     % Same as \floatsep for double-column
+                                         % figures in two-column mode.
+\dbltextfloatsep 20pt plus 2pt minus 4pt % \textfloatsep for double-column
+                                         % floats.
+\@dblmaxsep 20pt                         % The maximum of \dblfloatsep and
+                                         % \dbltexfloatsep.
+ 
+\@fptop 0pt plus 1fil    % Stretch at top of float page/column. (Must be
+                         % 0pt plus ...)
+\@fpsep 8pt plus 2fil    % Space between floats on float page/column.
+\@fpbot 0pt plus 1fil    % Stretch at bottom of float page/column. (Must be
+                         % 0pt plus ... )
+ 
+\@dblfptop 0pt plus 1fil % Stretch at top of float page. (Must be 0pt plus ...)
+\@dblfpsep 8pt plus 2fil % Space between floats on float page.
+\@dblfpbot 0pt plus 1fil % Stretch at bottom of float page. (Must be
+                         % 0pt plus ... )
+\marginparpush 5pt       % Minimum vertical separation between two marginal
+                         % notes.
+\endinput
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% End of file `crna10.sty'.

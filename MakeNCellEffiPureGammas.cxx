@@ -25,6 +25,7 @@ class DataTree{
     void FillHitmap();
     bool IsIsolated(unsigned int i);
     bool IsBorderCell(unsigned int clus, unsigned int NCellDist);
+    void RejectBorderCells(bool tmp)                  {fRejectBorderCells = tmp;};
     bool IsTrackMatched(unsigned int i);
     bool IsExoticClus(unsigned int i, float eThresh = 0.07);
     void FillElectronHist();
@@ -42,6 +43,7 @@ class DataTree{
     bool fDoLight = true;
     bool fDoNoTRD = false;
     bool fDoRejectTRDSupport = false;
+    bool fRejectBorderCells = false;
 
     AliEMCALGeometry * geom = nullptr;
 
@@ -225,6 +227,14 @@ class DataTree{
     TH2F* hNCellVsETMNLS550A110 = nullptr;
     TH2F* hNCellVsETMNLS510A102 = nullptr;
     TH2F* hNCellVsETMNLS500A110 = nullptr;
+
+    //--------------------------------------
+    //--- True particles (gamma, elec, hadrons)
+    //--------------------------------------
+
+    TH2F* hNCellVsETrueGamma = nullptr;
+    TH2F* hNCellVsETrueElec = nullptr;
+    TH2F* hNCellVsETrueHadr = nullptr;
 
     //--------------------------------------
     //--- True vs. rec. energy
@@ -517,6 +527,11 @@ void DataTree::CreateHistos(){
   hNCellVsETMNLS510A102 = new TH2F("hNCellVsETMNLS510A102_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
   hNCellVsETMNLS500A110 = new TH2F("hNCellVsETMNLS500A110_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
 
+
+  hNCellVsETrueGamma = new TH2F("hNCellVsETrueGamma", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsETrueElec = new TH2F("hNCellVsETrueElec", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsETrueHadr = new TH2F("hNCellVsETrueHadr", "", nBinsE, arrEbins , 20, 0, 20);
+
   hRecVsTrueE = new TH2F("hRecVsTrueE", "", 100, 0, 10, 100, 0, 10);
   hRecDivTrueE = new TH2F("hRecDivTrueE", "", 100, 0, 10, 200, -2, 2);
   hRecDivTrueEOneCell = new TH2F("hRecDivTrueEOneCell", "", 100, 0, 10, 200, -2, 2);
@@ -708,7 +723,7 @@ void DataTree::GetGammasViaPi0(){
     if(!SMwithNoTRD(ig1)) continue;
     if(IsBehindTRDSupport(ig1)) continue;
     if(fdebug) cerr<<__LINE__<<endl;
-    // if(IsBorderCell(ig1, 3)) continue;
+    if(IsBorderCell(ig1, 3)) continue;
     if(fdebug) cerr<<__LINE__<<endl;
     int PDGig1 = Evt.clus[ig1]->ClusterPDG;
     // int PDGig1 = GetClusterPDG(ig1);
@@ -728,7 +743,7 @@ void DataTree::GetGammasViaPi0(){
       if(IsTrackMatched(ig2)) continue;
       if(!SMwithNoTRD(ig2)) continue;
       if(IsBehindTRDSupport(ig2)) continue;
-      // if(IsBorderCell(ig2, 3)) continue;
+      if(IsBorderCell(ig2, 3)) continue;
 
       int PDGig2 = Evt.clus[ig2]->ClusterPDG;
       // int PDGig2 = GetClusterPDG(ig2);
@@ -1074,7 +1089,7 @@ void DataTree::FillHitmap(){
   for(unsigned int i = 0; i < nclus; ++i){
     if(fdebug == 2) cerr<<__LINE__<<endl;
     // T->GetEvent(currEvt + i);
-    // if(IsBorderCell(i, 3)) continue;
+    if(IsBorderCell(i, 3)) continue;
     float theta = EtaToTheta(Evt.clus[i]->eta);
     if(fdebug == 2) cerr<<__LINE__<<endl;
     // cerr<<"theta: "<<theta - TMath::Pi()*0.5<<endl;
@@ -1124,6 +1139,7 @@ bool DataTree::IsIsolated(unsigned int clus){
 //--------------------------------------
 bool DataTree::IsBorderCell(unsigned int clus, unsigned int NCellDist){
   // T->GetEvent(clus);
+  if(!fRejectBorderCells) return false;
   float etaphiDist = NCellDist * 0.013;
   for(int ie = 0; ie < fnEMCalGapsEta; ++ie){
     if(fEMCalGapsEta.at(ie) - etaphiDist < Evt.clus[clus]->eta && fEMCalGapsEta.at(ie) + etaphiDist > Evt.clus[clus]->eta) return true;
@@ -1369,6 +1385,13 @@ void DataTree::FillAllCLusterHist(){
           }
           hNCellVsEGammasNLTrue_TrueE->Fill(Evt.clus[ic]->TrueE, Evt.clus[ic]->ncells);
           hNCellVsEGammasNLTrue_RecE->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
+          hNCellVsETrueGamma->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
+        }
+        else if( fabs(Evt.clus[ic]->ClusterPDG) == 11){
+          hNCellVsETrueElec->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
+        }
+        else {
+          hNCellVsETrueHadr->Fill(Evt.clus[ic]->e, Evt.clus[ic]->ncells);
         }
       }
 
@@ -1479,7 +1502,7 @@ void DataTree::FillMassHists(TString name){
 void DataTree::WriteToFile(){
   gSystem->Exec("mkdir rootFiles");
 
-  TString filename = "rootFiles/Pi0Tagging_13TeV_nom_03_25_WithTRD_1cellFT";
+  TString filename = "rootFiles/Pi0Tagging_13TeV_nom_04_26_WithTRD_WithBorderCells_1cellFT";
   // TString filename = "rootFiles/Pi0Tagging_13TeV_nom_03_18_Iso02_TBNL_noScale_1cellFT_RejectBehindTRDSupport";
   if(period ==1) filename = "rootFiles/Pi0Tagging_13TeV_low_03_16_Iso02_TBNL_noScale";
   else if(period ==2) filename = "rootFiles/Pi0Tagging_8TeV_03_12_NoTRD_NoShaper_TBNL";
@@ -1587,6 +1610,10 @@ void DataTree::WriteToFile(){
   hNCellVsETMNLS510A102->Write(Form("hNCellVsETMNLS510A102_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hNCellVsETMNLS500A110->Write(Form("hNCellVsETMNLS500A110_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
 
+  hNCellVsETrueGamma->Write(Form("hNCellVsETrueGamma_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hNCellVsETrueElec ->Write(Form("hNCellVsETrueElec_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+  hNCellVsETrueHadr ->Write(Form("hNCellVsETrueHadr_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
+
   hRecVsTrueE->Write(Form("hRecVsTrueE_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hRecDivTrueE->Write(Form("hRecDivTrueE_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
   hRecDivTrueEOneCell->Write(Form("hRecDivTrueEOneCell_%s", (isMC == 1) ? "MC" : "data"), TObject::kOverwrite);
@@ -1613,12 +1640,14 @@ void MakeNCellEffiPureGammas(bool isMC = 1, TString period = "13TeVNomB", bool l
     DataTree myAna(true, period, light, skip);
     // myAna.SetDoNoTRD(1);
     // myAna.SetRejectBehindTRDSupport(true);
+    myAna.RejectBorderCells(false);
     myAna.Process(nEvt*2.5);
     myAna.WriteToFile();
   } else {
     DataTree myAna2(false, period, light, skip);
     // myAna2.SetDoNoTRD(1);
     // myAna2.SetRejectBehindTRDSupport(true);
+    myAna2.RejectBorderCells(false);
     myAna2.Process(nEvt);
     myAna2.WriteToFile();
   }

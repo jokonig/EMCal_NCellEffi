@@ -1,0 +1,20 @@
+\babel@toc {american}{}
+\contentsline {section}{\numberline {1}Difference between P2 and TB}{2}{section.1}
+\contentsline {section}{\numberline {2}$\pi ^0$\xspace tagging for pure $\gamma $\xspace }{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Sideband subtraction}{5}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Reweighting}{5}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Resulting efficiency}{6}{subsection.2.3}
+\contentsline {section}{\numberline {3}Calculation of the correction factor $\rho $}{7}{section.3}
+\contentsline {subsection}{\numberline {3.1}Resulting correction factor}{7}{subsection.3.1}
+\contentsline {section}{\numberline {4}Testing on the whole pp $\sqrt {s}$ = 13 TeV dataset}{8}{section.4}
+\contentsline {section}{\numberline {5}Applying the correction factor}{9}{section.5}
+\contentsline {section}{\numberline {6}Calculating the correction from the $\pi ^0$\xspace spectrum}{11}{section.6}
+\contentsline {section}{\numberline {7}Corrections and other considerations}{12}{section.7}
+\contentsline {subsection}{\numberline {7.1}effect of exotics/noise on the $\pi ^{0}$ spectrum}{12}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}Cluster Energy Finetuning for 1 cell cluster}{12}{subsection.7.2}
+\contentsline {subsubsection}{\numberline {7.2.1}Absolute peak position for different number of cells}{13}{subsubsection.7.2.1}
+\contentsline {subsection}{\numberline {7.3}Non-Linearity correction of the Test-Beam clusters}{15}{subsection.7.3}
+\contentsline {subsection}{\numberline {7.4}High $p_{T}$ drop, nearby clusters}{15}{subsection.7.4}
+\contentsline {subsection}{\numberline {7.5}3x3 clusterizer vs. V2 clusterizer}{16}{subsection.7.5}
+\contentsline {subsection}{\numberline {7.6}Corrections estimated with electrons from P2}{17}{subsection.7.6}
+\contentsline {subsection}{\numberline {7.7}Clusterization settings}{18}{subsection.7.7}

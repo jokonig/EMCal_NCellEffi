@@ -1,0 +1,284 @@
+%\documentclass[11pt]{elsart}
+\documentclass[ALICE]{ALICE_analysis_notes}
+
+% Use the option doublespacing or reviewcopy to obtain double line spacing
+%\documentclass[doublespacing]{elsart}
+\usepackage[american]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[colorlinks=true,bookmarksnumbered=true,bookmarksopen=true]{hyperref}
+
+ \usepackage{graphicx}
+ \usepackage{subfigure}
+ \usepackage{geometry}
+% %\geometry{a4paper,inner=28mm, outer=18mm, top=25mm, bottom=30mm,twoside}
+%  \geometry{a4paper, inner=28mm, outer=18mm, top=25mm, bottom=29mm, headsep=10mm, footskip=12mm, twoside}
+ \geometry{a4paper, inner=28mm, outer=18mm, top=25mm, bottom=29mm, headsep=10mm, footskip=12mm}
+ \usepackage{amsmath}
+ \usepackage{amssymb}
+ \usepackage{mathcomp}
+ \usepackage{array}
+\usepackage{helvet}
+ \usepackage{color}
+% 	\usepackage{hyperref}
+\usepackage[dvips]{epsfig}
+
+\hypersetup{
+    pdfauthor={Adrian, Mechler},     % author
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=red!60!black,        % color of internal links (change box color with linkbordercolor)
+    citecolor=red!60!black,       % color of links to bibliography
+    filecolor=red!60!black,     % color of file links
+    urlcolor=red!60!black          % color of external links
+}
+\usepackage[all]{hypcap}
+ \usepackage{listings}
+ \usepackage{cite}
+ \usepackage[printonlyused]{acronym}
+ \usepackage{units}
+ \usepackage{lineno}
+\linenumbers
+%  \usepackage[numbers]{natbib}
+ \usepackage{ascii}
+ \usepackage{feynmf}
+\usepackage{dcolumn}
+\usepackage[point,rounding]{rccol}
+\usepackage{rotating}
+\usepackage{subcaption}
+
+\usepackage{todonotes}
+\newcommand{\warning}[1]{\todo[inline]{#1}\xspace}
+% \newcommand{\warning}[1]{\todo[textsize=tiny]{#1}\xspace}
+
+\renewcommand*{\acsfont}[1]{{\color{black}#1}}
+\renewcommand*{\acffont}[1]{{\color{black}#1}}
+ \usepackage{booktabs}
+\setlength{\abovecaptionskip}{4pt plus 0pt minus 0pt}
+\setlength{\parskip}{0pt}
+
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\AC@hyperlink}[2]{%
+    \begingroup
+      \hypersetup{hidelinks}%
+      \hyperlink{#1}{#2}%
+    \endgroup
+  }%
+}
+\makeatother
+\PHnumber{ALICE-ANA-XXXX}
+
+
+%%%%%%%%%%%%%% TODO setup
+\usepackage{stackengine}
+\setstackgap{L}{.5\baselineskip}
+\newcommand\markabove[3][orange]{{\sffamily\color{#1}%\hsmash{}%
+  \smash{\toplap{#2}{\bfseries#3}}}}
+% \newcommand\markbelow[3][orange]{{\sffamily\color{#1}\hsmash{$\downarrow$}smash{\bottomlap{#2}{\scriptsize\bfseries#3}}}}
+\usepackage{ifthen}
+\newcounter{TODOpointers}
+\newcommand\addTODOpointer[2]{%
+  \stepcounter{TODOpointers}%
+  \newcounter{todoindex\romannumeral\theTODOpointers}%
+  \setcounter{todoindex\romannumeral\theTODOpointers}{0}%
+  \expandafter\gdef\csname TODOname\romannumeral\theTODOpointers\endcsname{%
+    #1}%
+  \expandafter\gdef\csname TODOcolor\romannumeral\theTODOpointers\endcsname{%
+    #2}%
+  \edef\tmp{\theTODOpointers}%
+  \expandafter\edef\csname #1TODO\endcsname{\tmp}%
+}
+\newcommand\TODO[2]{%
+  \edef\thenameindex{\csname #1TODO\endcsname}%
+  \stepcounter{todoindex\romannumeral\thenameindex}%
+  \def\thetmp{\csname thetodoindex\romannumeral\thenameindex\endcsname}%
+  \expandafter\gdef%
+    \csname todo.\thenameindex.\romannumeral\thetmp\endcsname{#2}%
+  \markabove[\csname TODOcolor\romannumeral\thenameindex\endcsname]%
+    {r}{#2}%
+}
+\newcounter{index}
+\newcommand\showTODOs[1]{%
+  \edef\thenameindex{\csname #1TODO\endcsname}%
+  \def\thetmp{\csname thetodoindex\romannumeral\thenameindex\endcsname}%
+  \vspace{5ex}\noindent%
+  \rule{20ex}{.1ex}
+  \par\noindent
+  \hspace{5ex}\textbf{ \Large \textcolor{%
+    \csname TODOcolor\romannumeral\thenameindex\endcsname}%
+    {\csname TODOname\romannumeral\thenameindex\endcsname%
+    }}\par\noindent%
+  \setcounter{index}{0}%
+  \whiledo{\value{index} < \value{todoindex\romannumeral\thenameindex}}{%
+    \addtocounter{index}{1}%
+    \markabove[\csname TODOcolor\romannumeral\thenameindex\endcsname]{c}%
+       {\arabic{index}} %
+       \csname todo.\thenameindex.\romannumeral\theindex\endcsname\\%
+  }\par%
+}
+
+\addTODOpointer{EMCal}{blue}
+\addTODOpointer{PCMEMCal}{violet}
+\addTODOpointer{PCMPHOS}{cyan!80}
+\addTODOpointer{PCM}{red}
+\addTODOpointer{PHOS}{green!80!black}
+\addTODOpointer{All}{orange}
+
+
+
+\renewcommand{\floatpagefraction}{.82}
+\renewcommand{\bottomfraction}{.95}
+\renewcommand{\topfraction}{.95}
+\renewcommand{\textfraction}{.04}
+\newcommand{\pT}{$p_{\mbox{\tiny T}}$\xspace}
+\newcommand{\pTHard}{$p_{\mbox{\tiny T,hard}}$\xspace}
+\newcommand{\sNN}{$\sqrt{s_{\mbox{\tiny NN}}}$\xspace}
+\newcommand{\sNNF}{$\sqrt{s_{\mbox{\tiny NN}}}=2.76\,$TeV\xspace}
+\newcommand{\sNNMa}{$\sqrt{s_{\mbox{\tiny NN}}}=5.02\,$TeV\xspace}
+\newcommand{\s}{$\sqrt{s}$\xspace}
+\newcommand{\sth}{\s~=~13~TeV\xspace}
+\newcommand{\sei}{\s~=~8~TeV\xspace}
+\newcommand{\stw}{\s~=~2.76~TeV\xspace}
+\newcommand{\mT}{$m_{\mbox{\tiny T}}$\xspace}
+\newcommand{\qT}{$q_{\mbox{\tiny T}}$\xspace}
+\newcommand{\xT}{$x_{\mbox{\tiny T}}$\xspace}
+\newcommand{\Pb}{{\mbox{Pb--Pb}}\xspace}
+\newcommand{\AACol}{{\mbox{A--A}}\xspace}
+\newcommand{\Au}{{\mbox{Au--Au}}\xspace}
+\newcommand{\pPb}{{\mbox{p--Pb}}\xspace}
+\newcommand{\pA}{{\mbox{p--A}}\xspace}
+\newcommand{\pp}{pp\xspace}
+\newcommand{\MeVc}{MeV/$c$\xspace}
+\newcommand{\GeVc}{GeV/$c$\xspace}
+\newcommand{\vtwo}{$\nu_2$\xspace}
+\newcommand{\vn}{$\nu_n$\xspace}
+% \newcommand{\pi0}{$\pi^0$\xspace}
+\newcommand{\mum}{$\mu$m\xspace}
+\newcommand{\dEdx}{$\mbox{d}E/\mbox{d}x$\xspace}
+\newcommand{\RConv}{R_{\mbox{\tiny conv}}}
+\newcommand{\ZConv}{Z_{\mbox{\tiny conv}}}
+\newcommand{\XConv}{X_{\mbox{\tiny conv}}}
+\newcommand{\YConv}{Y_{\mbox{\tiny conv}}}
+\newcommand{\PhiConv}{\phi_{\mbox{\tiny conv}}}
+\newcommand{\RSec}{R_{\mbox{\tiny sec}}}
+\newcommand{\ZSec}{Z_{\mbox{\tiny sec}}}
+\newcommand{\XSec}{X_{\mbox{\tiny sec}}}
+\newcommand{\YSec}{Y_{\mbox{\tiny sec}}}
+\newcommand{\PhiSec}{\phi_{\mbox{\tiny sec}}}
+\newcommand{\dcaZ}{$dca_z$\xspace}
+\newcommand{\pTtrack}{p_{\mbox{\tiny T},\mbox{\tiny track}}}
+\newcommand{\EtaToPi}{$\eta/\pi^0$\xspace}
+\newcommand{\Etat}{\eta_{\mbox{\tiny track, V0}}}
+\newcommand{\EtaV}{\eta_{\mbox{\tiny V0}}}
+
+
+\newcommand{\gsim}        {\stackrel{>}{\sim}}
+\newcommand{\lsim}        {\stackrel{<}{\sim}}
+\newcommand{\stat}        {({\mathit{ stat.}})}
+\newcommand{\syst}        {({\mathit{ sys.}})}
+\newcommand{\com}[1]      {}
+\newcommand{\PCM}         {\acs{PCM}}
+\newcommand{\PCMEMC}      {\acs{PCM}-\acs{EMCal}}
+\newcommand{\PCMPHOS}     {\acs{PCM}-\acs{PHOS}}
+\newcommand{\PCMDal}      {\acs{PCM}-\acs{Dal}}
+\newcommand{\EMC}         {\acs{EMCal}}
+\newcommand{\mEMC}        {mEMC}
+\newcommand{\PHOS}        {\acs{PHOS}}
+\newcommand{\PE}          {\mbox{P-E}}
+
+\setlength{\textfloatsep}{1em}
+
+
+
+% \usepackage{floatrow}
+
+% \usepackage{enumitem}\setlist[description]{font=$\bullet$}
+
+% %%%%%%%%%%%%%% Schrift
+    \renewcommand*{\familydefault}{\sfdefault}
+% \usepackage[labelfont=bf]{caption}  							%change color sheme
+\usepackage[labelfont={color=red!60!black,bf}]{caption} 			%change color sheme
+\usepackage{sectsty}
+% \allsectionsfont{\color{red!60!black}\bfseries}
+\sectionfont{\color{red!60!black}\huge\bfseries}
+\subsectionfont{\color{red!60!black}\Large}
+\subsubsectionfont{\color{red!60!black}\large}
+
+
+
+
+\begin{document}
+%\begin{frontmatter}
+%\begin{titlepage}
+\title{Analysis Note:\\Neutral meson measurements with PCM, EMC, PHOS, PCM-EMC and PCM-PHOS \\
+in ALICE in pp collisions at $\sqrt{s}$~=~13~TeV}
+\ShortTitle{ALICE-ANA-XXXX}
+
+
+\begin{Authlist}
+H.~Bossi \Iref{a5},
+J.~K\"onig\Iref{a2},
+J.~L\"uhder\Iref{a1},
+A.~Mechler\Iref{a2},
+F.~Bock\Iref{a3},
+D.~M\"uhlheim\Iref{a1},
+N.~Schmidt\Iref{a6},
+J.P.~Wessels\Iref{a1},
+H.~B\"usching\Iref{a2},\\
+C.~Loizides\Iref{a6},
+for the ALICE Collaboration \Iref{a4}
+\end{Authlist}
+
+\ShortAuthor{ALICE Analysis Note ANA-XXX}
+\Instfoot{a5}{Yale University, New Haven, United States}
+\Instfoot{a2}{Institut f\"ur Kernphysik, Universit\"at Frankfurt, Frankfurt, Germany}
+\Instfoot{a1}{Institut f\"ur Kernphysik, Westf\"alische Wilhelms-Universit\"at M{\"u}nster, M\"unster, Germany}
+\Instfoot{a3}{CERN, Geneva, Switzerland}
+\Instfoot{a6}{ORNL, United States}
+\Instfoot{a4}{\acs{ALICE}}
+
+
+%% For running titles
+% \ShortAuthor{F.~Bock \emph{et al.}}
+%
+
+
+\vspace{4cm}
+\begin{abstract}
+In this analysis note, the differential invariant cross-sections of the feed-down corrected $\pi^0$ and $\eta$ mesons for \pp collisions at \sth are presented using the \ac{PCM}, \ac{EMCal}, \ac{PHOS} and hybrid methods, with which one referres to the combination of one photon reconstructed with \ac{PCM} and one calorimeter cluster (\PCMEMC, \PCMPHOS).
+
+Please note that this analysis was carried out analogous to the corresponding analysis at \sei \cite{anaNoteEMC8TeV,anaNotePCMEMC8TeV} and \stw \cite{anaNotePCMEMC2760GeV,anaNoteEMC2760GeV}. Therefore, the analysis notes are based on the same template and parts of the text are very close between those notes which will not be cited explicitly in this note. Thus, it has been ensured that it is not necessary to jump between notes in order to fully understand the analysis.
+\end{abstract}
+
+% \begin{keyword},
+% \PACS
+% \end{keyword}
+% \end{frontmatter}
+%\end{titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\tableofcontents
+
+\include{PhotonDetection_v2}
+\include{NeutralMesons_v1}
+\include{Combination_v1}
+
+
+
+\begin{appendix}
+
+\include{appendix}
+
+\end{appendix}
+
+
+\clearpage
+\showTODOs{EMCal}
+\showTODOs{PCMEMCal}
+\showTODOs{PCMPHOS}
+\showTODOs{PCM}
+\showTODOs{PHOS}
+\showTODOs{All}
+
+\end{document}

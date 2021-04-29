@@ -1,0 +1,812 @@
+%\documentclass[11pt]{elsart}
+\documentclass[ALICE]{ALICE_analysis_notes}
+
+% Use the option doublespacing or reviewcopy to obtain double line spacing
+%\documentclass[doublespacing]{elsart}
+\usepackage[american]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[colorlinks=true,bookmarksnumbered=true,bookmarksopen=true]{hyperref}
+
+ \usepackage{graphicx}
+ \usepackage{subfigure}
+ \usepackage{geometry}
+% %\geometry{a4paper,inner=28mm, outer=18mm, top=25mm, bottom=30mm,twoside}
+ \geometry{a4paper, inner=28mm, outer=18mm, top=25mm, bottom=20mm, headsep=10mm, footskip=12mm, twoside}
+%  \geometry{a4paper, inner=18mm, outer=18mm, top=25mm, bottom=20mm, headsep=10mm, footskip=12mm, twoside}
+ \usepackage{amsmath}
+ \usepackage{amssymb}
+ \usepackage{mathcomp}
+ \usepackage{array}
+% \usepackage{helvet}
+ \usepackage{color}
+% 	\usepackage{hyperref}
+\usepackage[dvips]{epsfig}
+
+\hypersetup{
+    pdfauthor={Adrian, Mechler},     % author
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=black, %red!60!black,        % color of internal links (change box color with linkbordercolor)
+    citecolor=red!60!black,       % color of links to bibliography
+    filecolor=red!60!black,     % color of file links
+    urlcolor=red!60!black          % color of external links
+}
+\usepackage[all]{hypcap}
+ \usepackage{listings}
+ \usepackage{cite}
+ \usepackage[printonlyused]{acronym}
+ \usepackage{units}
+ \usepackage{lineno}
+\linenumbers
+%  \usepackage[numbers]{natbib}
+ \usepackage{ascii}
+ \usepackage{feynmf}
+\usepackage{dcolumn}
+\usepackage[point,rounding]{rccol}
+\usepackage{rotating}
+%\usepackage{subcaption}
+
+\renewcommand*{\acsfont}[1]{{\color{black}#1}}
+\renewcommand*{\acffont}[1]{{\color{black}#1}}
+ \usepackage{booktabs}
+\setlength{\abovecaptionskip}{4pt plus 0pt minus 0pt}
+\setlength{\parskip}{0pt}
+
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\AC@hyperlink}[2]{%
+    \begingroup
+      \hypersetup{hidelinks}%
+      \hyperlink{#1}{#2}%
+    \endgroup
+  }%
+}
+\makeatother
+\PHnumber{ALICE-ANA-XXXX}
+
+
+%%%%%%%%%%%%%% TODO setup
+\usepackage[colorinlistoftodos]{todonotes}
+% \usepackage{todonotes}
+% \newcommand{\warning}[1]{\todo[inline]{#1}\xspace}
+% \newcommand{\warning}[1]{\todo[textsize=tiny]{#1}\xspace}
+
+\usepackage{stackengine}
+\setstackgap{L}{.5\baselineskip}
+\newcommand\markabove[3][orange]{{\sffamily\color{#1}%\hsmash{}%
+  \smash{\toplap{#2}{\bfseries#3}}}}
+% \newcommand\markbelow[3][orange]{{\sffamily\color{#1}\hsmash{$\downarrow$}smash{\bottomlap{#2}{\scriptsize\bfseries#3}}}}
+\usepackage{ifthen}
+\newcounter{TODOpointers}
+\newcommand\addTODOpointer[2]{%
+  \stepcounter{TODOpointers}%
+  \newcounter{todoindex\romannumeral\theTODOpointers}%
+  \setcounter{todoindex\romannumeral\theTODOpointers}{0}%
+  \expandafter\gdef\csname TODOname\romannumeral\theTODOpointers\endcsname{%
+    #1}%
+  \expandafter\gdef\csname TODOcolor\romannumeral\theTODOpointers\endcsname{%
+    #2}%
+  \edef\tmp{\theTODOpointers}%
+  \expandafter\edef\csname #1TODO\endcsname{\tmp}%
+}
+\newcommand\TODO[2]{%
+  \edef\thenameindex{\csname #1TODO\endcsname}%
+  \stepcounter{todoindex\romannumeral\thenameindex}%
+  \def\thetmp{\csname thetodoindex\romannumeral\thenameindex\endcsname}%
+  \expandafter\gdef%
+    \csname todo.\thenameindex.\romannumeral\thetmp\endcsname{#2}%
+%   \markabove[\csname TODOcolor\romannumeral\thenameindex\endcsname]{r}{#2}%
+%   \todo[inline, color=\csname TODOcolor\romannumeral\thenameindex\endcsname]{\csname TODOname\romannumeral\thenameindex\endcsname: #2}\xspace
+}
+\addTODOpointer{EMCal}{blue!40}
+\addTODOpointer{PCMEMCal}{cyan!50}
+% \addTODOpointer{PCMPHOS}{violet!40}
+\addTODOpointer{PCM}{orange!70}
+\addTODOpointer{PHOS}{green!70!black!40}
+\addTODOpointer{Dalitz}{violet!40}
+\addTODOpointer{Combination}{red!70!black!40}
+
+\addTODOpointer{All}{yellow!60}
+
+
+
+\renewcommand{\floatpagefraction}{.82}
+\renewcommand{\bottomfraction}{.95}
+\renewcommand{\topfraction}{.95}
+\renewcommand{\textfraction}{.04}
+\newcommand{\pT}{$p_{\mbox{\tiny T}}$\xspace}
+\newcommand{\pTHard}{$p_{\mbox{\tiny T,hard}}$\xspace}
+\newcommand{\sNN}{$\sqrt{s_{\mbox{\tiny NN}}}$\xspace}
+\newcommand{\sNNF}{$\sqrt{s_{\mbox{\tiny NN}}}=2.76\,$TeV\xspace}
+\newcommand{\sNNMa}{$\sqrt{s_{\mbox{\tiny NN}}}=5.02\,$TeV\xspace}
+\newcommand{\s}{$\sqrt{s}$\xspace}
+\newcommand{\sth}{\s~=~13~TeV\xspace}
+\newcommand{\sei}{\s~=~8~TeV\xspace}
+\newcommand{\stw}{\s~=~2.76~TeV\xspace}
+\newcommand{\mT}{$m_{\mbox{\tiny T}}$\xspace}
+\newcommand{\qT}{$q_{\mbox{\tiny T}}$\xspace}
+\newcommand{\xT}{$x_{\mbox{\tiny T}}$\xspace}
+\newcommand{\Pb}{{\mbox{Pb--Pb}}\xspace}
+\newcommand{\AACol}{{\mbox{A--A}}\xspace}
+\newcommand{\Au}{{\mbox{Au--Au}}\xspace}
+\newcommand{\pPb}{{\mbox{p--Pb}}\xspace}
+\newcommand{\pA}{{\mbox{p--A}}\xspace}
+\newcommand{\pp}{pp\xspace}
+\newcommand{\MeVc}{MeV/$c$\xspace}
+\newcommand{\GeVc}{GeV/$c$\xspace}
+\newcommand{\vtwo}{$\nu_2$\xspace}
+\newcommand{\vn}{$\nu_n$\xspace}
+% \newcommand{\pi0}{$\pi^0$\xspace}
+\newcommand{\mum}{$\mu$m\xspace}
+\newcommand{\dEdx}{$\mbox{d}E/\mbox{d}x$\xspace}
+\newcommand{\RConv}{R_{\mbox{\tiny conv}}}
+\newcommand{\ZConv}{Z_{\mbox{\tiny conv}}}
+\newcommand{\XConv}{X_{\mbox{\tiny conv}}}
+\newcommand{\YConv}{Y_{\mbox{\tiny conv}}}
+\newcommand{\PhiConv}{\phi_{\mbox{\tiny conv}}}
+\newcommand{\RSec}{R_{\mbox{\tiny sec}}}
+\newcommand{\ZSec}{Z_{\mbox{\tiny sec}}}
+\newcommand{\XSec}{X_{\mbox{\tiny sec}}}
+\newcommand{\YSec}{Y_{\mbox{\tiny sec}}}
+\newcommand{\PhiSec}{\phi_{\mbox{\tiny sec}}}
+\newcommand{\dcaZ}{$dca_z$\xspace}
+\newcommand{\pTtrack}{p_{\mbox{\tiny T},\mbox{\tiny track}}}
+\newcommand{\EtaToPi}{$\eta/\pi^0$\xspace}
+\newcommand{\PZ}{$\pi^0$\xspace}
+\newcommand{\g}{$\gamma$\xspace}
+\newcommand{\Etat}{\eta_{\mbox{\tiny track, V0}}}
+\newcommand{\EtaV}{\eta_{\mbox{\tiny V0}}}
+
+\newcommand{\PathToPlots}{/home/joshua/PCG_Software/EMCal_NCellEffi/13TeVNomB_Wide/Pi0Tagging_13TeV_nom_04_26_WithTRD_WithBorderCells_1cellFT/pdf}
+
+
+\newcommand{\gsim}        {\stackrel{>}{\sim}}
+\newcommand{\lsim}        {\stackrel{<}{\sim}}
+\newcommand{\stat}        {({\mathit{ stat.}})}
+\newcommand{\syst}        {({\mathit{ sys.}})}
+\newcommand{\com}[1]      {}
+\newcommand{\PCM}         {\acs{PCM}}
+\newcommand{\PCMEMC}      {\acs{PCM}-\acs{EMCal}}
+\newcommand{\PCMPHOS}     {\acs{PCM}-\acs{PHOS}}
+\newcommand{\PCMDal}      {\acs{PCM}-\acs{Dal}}
+\newcommand{\EMC}         {\acs{EMCal}}
+\newcommand{\mEMC}        {mEMC}
+\newcommand{\PHOS}        {\acs{PHOS}}
+\newcommand{\PE}          {\mbox{P-E}}
+
+\setlength{\textfloatsep}{1em}
+
+
+
+% \usepackage{floatrow}
+
+% \usepackage{enumitem}\setlist[description]{font=$\bullet$}
+
+% %%%%%%%%%%%%%% Schrift
+%     \renewcommand*{\familydefault}{\sfdefault}
+% \usepackage[labelfont=bf]{caption}  							%change color sheme
+% \usepackage[labelfont={color=red!60!black,bf}]{caption} 			%change color sheme
+% \usepackage{sectsty}
+% \allsectionsfont{\color{red!60!black}\bfseries}
+% \sectionfont{\color{red!60!black}\huge\bfseries}
+% \subsectionfont{\color{red!60!black}\Large}
+% \subsubsectionfont{\color{red!60!black}\large}
+
+\usepackage{colortbl}
+\newcommand{\RowColor}{\rowcolor{red!50}}
+\newcommand{\RowColorb}{\rowcolor{red!20}}
+\newcommand{\RowColora}{\rowcolor{red!5}}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% \rfoot{\includegraphics[height=1.cm]{alicelogo.pdf}}
+
+\begin{document}
+%\begin{frontmatter}
+%\begin{titlepage}
+\title{EMCal low \pT $N_{\text{cell}}$ efficiency}
+\ShortTitle{$N_{cell}$ Efficiency}
+
+
+
+
+
+%% For running titles
+% \ShortAuthor{F.~Bock \emph{et al.}}
+%
+
+\tableofcontents
+
+\newpage
+
+
+% \begin{keyword},
+% \PACS
+% \end{keyword}
+% \end{frontmatter}
+%\end{titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \newpage
+% \listoftodos
+
+%=====pp13TeV_AllMethods/aliceNoteNeutralMeson_allMethods_v4.tex==
+
+\begin{figure}[b]
+	\centering
+	\includegraphics[width=0.48\textwidth]{\PathToPlots/Effi_AllClusAndTB.pdf}
+	\includegraphics[width=0.48\textwidth]{\PathToPlots/Ratio_TBAndAll.pdf}
+	\caption{Left: $N_{cell}$ efficiency $\nu = N_{clusters, cells \geq 2} / N_{clusters}$ as function of the cluster energy for TB and P2 for both data and MC. Right: Ratio between data and MC for TB and P2. }
+	\label{fig:NCells_Cor}
+\end{figure}
+
+The number of cells per cluster in data is not perfectly reproduced by the MC simulation. We observe a higher number of 1-cell clusters in the simulation than in data. From previous Test-Beam (TB) studies this behavior is known and can be corrected. 
+Fig. \ref{fig:NCells_Cor} shows the ratio of the number of clusters with 2 or more cells $N_{\geq 2}$ to all clusters $N_{all}$ (this ratio is called $\nu$  in the following) for test beam data and test beam MC as well as for P2 data and P2 MC (P2 refers to data/MC recorded with the Run2 setup of the ALICE experiment). Both for the TB and the P2 points the MC deviates from the data. The data and MC from the TB distribution as well as the MC distribution from P2 saturate at unity for $p_{T} > 4$ GeV. The data from P2 does not reach 1 and drops instead. This is caused by exotic clusters, which are not present in the MC simulation and also not in the TB data/MC.\\
+In Fig. \ref{fig:NCells_Cor} and all the following figures in this text (if not stated otherwise), the energy for P2 is always the reconstructed energy (corrected for non-linearity) while the TB is shown as a function of the incident energy (which is precisely known for TB). Ideally the reconstructed energy matches the incident energy, however we know that the absolute energy scale in P2 might be off by 1.5\%. This is discussed in more detail in sec. \ref{sec:TBNL}.\\
+To get a correct efficiency correction for later physics analyses the MC needs to describe the data. Otherwise a cut on the $N_{cell}$ distribution will lead to a bias in the reconstruction efficiency in physics analyses. Other variables which are widely used to distinguish clusters and by that increase the purity,such as $M_{02}$, depend on at least two cells in the cluster. For one cell clusters, $M_{02}$ is not defined and set to 0. Applying a cut on those variables leads to an intrinsic cut on the 1 cell clusters.\\
+
+
+\begin{section}{Difference between P2 and TB}
+The difference of $\nu$ between data and MC can be seen in figure \ref{fig:NCells_Cor} (right). The ratio $\nu_{data}/\nu_{MC}$ is shown as a function of the cluster energy for TB and P2. A larger deviation in the TB than in P2 is observed and can by first glance be attributed to the different conditions of the detector: In the TB data/MC single electrons were shot straight at the calorimeter surface. In P2, photons, electrons but also other particles like charged hadrons hit the detector. Due to the magnetic field charged particles are bend and therefore don't hit the calorimeter with a 90 degree angle, leading to more elongated clusters which are more likely to have at least 2 cells compared to round clusters. Additionally clusters from different particles can overlap and merge and therefore increase the cluster size. One of the main contributors are electrons from photon conversions in the detector material in front of the EMCal. Fig \ref{fig:NCells_Conversions} shows the cummulated  probability for a conversion as a function of the radius. Before the TPC ($\approx 100$ cm) 9\% of the photons convert in the detector material. The resulting electron tracks can be extrapolated to the EMCal surface and if necessary be rejected.  Additionally 40\% of the photons convert in the material of TRD and TOF. The electrons from those conversions can not be identified by the tracking detectors and therefore they can not be vetoed. Since the electron tracks are bend due to the magnetic field we expect the clusters to be more elongated. Additionally clusters can contain both the electron as well as the positron of the conversion if the conversion happened close to the EMCal surface. This would also produce an even more elongated cluster. Fig. \ref{fig:NCells_Conversions2} (left) shows the $\nu$ as a function of $E_{cluster}$ for different cluster types: pure $\gamma$ clusters, electron clusters and hadron clusters. One can clearly see that electrons tend to produce less 1 cell clusters compared to the photons since $\nu$ is closer to unity. Additionally the results from the TB is plotted. It is in good agreement with the results from pure $\gamma$ clusters as expected.\\
+Fig. \ref{fig:NCells_Conversions2} (right) shows the abundance of the discussed cluster categories. Clusters from photons have the largest contribution to the cluster sample. At low \pT hadrons contribute quite significantly and at high \pT clusters from electrons (mostly conversions) contribute about 40\%.\\
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/EMCConvStudies/figures/cummulated_EMC.png}
+	\caption{Cummulated conversion probability as function of the radius. The Detector ranges are: ITS: 0 - 80 cm, TPC: 80 - 280 cm, TRD: 280 - 370 cm, TOF: 370 - 400 cm, EMCal starting from 430cm (these values are not exact! Just rough references) }
+	\label{fig:NCells_Conversions}
+\end{figure}
+
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=0.48\textwidth]{\PathToPlots/Effi_TrueContributions.pdf}
+	\includegraphics[width=0.48\textwidth]{\PathToPlots/Effi_TrueContributions_Fraction.pdf}
+	\caption{Left: $\nu$ as a function of the cluster energy for different types of clusters estimated with an P2 MC. Additionally the result from the TB MC is shown. Right: Abundance of different cluster types estimated with an P2 MC.}
+	\label{fig:NCells_Conversions2}
+\end{figure}
+
+
+We have shown that we see a significant deviation in the cluster $N_{cell}$ distribution between data and MC for both P2 and TB. The MC shows that the difference is coming from (conversion) electrons and hadronic clusters which strongly deviate from the TB result, while the $\gamma$ clusters agree with the TB.\\
+To verify the results from the TB one needs a pure \g sample in data and MC. In the following section a description of an analysis aiming for a pure \g sample in the P2 data is presented.
+Furthermore additional calibrations such as an additional $E_{cluster}$ fine-tuning calibration for 1-cell clusters are shown in additional chapters.
+\end{section}
+\begin{section}{\PZ tagging for pure \g}
+	\label{sec:tagging}
+
+
+
+The comparison of the test-beam data and the P2 data is not viable due to exotic clusters which dominate the 1 cell cluster sample above $\approx 1.5 GeV$. Furthermore clusters from \g conversions have a different $\nu$ than \g due to a non-vertical hit on the EMCal surface which is caused by the bending in the magnetic field. Pure photons however should have the same performance as the test-beam data as can be seen in fig. \ref{fig:NCells_Conversions2}. \\
+In the following section a \PZ tagging method for the selection of a pure \g sample is presented.\\
+To minimize the contribution from exotic clusters, we only select clusters from cluster pairs in the \PZ mass window (0.09 $< M_{clus, clus} <$ 0.17) and with the cluster cuts shown in tab. \ref{Tab:ClusCuts}. Fig. \ref{fig:Pi0InvMass} shows a \PZ example bin for cluster energies between 1.5 and 2 GeV. The $m_{inv}$ selection interval is indicated by the red lines.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\textwidth]{\PathToPlots/ExampleBins/ExampleBin_wData_2.pdf}	
+	
+	\caption{  MC Invariant mass distribution for cluster pairs as function of the cluster energy. The contributions from \g, $e^{\pm}$ and hadron clusters. $e^{\pm}$ are mostly from \g-conversions. The background estimation with the rotation method is shown in open circles. In addition the data $m_{inv}$ distribution is shown in orange }
+	\label{fig:Pi0InvMass}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\textwidth]{\PathToPlots/NCellVsE.pdf}	
+	
+	\caption{  Example $N_{cell}\text{ vs. E}$ distribution for tagged clusters. }
+	\label{fig:NCellVsE}
+\end{figure}
+
+
+\begin{table}[ht!]
+	\centering
+	\begin{tabular}{ c c }
+		\hline
+		Track Matching & $\Delta_{clus, track} > 0.1$ \\ 
+		Isolation & $\Delta_{clus, cell} > 0.02$ \\
+		\hline
+		
+	\end{tabular}	
+	
+	\caption{ cluster cuts used in the analysis }
+	\label{Tab:ClusCuts} 
+\end{table}
+
+
+
+The clusters selected with this method are filled in the $N_{cell}\text{ vs. E}$ distribution shown in fig \ref{fig:NCellVsE}. Double counting from clusters that contribute to two cluster-pairs in the \PZ mass window is rejected, so each cluster can only be filled once. From the resulting $N_{cell}\text{ vs. E}$ distribution the efficiency $\nu$ can be calculated for data and MC. This is shown in Fig. \ref{fig:NCellEff_Tagging1} together with the result from TB. The data and MC from P2 is noticeably closer together than the TB. However we know that the clusters from P2 are not pure \g clusters as shown in \ref{fig:Pi0InvMass}.\\
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\textwidth]{\PathToPlots/Effi_Wide.pdf}	
+	
+	\caption{  $\nu$ for tagged clusters for data and MC as well as for TB.}
+	\label{fig:NCellEff_Tagging1}
+\end{figure}
+
+
+To get to a pure \g sample 2 steps are performed:
+\begin{itemize}
+	\item Sideband subtraction
+	\item MC based reweighting procedure
+\end{itemize}
+Those two procedures are described in the following.
+\begin{subsection}{Sideband subtraction}
+	To accont for hadronic and exotic clusters in the peak region, we extrapolate the distribution from a sideband (0.2 $< M_{clus, clus} <$ 0.3) to the \PZ region. 
+	The $N_{cell} vs. E$  distribution distribution from the sideband is scaled with the ratio of the number of cluster pairs in the signal region and the sideband region 
+	\begin{equation}
+	S = \frac{\int_{0.05}^{0.17} M_{inv}(Back_{Signal})}{\int_{0.2}^{0.3} M_{inv}(Sideband)}
+	\end{equation}
+	The background in the signal region ($M_{inv}(Back_{Signal})$) is estimated by a rotation method and can be seen in open markers in fig. \ref{fig:Pi0InvMass}. To account for a possible energy dependence this procedure is done separately for each energy interval.
+\end{subsection}
+
+\begin{subsection}{Reweighting}
+	In the \PZ region we still see a large contribution from conversion electrons (compare Fig. \ref{fig:Pi0InvMass}). To account for this in the data the (scaled) contribution from the electrons is subtracted taking the information from MC:
+	\begin{equation}
+		N_{data, RW} = N_{data} ( 1 - \frac{1}{N_{MC}} N_{MC, e^{\pm}} )
+		\label{eq:RW}
+	\end{equation}
+	where $N$ is the $N_{cell} vs. E$ distribution for the given quantity.
+	In MC the reweighting becomes more trivial due to the know contribution from conversions:
+	\begin{equation}
+	N_{MC, RW} = N_{MC} - N_{MC, e^{\pm}}
+	\label{eq:RWMC}
+	\end{equation}
+	
+	
+	If the sideband subtraction is applied before the reweighting, the true electron distribution has to be modified to account for the electrons that were subtracted previously from the sideband subtraction: \\
+	\begin{equation}
+	N_{MC, SB sub, e^{\pm}} = N_{MC, e^{\pm}} - S \cdot N_{MC, SB, e^{\pm}}
+	\end{equation}
+	(eg. $N_{MC, e^{\pm}}$ has to be replaced by $N_{MC, SB sub, e^{\pm}}$) in eq. \ref{eq:RW} and \ref{eq:RWMC}.
+	
+	
+	
+\end{subsection}
+
+\begin{subsection}{Resulting efficiency}
+	
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\textwidth]{\PathToPlots/Effi_RW_SB.pdf}
+		\includegraphics[width=0.45\textwidth]{\PathToPlots/Effi_RW_SB_Log.pdf}
+		
+		\caption{  $\nu$ for tagged clusters for data and MC as well as for TB.}
+		\label{fig:NCellEff_Tagging2}
+		
+	\end{figure}
+	
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\textwidth]{\PathToPlots/MC_Closure.pdf}	
+		\includegraphics[width=0.45\textwidth]{\PathToPlots/Data_Closure.pdf}	
+		\caption{ (left) ratio for different Methods to validated \g clusters. (right) ratio for different Methods to fit (fit for TB data).}
+		\label{fig:NCellEff_Tagging_Closure}
+		
+	\end{figure}
+	
+	Fig. \ref{fig:NCellEff_Tagging2} (left and right is the same just with/without log scale) shows $\nu$ for data and MC for the reweighted + sideband subtracted case in orange. One can see that with every additional correction $\nu$ is lowered by a bit. Additionally the MC true information from pure \g is shown.\\
+	Fig. \ref{fig:NCellEff_Tagging_Closure} (left) shows the ratio of the different methods from MC to the MC validated \g. The TB points are in very good agreement with the P2 MC, only the first point deviates significantly. The sideband subtracted and reweighted result deviates up to 5\% at low energies for reasons not yet understood, but is in overall in quite good agreement. One sees a large improvement comparing the results without the additional corrections (green) and with the additional corrections (orange) \\
+	As we dont know the "true" \g distribution for data we can take the TB as reference. Fig. \ref{fig:NCellEff_Tagging_Closure} (right) shows the ratio of the different $\nu$ distributions for data to a fit which was made to the TB data. The fit has problems describing the first point but the goal here is to compare the P2 methods to the TB (dark blue points). The green points with no correction applied seem to be in okay agreement with the TB, and the reweighted (blue) and sideband subtracted (pink) are also okay. Each of the methods describes the TB data in a different energy region. The sideband subtracted + reweighted result however deviates from the TB points quite significantly. For MC those two methods were in good agreement.\\
+	This deviation in data is not yet understood. The applied corrections move the data $\nu$ in the correct direction (down) since we know we have electrons and hadrons still in. This means the corrction does what it is supposed to do. However the uncorrected data distribution is too low when assuming that it should end up at the TB data points when only looking at \g in data.
+	
+	
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\textwidth]{\PathToPlots/Ratio.pdf}		
+		\caption{ (left) ratio of the data efficiencies to the MC ones}
+		\label{fig:NCellEff_Tagging_Corr}
+		
+	\end{figure}
+	
+\end{subsection}
+
+
+
+\begin{section}{Calculation of the correction factor $\rho$}
+	In this section a correction factor for the fraction of one cell clusters is presented.
+	To correct for the difference in data and MC we allow a fraction $\rho$ of the 1 cell clusters to pass the $N_{cell} > 2$ in the MC such that the ratio  $\nu_{data}/\nu_{MC}$ from Fig. \ref{fig:NCells_Cor} gets 1. $\rho$ can be obtained calculated in the following way, where $N_{>1}$ represents the number of clusters with more than one cell,  $N_{all}$ is the number of all cluster and $N_{1}$ is the number of 1 cell clusters:
+	\begin{equation}
+	\frac{\nu_{data}}{\nu_{MC}} = \frac{N_{data, >1}}{N_{data, all}} / \frac{N_{MC, >1}}{N_{MC, all}}  = \frac{N_{data, >1}}{N_{data, all}} \cdot \frac{N_{MC, all}}{N_{MC, >1}}
+	\end{equation} 
+	
+	\begin{equation}
+	\nu_{data} \cdot \frac{N_{MC, all}}{N_{MC, >1} + \rho N_{MC, 1}} = 1
+	\end{equation} 
+	\begin{equation}
+	\nu_{data} \cdot N_{MC, all} = N_{MC, >1} + \rho N_{MC, 1}
+	\end{equation} 
+	\begin{equation}
+	\nu_{data} \cdot N_{MC, all} - N_{MC, >1} =  \rho N_{MC, 1}
+	\end{equation} 
+	\begin{equation}
+	\nu_{data} \cdot \frac{N_{MC, all}}{N_{MC, 1}} - \frac{N_{MC, >1}}{N_{MC, 1}} =  \rho 
+	\end{equation} 
+	
+	\begin{equation}
+	\nu_{data} \cdot \frac{N_{MC, all}}{N_{MC, all} - N_{MC, >1}} - \frac{N_{MC, >1}}{N_{MC, all} - N_{MC, >1}} =  \rho
+	\end{equation}
+	\begin{equation}
+	\nu_{data} \cdot \frac{1}{ 1 - \frac{N_{MC, >1}}{N_{MC, all}}} - \frac{\frac{N_{MC, >1}}{N_{MC, all}}}{1 - \frac{N_{MC, >1}}{N_{MC, all}}} =  \rho
+	\end{equation}
+	\begin{equation}
+	\frac{\nu_{data}}{1 - \nu_{MC}} - \frac{\nu_{MC}}{1 - \nu_{MC}} =  \rho
+	\end{equation}
+	\begin{equation}
+	\frac{\nu_{data} - \nu_{MC}}{1 - \nu_{MC}} =  \rho
+	\end{equation}
+	\begin{equation}
+	1 - \frac{ 1 - \nu_{data} }{1 - \nu_{MC}} =  \rho
+	\end{equation}
+	
+	
+	\begin{figure}[t]
+		\centering
+		\includegraphics[width=0.45\textwidth]{\PathToPlots/Corr.pdf}
+		\caption{Correction factor $\rho$ calculated with P2 data for the different methods introduced in the previous chapter as well as $\rho$ calculated from the TB data. }
+		\label{fig:NCells_Rho}
+	\end{figure}
+	
+
+
+\end{section}
+
+\begin{subsection}{Resulting correction factor}
+	Fig. \ref{fig:NCellEff_Tagging_Corr} shows the ratio of $\nu$ from data to MC. All three previous discussed methods are far below the TB and in the same region as the ratio calculated when taking all clusters (no tagging).\\
+	From the efficiencies $\nu$ for data and MC derived in the previous section, we can calculate the correction factor $\rho = 1 - \frac{1- \nu_{MC}}{1- \nu_{data}}$, which is shown in Fig.\ref{fig:NCells_Rho}. The tagged results show a different behavior compared to the TB results and are also different from all clusters. The difference seems to stem from a different behavior of the data between P2 and TB as shown in fig. \ref{fig:NCellEff_Tagging_Closure}.
+    The procedure shown in sec. \ref{sec:tagging} in great detail will now be applied using the whole pp $\sqrt{s}$ = 13TeV dataset to decrease the statistical fluctuations, which is described in the next section
+	
+\end{subsection}
+
+
+\end{section}
+
+
+\newpage
+
+\begin{section}{Testing on the whole pp $\sqrt{s}$ = 13 TeV dataset}
+	
+	
+	
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Effi_EMC.pdf}	
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Ratio_EMC.pdf}	
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_EMC_wFit.pdf}
+		\caption{ Efficiency, ratio and correction factor for the EMC-EMC tagged \PZ for different Non-Linearity settings}
+		\label{fig:NCellEff_Train}
+		
+	\end{figure}
+	
+	
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Effi_PCMEMC.pdf}	
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Ratio_PCMEMC.pdf}	
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_PCMEMC_wFit.pdf}
+		\caption{ Efficiency, ratio and correction factor for the PCM-EMC tagged \PZ for different Non-Linearity settings}
+		\label{fig:NCellEff_Train_PCMEMC}
+		
+	\end{figure}
+
+
+	Fig. \ref{fig:NCellEff_Train} shows the results from the tagging analysis using the whole pp $\sqrt{s}$ = 13 TeV (B=0.5T) dataset. The results are similar to the one shown in Fig. \ref{fig:NCellEff_Tagging_Corr} and are shown for three different non-linearity settings (TB non-linearity without scale, TB non-linearity with scale and TB non-linearity with scale and fine-tuning). The latter setting is currently the standard correction applied to physics analyses. Additionally to the pure EMCal tagging technique, a PCM-EMCal tagging was performed. The procedure is the same as for the pure EMCal tagging method but instead of reconstructing the \PZ with 2 EMCal clusters, each EMCal cluster is paired with a PCM-photon. This has the advantage, that the clusters in the PCM-EMC method are more isolated and therefore tend to be less influenced by overlaps. \ref{fig:NCellEff_Train_PCMEMC} shows the same distributions as in \ref{fig:NCellEff_Tagging_Corr} for clusters tagged with the PM-EMCal method. The distributions show a greater deviation between data and MC and by that show a bit better agreement with the TB results. The difference between EMCal-EMCal and PCM-EMCal can be explained by the larger merging/cluster-overlap effects in the EMCal standalone method.\\
+	The distributions in Fig. \ref{fig:NCellEff_Train} and Fig.  \ref{fig:NCellEff_Train_PCMEMC} \textbf{not include any reweigting or sideband subtraction}. But since in fig. \ref{fig:NCellEff_Tagging_Corr} we dont observe a significant dependence on the correction factor $\rho$ when applying these corrections, the results should still be correct.\\
+	The correction factor $\rho$ is parameterized with a second order polynomial for both tagging techniques (PCM-EMC and EMC) and for the non-linearity settings: TB+scale and TB+scale+FT. The setting without scale was not considered since it introduces a very large descrepancy in the \PZ peak position and therefore is believed to be not correct.
+	
+\end{section}
+
+
+\begin{section}{Applying the correction factor}
+	\begin{figure}[t]
+		\centering
+		\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Pi0_2020_12_22.pdf}
+		\caption{Ratio of fully corrected $\pi^{0}$ spectra corrected with different $\rho$ to the $N_{cell} \leq$ 2 cluster spectra.}
+		\label{fig:NCells_Pi0Spec}
+	\end{figure}
+
+	In this section the results of the correction factor are discussed. It is believed that the corrected \PZ sepctrum without applying a cut on the number of cells should give the correct result since exotic and noisy one cell clusters dont influence the \PZ yield (compare sec. \ref{sec:exotics} ). The energy response for 1 cell clusters had to be tuned in the MC in order to match the data (compare sec. \ref{sec:nonlin}). Furthermore the correction is only applied to clusters that dont have a direct neighbors as those 1 cell clusters are perfectly described in the MC (compare sec. \ref{sec:neighbors}).\\
+	Fig. \ref{fig:NCells_Pi0Spec} shows the ratio of fully corrected \PZ spectra (without $N_{cell}$ cut in blue, with $\rho$ from all clusters applied in red and with $\rho$ from the TB correction applied in red) to the corrected \PZ spectrum with the $N_{cell} > 2$ cut. The correction from all clusters agrees quite good with the spectra obtained without the cut while the TB clearly differs. However we know that the correction obtained with all clusters is largely influenced by the exotics above 1.5 GeV and can therefore not be a valid correction. That this spectra still agrees with the spectra obtained with no cut could be just by coincidence.\\
+	\textbf{Currently ongoing: Applying the correction obtained from tagging. This has to be done on the grid. Results expected latest on May 3rd! }
+	
+
+	
+\end{section}
+
+
+\newpage
+
+\begin{section}{Calculating the correction from the \PZ spectrum}
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/Plots_PCMEDC_corr/Correction.pdf}
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/Plots_PCMEDC_corr/Rho.pdf}
+		\caption{ (left) difference $R$ of the \PZ spectra as function of the EMCal cluster energy. (right) correction factor calculated from the difference of the 2 spectra/}
+		\label{fig:NCellEff_from spectrum}
+		
+	\end{figure}
+	
+	As seen in Fig. \ref{fig:NCells_Pi0Spec} the \PZ spectra differ largely when using the $N_{cell} \leq 1$ cut compared to the $N_{cell} \leq 2$ cut. In the previous sections a correction was calculated based on the energy dependent $N_{cell}$ histograms. In this section the correction is calculated using the difference of the corrected \PZ spectra. \\
+	This can be done using the PCM-EMC method and looking at the number of \PZ as function of the corresponding EMCal cluster energy. Fig \ref{fig:NCellEff_from spectrum} (left) shows the comparison of the \PZ spectra using the $N_{cell} \leq 2$ and $N_{cell} \leq 1$ cut. The y-axis is defined as:
+	\begin{equation}
+	R = 1 - \frac{RY_{data, \geq 2} / RY_{MC, \geq 2}}{RY_{data, \geq 1} / RY_{MC, \geq 1}}
+	\label{eq:R}
+	\end{equation}
+	which is the same as:
+	\begin{equation}
+	R = 1 - \frac{CY_{\geq2}}{CY_{\geq1}}
+	\end{equation}
+	where$RY$ is the raw and $CY$ the corrected yield. Since the MC input spectrum is the same for both cuts it cancels in the ratio resulting in equation \ref{eq:R}. $R$ represents the relative difference between the two cut settings.\\
+	$R$ needs to be connected to the number of clusters for different number of cells to get the correction factor:
+	\begin{equation}
+	\rho \cdot N_{clus, 1 cell}= R \cdot N_{clus, \geq 2 cells}
+	\end{equation}
+	(In words: The missing number of 1 cell clusters, which is the number of all 1 cell clusters times the missing fraction $\rho$ is equal to the number of clusters with 2 or more cells times the difference observed in the \PZ yield). This is true since each cluster can be connected to a \PZ for PCM-EMCal. For $\rho$ one gets:
+	\begin{equation}
+	\rho = \frac{R \cdot N_{clus, \geq 2 cells}}{N_{clus, 1 cell}}
+	\end{equation}
+	Fig. \ref{fig:NCells_Pi0Spec} (right) shows $\rho$ calculated with the described method in green markers. It agrees with the correction factor obtained from all clusters and obtained with testbeam. \\
+	\textbf{It remains a mystery for now why the \PZ tagging and the correction calculated from the \PZ spectra do not agree...}
+	
+	
+\end{section}
+
+\newpage
+
+\begin{section}{Corrections and other considerations}
+	In this chapter several corrections and ideas are discussed that are important to consider for the final correction factor.
+	Most of the subsections in this chapter are referenced in the previous text if relevant.\\
+	
+%Fig. \ref{fig:NCells_Rho} shows the correction factor $\rho$ as a function of the cluster energy for TB and ALICE. The TB results can be described by a linear fit while the ALICE results can be parametrized with a gaussian below $E_{cluster} = 3$ GeV. Above this value the contribution from exotic clusters pushes the distribution below zero. The parametrization for the TB was varied by $\pm 3\%$ for systematic studies.
+%Since the ALICE data is not a clean sample due to the exotics and other non-photonic clusters the correction from the TB is preferred. 
+%The correction can now be applied on the MC-clusters. However there are 2 options on how to apply the correction:
+%\begin{itemize}
+%	\item Applying the correction only on $\gamma$ clusters: As seen in Fig. \ref{fig:NCells_Conversions2} the majority of 1 cell clusters comes from $\gamma$s. For those clusters we validated that the $N_{cell}$ distribution is similar to the TB (see Fig. \ref{fig:NCells_Conversions2}). 
+%	\item Applying the correction on all clusters: Assuming that the difference between data and MC is the same for all different cluster types ($\gamma$, conversions etc.). The correction can be applied to all clusters. However one can not validate that this assumption is correct. (TODO: Maybe we could look into conversion electrons from the TPC that we extrapolate to the EMCal to study the behaviour of electrons?)
+%\end{itemize}
+%In the following we will focus mainly on the correction applied only on the $\gamma$ clusters. All plots, if not noted otherwise will use this correction method. 
+%
+%
+%\begin{figure}[t]
+%	\centering
+%	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Cluster_2020_12_22.pdf}
+%	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Gamma_2020_12_22.pdf}
+%	\caption{Left: Ratio of cluster spectra corrected with different $\rho$ to the $N_{cell} \leq$ 2 cluster spectra. Right: Ratio of inclusive $\gamma$ spectra corrected with different $\rho$ to the $N_{cell} \leq$ 2 cluster spectra.}
+%	\label{fig:NCells_ClusGammaSpec}
+%\end{figure}
+%Fig. \ref{fig:NCells_ClusGammaSpec} shows the ratio of the cluster spectra (left) and the inclusive $\gamma$-spectra (right) for different $N_{cell}$-corrections to the uncorrected $N_{cell} \leq 2$ spectra. For the $\gamma$-spectra the comparison to the spectrum with no $N_{cell}$ cut below 4 GeV is shown in addition (Note that for the 1 cell clusters the $M_{02}$ cut is also not applied below 4 GeV since $M_{02}$ can not be calculated for 1 cell clusters!). The cluster spectra directly translates to the correction factor $\rho$: The larger the correction factor, the more clusters one sees. On the inclusive $\gamma$ spectrum we see a similar behavior. All 3 TB corrections are in relative good agreement. Again the spectrum with the ALICE correction deviates from the spectra with the TB correction above 2 GeV. The spectrum where no $N_{cell}$ cut was applied below 4 GeV is in better agreement with the $\rho_{ALICE}$ corrected spectrum than with the $\rho_{TB}$ corrected ones.\\
+%\begin{figure}[t]
+%	\centering
+%	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Pi0_2020_12_22.pdf}
+%	\caption{Ratio of fully corrected $\pi^{0}$ spectra corrected with different $\rho$ to the $N_{cell} \leq$ 2 cluster spectra.}
+%	\label{fig:NCells_Pi0Spec}
+%\end{figure}
+%In a next step we are comparing the fully corrected $\pi^{0}$ spectra when applying different corrections. Fig. \ref{fig:NCells_Pi0Spec} shows the ratio of fully corrected $\pi^{0}$ reconstructed with the EMCal for the same corrections as already shown in Fig. \ref{fig:NCells_ClusGammaSpec}. The general ordering is the same as before. However due to the fact that $\pi^{0}$ are reconstructed using 2 clusters, the effect of the correction is approximately twice as large. In addition to the deviation at low $p_{T}$ a deviation at high $p_{T}$ is observed when applying the TB corrections. This is likely due to asymmetric decays where one cluster has to have a low energy. Otherwise the $\pi^{0}$ could not be reconstructed anymore due to cluster merging. However it is not yet understood why the drop at high $p_{T}$ is not seen for the ALICE corrected spectrum or the pectrum with no $N_{cell}$ cut. \\
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Gamma_NEWCALC.pdf}
+%	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Pi0_NEWCALC.pdf}
+%	\caption{Ratio of the inclusive $\gamma$ spectrum (left) fully corrected $\pi^{0}$ spectra (right) corrected with the same $\rho$ but applied only on $\gamma$ clusters and on all clusters to the $N_{cell} \leq$ 2 cluster spectra.}
+%	\label{fig:NCells_Pi0Spec_diffMethods}
+%\end{figure}
+%Fig. \ref{fig:NCells_Pi0Spec_diffMethods} shows the effect of the previously discussed two different ways of applying $\rho$ on the inclusive $\gamma$ spectrum (left) and on the fully corrected $\pi^{0}$ spectrum (right) reconstructed with the EMCal. When the correction is applied on all clusters the difference to the standard spectrum ($N_{cell} \leq 2$) gets larger, but the effect is only $\approx$ 2 \% for the $\gamma$"s and $\approx$ 3-4\% for the $\pi^{0}$'s  at maximum.\\
+
+
+\begin{subsection}{effect of exotics/noise on the $\pi^{0}$ spectrum}
+	\label{sec:exotics}
+As mentioned before one cell clusters in data are contaminated by exotic clusters for some energy intervals. Those clusters likely come from slow neutrons which deposit energy in the readout electronics of the calorimeter. It is therefore likely that only one cell detects a "hit", especially at low energies. Additionally noisy cells can also contribute to the sample of exotic clusters. For the previously shown comparisons (for example fig. \ref{fig:NCells_Pi0Spec}) also the case of no $N_{cell}$ cut below 4 GeV was considered. On the cluster and $\gamma$ spectrum those exotic clusters can have a large impact. Since the MC does not contain exotic clusters we cannot correct for this effect. However for the $\pi^{0}$ spectrum we don't expect a (large) bias due to the exotics since in an invariant mass analysis exotic cluster would just increase the background but not the actual meson peak. To further study this effect we embedded "exotic" clusters into the normal MC in two different ways:
+\begin{itemize}
+	\item randomly distribute 4 clusters per event with a (randomly generated) energy between 0.7 and 50 GeV. Those clusters will enter the analysis in the same way as normal clusters. This is refereed to as random embedding in the following.
+	\item distribute 4 clusters per event at a fixed location with a (randomly generated) energy between 0.7 and 50 GeV. Those clusters will enter the analysis in the same way as normal clusters. This case is not very likely for exotic clusters since they are believed to be random as in the first case. This implementation would test remaining bad channels (which is very unlikely in this order of magnitude as done here). This is refereed to as fixed embedding in the following.
+\end{itemize}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/Swapping_Method/code/Exotics_Effect_1_2.pdf}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/Swapping_Method/code/Exotics_Effect_2_4.pdf}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/Swapping_Method/code/Exotics_Effect_5_10.pdf}
+	\caption{invariant mass distributions for different $p_{T}$ intervals. The standard analysis is compared to an analysis with added random exotic clusters and fixed-exotic clusters. }
+	\label{fig:NCells_Exotics}
+\end{figure}
+
+Fig. \ref{fig:NCells_Exotics} shows the invariant mass distribution for the 2 discussed embedding strategies together with the distribution obtained without the embedding. The standard case and the random embedding case are very similar but one can see that the background increased for the random embedding. The fixed-embedding case however is very different. The number of $\pi^{0}$ is counted by integrating both the background and the signal in a range from 0.1 GeV $< m_{inv} <$ 0.15 GeV: $N_{\pi^{0}} = \int_{0.1}^{0.15} Signal -\int_{0.1}^{0.15} Back$. The numbers between the standard and the random embedding are (within 1\%) the same. The fixed embedding can, depending on $p_{T}$ be very different.\\
+This shows that exotic clusters have no strong impact on the $\pi^{0}$ spectra. In our case we simulated 4 exotic clusters per event which is way above the expected value. Therefore in P2 data the effect should be even less than what is shown here.\\
+The results from the fixed embedding show a very distorted $m_{inv}$ spectrum. These cells would be found and removed by the bad channel QA. Therefore the fixed embedding is extremely unrealistic and not considered for any further assumptions. 
+
+\end{subsection}
+
+\begin{subsection}{Cluster Energy Finetuning for 1 cell cluster}
+	\label{sec:nonlin}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/Non_Linearity/1cell/PCMEDC_01/CorrectCaloNonLinearity/PCM-EMC/MeanMassRatio_LHC18.png}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/Non_Linearity/2cell/PCMEDC_01/CorrectCaloNonLinearity/PCM-EMC/MeanMassRatio_LHC18.png}
+	\caption{ (left): mass ratio between data and MC for $N_{cell = 1}$ clusters only (left) and for $N_{cell \geq 2}$ clusters (right) }
+	\label{fig:NonLin}
+\end{figure}
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/Non_Linearity/1cell/PCMEDC_01_withcorr/CorrectCaloNonLinearity/PCM-EMC/MeanMassRatio_LHC18.png}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/Non_Linearity/2cell/PCMEDC_01_withcorr/CorrectCaloNonLinearity/PCM-EMC/MeanMassRatio_LHC18.png}
+	\caption{ (left): mass ratio between data and MC for $N_{cell = 1}$ clusters only (left) and for $N_{cell \geq 2}$ clusters (right) after the correction }
+	\label{fig:NonLin2}
+\end{figure}
+
+
+
+Remark:\\\textbf{Plots for the absolute peak position after calibration for 1 and 2+cell clusters missing. Will be added after next train run! ($\approx$ May 3rd)}\\
+Since the 1 cell clusters were not included in the finetuning of $E_{cluster}$ of the MC simulation, they are not correctly calibrated. The fraction of 1 cell clusters that are accepted in the MC is different for every correction. Due to that, a combined Non-Linearity correction for 1 cell clusters and all other clusters is not viable. Instead we apply a different fine tuning for 1cell clusters than for all other clusters. Fig. \ref{fig:NonLin} shows the ratio of the $\pi^{0}$ mass peak position between data and MC for only 1 cell clusters (left) and all other clusters (right). The ratio for the $N_{cell \geq 2}$ clusters is not 1, since only the LHC18 dataset was used to obtain this information. It is known that the MC cluster energy finetuning changes for different years. To correct the energy of the $N_{cell = 1}$ clusters we take the deviation from the $N_{cell = 1}$ clusters and from the $N_{cell \geq 2}$ into account. Fig. \ref{fig:NonLin2} shows the ratio after the correction for the $N_{cell = 1}$ clusters and for the $N_{cell \geq 2}$. Both ratios give the same value. \\
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/Non_Linearity/EDC/TBNL_1cellFT_04_20/CorrectCaloNonLinearity/EMC/MeanMass_Pi0_LHC16,17,18.pdf}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/Non_Linearity/EDC/TBNL_1cellFT_04_20/CorrectCaloNonLinearity/EMC/MeanMassRatio_LHC16,17,18.pdf}
+	\caption{ Mass position in data and MC and the ratio for \PZ selected with $N_{cell} \leq 1$ cut}
+	\label{fig:NonLin3}
+\end{figure}
+
+Fig. \ref{fig:NonLin3} shows the mass position of the \PZ for data and MC and the respective ratio between data and MC. The $N_{cell} \leq 1$ cluster cut is used. Since the ratio between data and MC is flat in $E_{clus.}$ we can assume that the $N_{cell} = 1$ clusters are equally calibrated compared to the $N_{cell} \leq 2$. The residual offset from 1 of about 0.3\% is visible since there is a difference of $\approx$ 0.7\% between PCM-EMCal and EMCal in this quantity. The mass position was calibrated to an average of the EMCal and PCM-EMCal fine tuning.
+\end{subsection}
+
+\begin{subsubsection}{Absolute peak position for different number of cells}
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/13TeVNomB_Wide/Pi0Tagging_13TeV_nom_03_18_TrueVsRec_NoFT/pdf/TrueVsRecE/TrueVsRecE_3.pdf}
+		\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/13TeVNomB_Wide/Pi0Tagging_13TeV_nom_03_18_TrueVsRec_NoFT/pdf/TrueVsRecE.pdf}
+		\caption{ Ratio of rec. energy and true energy of clusters with different number of cells in the MC for one energy bin (left) and as afunction of the energy (right).}
+		\label{fig:NonLin4}
+	\end{figure}
+
+ In the previous section the relative difference of the peak position between data and MC was used as an estimation for the calibration. The MC is shifted to the data distribution in order to provide the same energy calibration in data and MC. \\
+ The 1 cell clusters in data were however never analyzed when calculating the TB based energy non-linearity. Therefore the 1 cell clusters might still need an absolute calibration. \\
+ Fig. \ref{fig:NonLin4} shows the ratio of reconstructed over true energy for clusters with different number of cells as well as for all clusters. The distribution of all clusters is at unity at higher energies but deviates up to 3\% at lower energies. This deviation is caused by the one cell clusters which are $\approx$ 5\% below unity independent of the energy. The influence of the one cell clusters is minor above 2 GeV since the fraction of 1 cell clusters rapidly decreases with energy (compare fig. \ref{fig:NCells_Cor}).\\
+ \textbf{The one cell clusters could be shifted to unity applying a constant 5\% correction. This is however not done yet.} 
+
+
+\end{subsubsection}
+
+
+\begin{subsection}{Non-Linearity correction of the Test-Beam clusters}
+	\label{sec:TBNL}
+In the previous section it is described how the Non-Linearity correction for the 1 cell clusters are obtained. The goal of the Non-Linearity correction and the according cluster-energy fine-tuning in MC should is to shift the cluster energy from the measured value to the true value. For the TB data the energy is not given as cluster-energy but as beam energy. This means that in principle no correction of the Non-linearity is needed for the TB data/MC. However, due to a small shift in the calibration of the ALICE data of $\approx 1.5\%$, the ALICE data is not corrected to the true value. To account for this, the same $1.5\%$ shift is applied on the TB data. Fig. \ref{fig:NonLinTB} shows the $N_{cell}$-efficiency (left) and the correction factor $\rho$ without any non-linearity correction as well as a 1.5\% (which should be the correct value) and a 3.5\% shift (The 3.5\% shift is just for systematic studies).\\
+The effect on the \PZ spectrum can be seen in fig. \ref{fig:3x3VsV2} (left). \\
+This shift should, in the end, not be applied to the TB but rather to the ALICE data which is currently ongoing.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Effi.pdf}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/TBEffi_diffNL.pdf}
+	\caption{ Comparison of the $N_{cell}$-efficiency (left) and the correction factor $\rho$ for different non-linearity shifts on the TB data. }
+	\label{fig:NonLinTB}
+\end{figure}
+\end{subsection}
+
+\begin{subsection}{High $p_{T}$ drop, nearby clusters}
+\label{sec:neighbors}
+In Fig. \ref{fig:NCells_Pi0Spec} we observe a drop at high $p_{T}$ for the spectra corrected with the test-beam correction. This drop can be explained by 1 cell clusters that come from shower overlaps in the detector. Fig \ref{fig:ShowerOverlaps} shows two clusters coming from the decay photons of a $\pi^{0}$ for low $p_{T}$ (left) and high $p_{T}$ (right). While for low $p_{T}$ the clusters can be perfectly separated, at high $p_{T}$ the clusters partly merge due to shower overlaps. However, in some cases those "merged" clusters will be split in two by the V2 clusterizer. The cluster with the smaller amount of energy is then likely to consist of just one cell since all other cells are absorbed by the cluster with more energy. \\
+These clusters can be characterized in the following way: If a 1 cell cluster cluster has a neighboring cell with an energy above aggregation threshold, the 1 cell cluster is partly merged into another cluster. Here we refer to those clusters as "not isolated". 1 cell clusters that do not have any direct neighboring cell which is above aggregation threshold, are called "isolated".
+Figure \ref{fig:ShowerOverlapsEffi} shows again the $N_{cell}$ efficiency but with the addition of 1 cell clusters which are not isolated. The ratio is in perfect agreement with unity. This shows, that the behavior of not isolated 1 cell clusters is perfectly described by the MC simulation. This means that these "not isolated" clusters can not be considered for the correction. \\
+Fig. \ref{fig:ShowerOverlaps_Result} shows the ratio of the corrected $\pi^{0}$ yields as in Fig. \ref{fig:NCells_Pi0Spec} with and without the discussed correction for isolated 1 cell clusters. The drop at high $p_{T}$ is only there if one includes the "not isolated" 1 cell cluster in the analysis. 
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/Pictures/1Cell_Cluster_LowPt.png}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/Pictures/1cellCluster_HighPt.png}
+	
+	\caption{ cluster from a $\pi^{0}$ decay at low $p_{T}$ (left) and high $p_{T}$ (right)}
+	\label{fig:ShowerOverlaps}
+\end{figure}
+
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Ratio.pdf}
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/RatioZoomed.pdf}
+	
+	\caption{ $N_{cell}$ efficiency as seen previously with additional data points for 1 cell clusters with direct neighbors. The right plot is a zoomed in version of the left plot.}
+	\label{fig:ShowerOverlapsEffi}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.48\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Pi0_Comp_2020_12_22.pdf}
+	
+	\caption{ Ratio of corrected $\pi^{0}$ yields as in Fig. \ref{fig:NCells_Pi0Spec} with and without the discussed correction for isolated 1 cell clusters.  }
+	\label{fig:ShowerOverlaps_Result}
+\end{figure}
+\end{subsection}
+\newpage
+
+\begin{subsection}{3x3 clusterizer vs. V2 clusterizer}
+The TB analysis was done using the 3x3 clusterizer whereas for the P2 analysis we are using the V2 clusterizer. Here we show the P2 analysis for both the V2 and the 3x3 clusterizer. Fig. \ref{fig:3x3VsV2} shows the ratio of the corrected $\pi^{0}$ yields for the V2 clusterizer (left) and the 3x3 clusterizer (right). No significant difference can be found between the two! The P2 correction and the "no $N_{cell}$" cut are compatible for both clusterizers while the TB correction is off by up to 5\%.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Pi0_2021_01_11.pdf}	
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/EDC_dirGammas/Plots/NCellVar/figures/NCells_Pi0_3x3_2021_01_11.pdf}
+	
+	
+	
+	\caption{ Ratio of corrected $\pi^{0}$ yields with V2 clusters (left) and 3x3 clusters (right).  }
+	\label{fig:3x3VsV2}
+\end{figure}
+\end{subsection}
+
+\begin{subsection}{Corrections estimated with electrons from P2}
+The TB corrections is obtained using electrons, while for the P2 correction we use all reconstructed clusters, such that the majority of the clusters are photons.
+In this section the $N_{cell}$ efficiency $\nu$ correction factor $\rho$ are calculated using electron clusters. We use conversion photons which have a track in the TPC for our electron sample. Primary electrons could also be used but they are lower in statistics. The study was done on the nominal field data (B=0.5T) and the low field data (B=0.2T) to study the effect of the bending of the electron tracks in the magnetic field.\\
+Fig. \ref{fig:electrons_Effi} shows the $N_{cell}$ efficiency for electrons (V2 and 3x3 clusterizer) together with the TB results for data and MC. The left plot shows the nominal and the right plot the low field data. The P2 results from B=0.5T are far off the TB results while the B=0.2T results are a bit closer to the TB but still far off. This means that for P2 data we see significantly less clusters with 1 cell compared to the TB. For B=0.5T we see less 1 cell clusters than for B=0.2T which can be attributed to the bending of the electron tracks in the magnetic field. If the electron hits the EMCal at a lower angle, the cluster should be more elongated and such have more cells than a cluster from a track hitting the EMCal at 90 degree.
+The difference between the V2 and the 3x3 clusterizer seems negligible, but the data changes a bit, while the MC seems to be the same for both clusterizers. This can be seen more clearly in the next plot.
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Electrons_Effi.pdf}	
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Electrons_Effi_lowB.pdf}
+	
+	\caption{ $N_{cell}$ efficiency for electrons (V2 and 3x3 clusterizer) together with the TB results for data and MC. The left plot shows the nominal and the right plot the low field data.   }
+	\label{fig:electrons_Effi}
+\end{figure}
+
+
+Fig. \ref{fig:electrons_Ratio} shows $\nu_{MC}/\nu_{data}$ for electrons (V2 and 3x3 clusterizer) together with the TB results and P2 $\gamma$ results. The left plot shows the nominal and the right plot the low field data.
+Here one can clearly see the difference between the V2 and the 3x3 clusterizer for the electrons, especially for B=0.5T. All 3 correction methods (electrons, $\gamma$, TB) give different results.
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Electrons_Ratio.pdf}	
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Electrons_Ratio_lowB.pdf}
+	
+	\caption{  $\nu_{MC}/\nu_{data}$ for electrons (V2 and 3x3 clusterizer) together with the TB results and P2 $\gamma$ results. The left plot shows the nominal and the right plot the low field data.   }
+	\label{fig:electrons_Ratio}
+\end{figure}
+
+Fig. \ref{fig:electrons_Corr} shows the correction factor $\rho$ for all 4 methods as before. In the low $p_{T}$ region the electron 3x3 points are similar to the $\gamma$ and TB result but this could be just by coincidence (at least I think so).\\
+In summary the electrons from P2 can not be compared to the TB results since they give very different results which is likely to come from the magnetic field.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Electrons_Corr.pdf}	
+	\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/AnalysisSoftware_Clones/NCellEffi/Electrons_Corr_lowB.pdf}
+	
+	\caption{  The correction factor $\rho$ for electrons (V2 and 3x3 clusterizer) together with the TB results and P2 $\gamma$ results. The left plot shows the nominal and the right plot the low field data.   }
+	\label{fig:electrons_Corr}
+\end{figure}
+
+\end{subsection}
+
+\begin{subsection}{Clusterization settings}
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/ClusterizerStudies/Effi.pdf}	
+		\includegraphics[width=0.45\textwidth]{/home/joshua/PCG_Software/EMCal_NCellEffi/ClusterizerStudies/Ratio.pdf}
+		
+		\caption{  (left) $\nu$ for different clusterization settings for MC together with the standard data setting, (right) Ratios of the different MC settings to the standard data setting.  }
+		\label{fig:clusterization}
+	\end{figure}
+
+	For both data and MC, the standard clusterization settings are: Seed = 500MeV, aggregation = 100MeV. The clusterizer runs (of course) before a non-linearity calibration. The non-linearity calibration is, however, different for data and MC. The calibration modifies the cluster energy and by that (in some way) also the actual seed and aggregation values. Therefore a cluster cannot consist of a leading cell with 500MeV and a second cell with 100MeV since the energy is increased after the non-linearity correction. This might be a problem for clusters near the clusterization threshold.\\
+	To test the influence of the clusterization thresholds on $\nu$, $\nu$ was calculated with different clusterization settings for P2 MC. Fig. \ref{fig:clusterization} (left) shows $\nu$ for different clusterization settings of the MC and the standard data settings, while the right plot shows the respective ratios. \\
+	Compared to the standard (blue) a reduction of th thresholds leads to a better agreement between data and MC. Above 2 GeV however, the exotics dominate the spectrum which makes a comparison hard.
+	
+	
+
+\end{subsection}
+	
+
+\end{section}
+
+
+
+\newpage
+
+%\begin{section}{$\pi^{0}$ tagging for pure $\gamma$}
+	
+\clearpage
+\centering
+\textbf{Link to the code on github:}\\
+\href{https://github.com/jokonig/EMCal_NCellEffi}{NCellEffi on github}
+
+
+\clearpage
+
+\end{document}

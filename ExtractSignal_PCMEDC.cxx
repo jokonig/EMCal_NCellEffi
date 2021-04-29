@@ -165,10 +165,10 @@ void ExtractSignal_PCMEDC(){
   StyleSettingsPaper();
   TCanvas *Can = new TCanvas("Can", "", 1200, 1000);
   DrawPaperCanvasSettings(Can, 0.1, 0.003, 0.003, 0.12);
-  TH2F* hDummy    = new TH2F("hDummy","hDummy",1000,0.4, 20,1000,-0.2, 1.4);
-  SetStyleHistoTH2ForGraphs(hDummy, "#it{E}_{#gamma, calo} (GeV)","ratio to NCell #geq 2", 0.85*0.044,0.044, 0.85*0.044,0.044, 1.1,1.2, 510, 510);
+  TH2F* hDummy    = new TH2F("hDummy","hDummy",1000,0.4, 10,1000,-0.2, 1.4);
+  SetStyleHistoTH2ForGraphs(hDummy, "#it{E}_{#gamma, calo} (GeV)","#it{R}", 0.85*0.044,0.044, 0.85*0.044,0.044, 1.1,1.2, 510, 510);
   Can->cd();
-  hDummy->GetYaxis()->SetRangeUser(-0.2, 0.4);
+  hDummy->GetYaxis()->SetRangeUser(-0.05, 0.12);
   hDummy->Draw();
 
 
@@ -203,7 +203,7 @@ void ExtractSignal_PCMEDC(){
   SetStyleHistoTH2ForGraphs(hDummy, "#it{E}_{#gamma, calo} (GeV)","#rho", 0.85*0.044,0.044, 0.85*0.044,0.044, 1.1,1.2, 510, 510);
   Can->cd();
   hDummy->GetYaxis()->SetRangeUser(-0.05, 1.4);
-  hDummy->GetXaxis()->SetRangeUser(0., 8.);
+  // hDummy->GetXaxis()->SetRangeUser(0., 8.);
 
   hDummy->Draw();
 

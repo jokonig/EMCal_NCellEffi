@@ -1,0 +1,71 @@
+\babel@toc {american}{}
+\contentsline {section}{\numberline {1}Photon Detection in ALICE}{4}{section.1}
+\contentsline {subsection}{\numberline {1.1}Data Sets and Monte Carlo Simulations}{4}{subsection.1.1}
+\contentsline {subsubsection}{\numberline {1.1.1}Event Selection}{4}{subsubsection.1.1.1}
+\contentsline {subsubsection}{\numberline {1.1.2}Monte Carlo Simulations}{6}{subsubsection.1.1.2}
+\contentsline {subsubsection}{\numberline {1.1.3}Jet-Jet Monte Carlo Production}{9}{subsubsection.1.1.3}
+\contentsline {subsubsection}{\numberline {1.1.4}Triggered Data Sets for pp\xspace Collisions at $\sqrt {s}$\xspace ~=~13~TeV and Basis Trigger Simulation}{11}{subsubsection.1.1.4}
+\contentsline {subsection}{\numberline {1.2}Photon Reconstruction and Selection with PCM}{12}{subsection.1.2}
+\contentsline {subsubsection}{\numberline {1.2.1}Track and V$^{0}$ Selection}{13}{subsubsection.1.2.1}
+\contentsline {subsubsection}{\numberline {1.2.2}Electron Identification Cuts}{14}{subsubsection.1.2.2}
+\contentsline {subsubsection}{\numberline {1.2.3}Photon Selection}{15}{subsubsection.1.2.3}
+\contentsline {subsection}{\numberline {1.3}Photon Reconstruction and Selection with EMCal}{19}{subsection.1.3}
+\contentsline {subsubsection}{\numberline {1.3.1}The ALICE EMCal}{19}{subsubsection.1.3.1}
+\contentsline {subsubsection}{\numberline {1.3.2}Cluster Selection}{21}{subsubsection.1.3.2}
+\contentsline {section}{\numberline {2}Neutral Meson Analysis}{23}{section.2}
+\contentsline {subsection}{\numberline {2.1}Neutral Meson Reconstruction}{23}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Signal Extraction}{23}{subsubsection.2.1.1}
+\contentsline {subsection}{\numberline {2.2}Meson Spectra Corrections}{23}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}Correction for Secondary Neutral Pions}{23}{subsubsection.2.2.1}
+\contentsline {subsubsection}{\numberline {2.2.2}Acceptance and Efficiency Correction}{23}{subsubsection.2.2.2}
+\contentsline {subsubsection}{\numberline {2.2.3}Trigger Efficiency Correction}{23}{subsubsection.2.2.3}
+\contentsline {subsubsection}{\numberline {2.2.4}Correction for Finite Bin Width}{23}{subsubsection.2.2.4}
+\contentsline {subsubsection}{\numberline {2.2.5}Correction for Neutral Mesons from Out of Bunch Pileup Vertices}{23}{subsubsection.2.2.5}
+\contentsline {subsection}{\numberline {2.3}Systematic Error Evaluation}{23}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Neutral Meson Invariant Cross Sections}{23}{subsection.2.4}
+\contentsline {subsubsection}{\numberline {2.4.1}Combination of Different Triggers}{23}{subsubsection.2.4.1}
+\contentsline {section}{\numberline {A}Software Version \& Input Data}{24}{appendix.A}
+\contentsline {section}{\numberline {B}List of Good Runs}{24}{appendix.B}
+\contentsline {subsection}{\numberline {B.1}LHC16d anchored to: LHC17f6, LHC17f6\_extra, LHC17f6\_extra2}{24}{subsection.B.1}
+\contentsline {subsection}{\numberline {B.2}LHC16g anchored to: LHC17d17, LHC17d17\_extra, LHC17d17\_extra2}{24}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}LHC16h anchored to: LHC17f5, LHC17f5\_extra, LHC17f5\_extra2}{25}{subsection.B.3}
+\contentsline {subsection}{\numberline {B.4}LHC16i anchored to: LHC17d3, LHC17d3\_extra, LHC17d3\_extra2}{25}{subsection.B.4}
+\contentsline {subsection}{\numberline {B.5}LHC16j anchored to: LHC17e5, LHC17e5\_extra, LHC17e5\_extra2}{26}{subsection.B.5}
+\contentsline {subsection}{\numberline {B.6}LHC16k anchored to: LHC18f1, LHC18f1\_extra}{26}{subsection.B.6}
+\contentsline {subsection}{\numberline {B.7}LHC16l anchored to: LHC18d8, LHC18d8\_extra}{28}{subsection.B.7}
+\contentsline {subsection}{\numberline {B.8}LHC16o anchored to: LHC17d16, LHC17d16\_extra, LHC17d16\_extra2}{28}{subsection.B.8}
+\contentsline {subsection}{\numberline {B.9}LHC16p anchored to: LHC17d18, LHC17d18\_extra, LHC17d18\_extra2}{29}{subsection.B.9}
+\contentsline {subsection}{\numberline {B.10}LHC17c anchored to: LHC18d3, LHC18d3\_extra}{30}{subsection.B.10}
+\contentsline {subsection}{\numberline {B.11}LHC17e anchored to: }{30}{subsection.B.11}
+\contentsline {subsection}{\numberline {B.12}LHC17f anchored to: }{30}{subsection.B.12}
+\contentsline {subsection}{\numberline {B.13}LHC17h anchored to: LHC18c12, LHC18c12\_extra}{30}{subsection.B.13}
+\contentsline {subsection}{\numberline {B.14}LHC17i anchored to: LHC17k4, LHC17k4\_extra}{31}{subsection.B.14}
+\contentsline {subsection}{\numberline {B.15}LHC17j anchored to: LHC17h11, LHC17h11\_extra}{32}{subsection.B.15}
+\contentsline {subsection}{\numberline {B.16}LHC17k anchored to: LHC18c13, LHC18c13\_extra}{32}{subsection.B.16}
+\contentsline {subsection}{\numberline {B.17}LHC17l anchored to: LHC18a8, LHC18a8\_extra}{33}{subsection.B.17}
+\contentsline {subsection}{\numberline {B.18}LHC17m anchored to: LHC17l5, LHC17l5\_extra}{35}{subsection.B.18}
+\contentsline {subsection}{\numberline {B.19}LHC17o anchored to: LHC18a9, LHC18a9\_extra}{36}{subsection.B.19}
+\contentsline {subsection}{\numberline {B.20}LHC17r anchored to: LHC18a1, LHC18a1\_extra}{37}{subsection.B.20}
+\contentsline {subsection}{\numberline {B.21}LHC18b anchored to: }{38}{subsection.B.21}
+\contentsline {subsection}{\numberline {B.22}LHC18d anchored to: }{38}{subsection.B.22}
+\contentsline {subsection}{\numberline {B.23}LHC18e anchored to: }{38}{subsection.B.23}
+\contentsline {subsection}{\numberline {B.24}LHC18f anchored to: }{38}{subsection.B.24}
+\contentsline {subsection}{\numberline {B.25}LHC18g anchored to: }{38}{subsection.B.25}
+\contentsline {subsection}{\numberline {B.26}LHC18h anchored to: }{38}{subsection.B.26}
+\contentsline {subsection}{\numberline {B.27}LHC18i anchored to: }{38}{subsection.B.27}
+\contentsline {subsection}{\numberline {B.28}LHC18j anchored to: }{39}{subsection.B.28}
+\contentsline {subsection}{\numberline {B.29}LHC18k anchored to: }{39}{subsection.B.29}
+\contentsline {subsection}{\numberline {B.30}LHC18l anchored to: }{39}{subsection.B.30}
+\contentsline {subsection}{\numberline {B.31}LHC18m anchored to: }{39}{subsection.B.31}
+\contentsline {subsection}{\numberline {B.32}LHC18n anchored to: }{39}{subsection.B.32}
+\contentsline {subsection}{\numberline {B.33}LHC18o anchored to: }{39}{subsection.B.33}
+\contentsline {subsection}{\numberline {B.34}LHC18p anchored to: }{39}{subsection.B.34}
+\contentsline {subsection}{\numberline {B.35}LHC16x, MB INT7}{39}{subsection.B.35}
+\contentsline {section}{\numberline {C}Quality Assurance on Cell Level}{41}{appendix.C}
+\contentsline {subsection}{\numberline {C.1}Periodwise Cell QA}{41}{subsection.C.1}
+\contentsline {subsection}{\numberline {C.2}Runwise Cell QA}{41}{subsection.C.2}
+\contentsline {section}{\numberline {D}Additional Cluster/Photon QA Plots}{41}{appendix.D}
+\contentsline {section}{\numberline {E}Additional Neutral Meson Plots}{43}{appendix.E}
+\contentsline {subsection}{\numberline {E.1}Neutral Mesons in pp\xspace Collisions at $\sqrt {s}$\xspace ~=~13~TeV, MB INT7}{43}{subsection.E.1}
+\contentsline {subsection}{\numberline {E.2}Detailed Systematics}{43}{subsection.E.2}
+\contentsline {section}{\numberline {F}Acronyms and Technical Terms}{44}{appendix.F}

@@ -90,8 +90,8 @@ class SpectraClass{
   //________________________________________________________________________
   Float_t FunctionNL_OfficialTB_100MeV_Data_V2(Float_t e){ // 1.5% shift instead of 5% to make the scale correct
     Double_t funcParams[5] = {1.91897, 0.0264988, 0.965663, -187.501, 2762.51};
-    return ( 1.015 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
-    // return ( 1.0505 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
+    // return ( 1.015 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
+    return ( 1.0505 * (funcParams[0] + funcParams[1] * TMath::Log(e) ) / ( 1 + ( funcParams[2] * TMath::Exp( ( e - funcParams[3] ) / funcParams[4] ) ) ) );
   }
   // Float_t FunctionNL_OfficialTB_100MeV_Data_V2(Float_t e){
   //   Double_t funcParams[5] = {1.91897, 0.0264988, 0.965663, -187.501, 2762.51};
@@ -128,6 +128,8 @@ class SpectraClass{
 
     bool fDoSkipping = false;
     int SkippingFrac = 1;
+
+    int fnumNCelVar = 1;
 
 
     // MC stuff
@@ -304,6 +306,9 @@ SpectraClass::SpectraClass(bool mc, TString Period, bool light, int skipping): r
   if(Period.Contains("13TeVNomB")) period = 0;
   else if(Period.Contains("13TeVLowB")) period = 1;
   else if(Period.Contains("8TeV")) period = 2;
+
+  fnumNCelVar = 2;
+  if(mc) fnumNCelVar = 10;
 
   hInvMassVsPt.clear();
   hInvMassVsPtBack.clear();
@@ -496,7 +501,8 @@ void SpectraClass::Process(unsigned int maxNumClus){
     NextEvt();
     if(fdebug)cout<<"energy: "<<fenergy<<endl;
     if(fdebug == 2) cerr<<__LINE__<<endl;
-    for(int i = 0; i < 10; ++i){
+
+    for(int i = 0; i < fnumNCelVar; ++i){
       CalculatePi0s(i);
     }
 
@@ -694,17 +700,18 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
       break;
     }
 
-    case 4: //kNCeGammaAndElec:
+    case 4: //kNCeGammaAndElec applied to all clusters. Based on PCMEDC results: file:///home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_PCMEMC_wFit.pdf
     {
+      // NonLin for obtained correction: TB with scale + FT
       // based on clusters which are part of a cluster pair with a mass of: [M(Pi0) - 0.05;M(Pi0) + 0.02]
       // mostly photon clusters and electron(conversion) clusters (purity about 95%)
-      // exotics should be nearly cancled by that
-      fNCellEfficiencyParams[0] = 0.0901375;
-      fNCellEfficiencyParams[1] = 1.28118;
-      fNCellEfficiencyParams[2] = 0.583403;
-      Float_t val = fNCellEfficiencyParams[0]*exp(
-                    -0.5*((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
-                    ((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+      // exotics should be cancled by that
+      fNCellEfficiencyParams[0] = -0.0377925;
+      fNCellEfficiencyParams[1] = 0.160758;
+      fNCellEfficiencyParams[2] = -0.00357992;
+      Float_t val = fNCellEfficiencyParams[0]*clusE*clusE +
+                    fNCellEfficiencyParams[1]*clusE +
+                    fNCellEfficiencyParams[2];
 
       // printf("kNCeGammaAndElec\n");
       if(randNr < val) return kTRUE;
@@ -712,135 +719,102 @@ bool SpectraClass::IsAcceptedByNCellEffi(unsigned int clus, unsigned int kCorrec
       break;
     }
 
-    case 5: //TB and Elec separated:
+    case 5: //kNCeGammaAndElec applied to all clusters. Based on PCMEDC results: file:///home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_PCMEMC_wFit.pdf
     {
-      // apply TB on Gamma clusters and electron correction for electrons
-      if(clusPDG == 22){ // photons, TB
-        // based on test beam measurements
-        // should behave like pure photon clusters
-        fNCellEfficiencyParams[0] = -4.23138e-02;
-        fNCellEfficiencyParams[1] = 1.95466e-01;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-        // printf("kNCeTestBeam\n");
-        if(randNr < val) return kTRUE;
-        else return kFALSE;
-
-      } else if (fabs(clusPDG) == 11){
-        // based on test beam measurements
-        // should behave like pure photon clusters
-        fNCellEfficiencyParams[0] = 6.86301e-02;
-        fNCellEfficiencyParams[1] = 6.23158e-02;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-        // printf("kNCeTestBeam\n");
-        if(randNr < val) return kTRUE;
-        else return kFALSE;
-
-
-      }
-
-      break;
-    }
-
-    case 6: //kNCeGamma and Elec separated 2:
-    {
-      if (fabs(clusPDG) == 22){
-      // apply kNCeGammaAndElec on Gamma clusters and electron correction for electrons
-      fNCellEfficiencyParams[0] = 0.0901375;
-      fNCellEfficiencyParams[1] = 1.28118;
-      fNCellEfficiencyParams[2] = 0.583403;
-      Float_t val = fNCellEfficiencyParams[0]*exp(
-                    -0.5*((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2])*
-                    ((clusE-fNCellEfficiencyParams[1])/fNCellEfficiencyParams[2]));
+      // NonLin for obtained correction: TB with scale
+      // based on clusters which are part of a cluster pair with a mass of: [M(Pi0) - 0.05;M(Pi0) + 0.02]
+      // mostly photon clusters and electron(conversion) clusters (purity about 95%)
+      // exotics should be cancled by that
+      fNCellEfficiencyParams[0] = -0.0387877;
+      fNCellEfficiencyParams[1] = 0.104607;
+      fNCellEfficiencyParams[2] = 0.0793534;
+      Float_t val = fNCellEfficiencyParams[0]*clusE*clusE +
+                    fNCellEfficiencyParams[1]*clusE +
+                    fNCellEfficiencyParams[2];
 
       // printf("kNCeGammaAndElec\n");
       if(randNr < val) return kTRUE;
       else return kFALSE;
+      break;
+    }
 
-    } else if (fabs(clusPDG) == 11){
-      // based on test beam measurements
-      // should behave like pure photon clusters
-      fNCellEfficiencyParams[0] = 6.86301e-02;
-      fNCellEfficiencyParams[1] = 6.23158e-02;
-      Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-      // printf("kNCeTestBeam\n");
+    case 6:
+      //kNCeGammaAndElec applied to only gamma clusters. Based on PCMEDC results: file:///home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_PCMEMC_wFit.pdf
+      {
+        if(fabs(clusPDG) != 22) return false;
+        // NonLin for obtained correction: TB with scale + FT
+        // based on clusters which are part of a cluster pair with a mass of: [M(Pi0) - 0.05;M(Pi0) + 0.02]
+        // mostly photon clusters and electron(conversion) clusters (purity about 95%)
+        // exotics should be cancled by that
+        fNCellEfficiencyParams[0] = -0.0377925;
+        fNCellEfficiencyParams[1] = 0.160758;
+        fNCellEfficiencyParams[2] = -0.00357992;
+        Float_t val = fNCellEfficiencyParams[0]*clusE*clusE +
+                      fNCellEfficiencyParams[1]*clusE +
+                      fNCellEfficiencyParams[2];
+
+        // printf("kNCeGammaAndElec\n");
+        if(randNr < val) return kTRUE;
+        else return kFALSE;
+        break;
+      }
+
+    case 7: //kNCeGammaAndElec applied to all clusters. Based on EDC results: file:///home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_PCMEMC_wFit.pdf
+    {
+      // NonLin for obtained correction: TB with scale + FT
+      // based on clusters which are part of a cluster pair with a mass of: [M(Pi0) - 0.05;M(Pi0) + 0.02]
+      // mostly photon clusters and electron(conversion) clusters (purity about 95%)
+      // exotics should be cancled by that
+      fNCellEfficiencyParams[0] = 0.0110515;
+      fNCellEfficiencyParams[1] = -0.035678;
+      fNCellEfficiencyParams[2] = 0.077142;
+      Float_t val = fNCellEfficiencyParams[0]*clusE*clusE +
+                    fNCellEfficiencyParams[1]*clusE +
+                    fNCellEfficiencyParams[2];
+
+      // printf("kNCeGammaAndElec\n");
       if(randNr < val) return kTRUE;
       else return kFALSE;
-
-
-    }
-    }
-
-    case 7: //kNCeGamma and Elec separated:
-    {
-      // apply TB on Gamma clusters and electron correction for electrons
-      if(clusPDG == 22){ // photons, TB
-        // from file Pi0Tagging_13TeV_nom_03_17_Iso02_TBNL_noScale_MCScaled_1cellFT
-        //
-        fNCellEfficiencyParams[0] = 5.72153e-02;
-        fNCellEfficiencyParams[1] = 4.19831e-02;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-        // printf("kNCeTestBeam\n");
-        if(randNr < val) return kTRUE;
-        else return kFALSE;
-
-      } else if (fabs(clusPDG) == 11){
-        // based on test beam measurements
-        // should behave like pure photon clusters
-        fNCellEfficiencyParams[0] = 6.86301e-02;
-        fNCellEfficiencyParams[1] = 6.23158e-02;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-        // printf("kNCeTestBeam\n");
-        if(randNr < val) return kTRUE;
-        else return kFALSE;
-
-
-      }
-
       break;
     }
-    case 8: //kNCeGamma and Elec separated:
+    case 8: //kNCeGammaAndElec applied to all clusters. Based on EDC results: file:///home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_PCMEMC_wFit.pdf
     {
-      // apply TB on Gamma clusters and electron correction for electrons
-      if(clusPDG == 22){ // photons, TB
-        // from file Pi0Tagging_13TeV_nom_03_17_Iso02_TBNL_noScale_MCScaled_1cellFT
-        //
-        fNCellEfficiencyParams[0] = 1.84654e-02;
-        fNCellEfficiencyParams[1] = 4.46480e-02;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-        // printf("kNCeTestBeam\n");
-        if(randNr < val) return kTRUE;
-        else return kFALSE;
+      // NonLin for obtained correction: TB with scale + FT
+      // based on clusters which are part of a cluster pair with a mass of: [M(Pi0) - 0.05;M(Pi0) + 0.02]
+      // mostly photon clusters and electron(conversion) clusters (purity about 95%)
+      // exotics should be cancled by that
+      fNCellEfficiencyParams[0] = 0.0124651;
+      fNCellEfficiencyParams[1] = -0.0961889;
+      fNCellEfficiencyParams[2] = 0.16844;
+      Float_t val = fNCellEfficiencyParams[0]*clusE*clusE +
+                    fNCellEfficiencyParams[1]*clusE +
+                    fNCellEfficiencyParams[2];
 
-      } else if (fabs(clusPDG) == 11){
-        // based on test beam measurements
-        // should behave like pure photon clusters
-        fNCellEfficiencyParams[0] = 6.86301e-02;
-        fNCellEfficiencyParams[1] = 6.23158e-02;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-        // printf("kNCeTestBeam\n");
-        if(randNr < val) return kTRUE;
-        else return kFALSE;
-
-
-      }
-
-      break;
-    }
-    case 9: //kNCeGamma linear fit
-    {
-        // from file Pi0Tagging_13TeV_nom_03_24_TrueVsRec_1cellFT_dataAndMC
-        //
-        fNCellEfficiencyParams[0] = 7.46288e-02;
-        fNCellEfficiencyParams[1] = -9.89379e-03;
-        Float_t val = fNCellEfficiencyParams[0] + fNCellEfficiencyParams[1]*clusE;
-        // printf("kNCeTestBeam\n");
-        if(randNr < val) return kTRUE;
-        else return kFALSE;
-
-
+      // printf("kNCeGammaAndElec\n");
+      if(randNr < val) return kTRUE;
+      else return kFALSE;
       break;
     }
 
+    case 9: //kNCeGammaAndElec applied to only gamma clusters. Based on EDC results: file:///home/joshua/PCG_Software/EMCal_NCellEffi/PlotsCalibTrain/Corr_PCMEMC_wFit.pdf
+    {
+      if(fabs(clusPDG) != 22) return false;
+      // NonLin for obtained correction: TB with scale + FT
+      // based on clusters which are part of a cluster pair with a mass of: [M(Pi0) - 0.05;M(Pi0) + 0.02]
+      // mostly photon clusters and electron(conversion) clusters (purity about 95%)
+      // exotics should be cancled by that
+      fNCellEfficiencyParams[0] = 0.0110515;
+      fNCellEfficiencyParams[1] = -0.035678;
+      fNCellEfficiencyParams[2] = 0.077142;
+      Float_t val = fNCellEfficiencyParams[0]*clusE*clusE +
+                    fNCellEfficiencyParams[1]*clusE +
+                    fNCellEfficiencyParams[2];
+
+      // printf("kNCeGammaAndElec\n");
+      if(randNr < val) return kTRUE;
+      else return kFALSE;
+      break;
+    }
   }
   return false;
 }
@@ -1141,10 +1115,11 @@ bool SpectraClass::IsClusAcceptedByThreshold(unsigned int i, float agg, float th
 //--- Write everything to file
 //--------------------------------------
 void SpectraClass::WriteToFile(){
+  gSystem->Exec("mkdir rootFiles_InvMass");
 
-  TString filename = "InvMassCorrected_13TeV_nom_03_25_TBNL.root";
-  if(period ==1) filename = "InvMassCorrected_13TeV_low_03_25_TBNL.root";
-  else if(period ==2) filename = "InvMassCorrected_8TeV_03_08_ShaperTBNL.root";
+  TString filename = "rootFiles_InvMass/InvMassCorrected_13TeV_nom_04_28_MConly.root";
+  if(period ==1) filename = "rootFiles_InvMass/InvMassCorrected_13TeV_low_03_25_TBNL.root";
+  else if(period ==2) filename = "rootFiles_InvMass/InvMassCorrected_8TeV_03_08_ShaperTBNL.root";
   std::ifstream ftest(filename);
 
   TFile fout(filename, (ftest.good() == 0) ? "Recreate" : "Update");
@@ -1168,7 +1143,7 @@ void SpectraClass::WriteToFile(){
 void MakeInvMassSpectraCorected(bool isMC = 1, TString period = "13TeVNomB", bool light = false, int skip = 0){
   TStopwatch watch;
   watch.Start();
-  unsigned int nEvt = 1e7;
+  unsigned int nEvt = 1.2e7;
   if(isMC){
     SpectraClass myAna(true, period, light, skip);
     myAna.Process(nEvt*2.5);

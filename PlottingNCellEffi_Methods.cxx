@@ -54,6 +54,7 @@ public:
 
   // Ratio Plots
   void PlotRatio_Wide();   // Plot ratio with TB + wide clusters with and without RW and SB sub
+  void PlotRatio_TBAndAll();   // Plot ratio with TB + all clus
   void PlotRatio_ConvMod();   // Plot ratio with TB + wide clusters with and without RW and SB sub
 
   // Corr Plots
@@ -74,6 +75,8 @@ public:
   void PlotExampleBin();
 
   void PlotNCellVsE();
+
+  void PlotEffiSources();
 
   void ScaleTo(TH1D *h, TH1D *& h2, float down = 0.2, float up = 0.3);
 
@@ -274,6 +277,12 @@ private:
   TH1D* hNCell_Gammas_RW_ConvMod10_Effi_Corr = nullptr;
 
 
+
+  TH2F* hNCellVsEAllClusTrueGamma = nullptr;
+  TH2F* hNCellVsEAllClusTrueElec = nullptr;
+  TH2F* hNCellVsEAllClusTrueHadrons = nullptr;
+
+
   // InvMass
   TH2F* hInvMassVsPt_MC = nullptr;
   TH2F* hInvMassVsPtGG = nullptr;
@@ -317,6 +326,7 @@ private:
   TH1D* hTrueGammasSB = nullptr;
   TH1D* hTrueElecSB = nullptr;
 
+
   // PlottingHists
   TH2F* hDummyEffi = nullptr;
   TH2F* hDummyRatio = nullptr;
@@ -330,6 +340,7 @@ private:
   TH2F* hDummyNCellFraction = nullptr;
   TH2F* hDummyERecVsETrue = nullptr;
   TH2F* hDummyERecVsETrue2 = nullptr;
+  TH2F* hDummyFraction = nullptr;
 
   TH2F* hRecDivTrueE = nullptr;
   TH2F* hRecDivTrueEOneCell = nullptr;
@@ -417,6 +428,7 @@ void Effi::LoadTB(){
   }
 }
 
+
 void Effi::FillHistos(){
   hNCellVsETMNL_data = (TH2F*) fdata->Get("hNCellVsETMNL_data");
   hNCellVsETMNL_data ->Sumw2();
@@ -463,6 +475,14 @@ void Effi::FillHistos(){
   hRecDivTrueEOneCell = (TH2F*) fdata->Get("hRecDivTrueEOneCell_MC");
   hRecDivTrueETwoCell = (TH2F*) fdata->Get("hRecDivTrueETwoCell_MC");
   hRecDivTrueEThreeCell = (TH2F*) fdata->Get("hRecDivTrueEThreeCell_MC");
+
+
+
+  // true gammas, electrons, hadrons
+  hNCellVsEAllClusTrueGamma = (TH2F*) fdata->Get("hNCellVsETrueGamma_MC");
+  hNCellVsEAllClusTrueElec = (TH2F*) fdata->Get("hNCellVsETrueElec_MC");
+  hNCellVsEAllClusTrueHadrons = (TH2F*) fdata->Get("hNCellVsETrueHadr_MC");
+
 }
 
 
@@ -915,7 +935,7 @@ void Effi::SetPlotting(){
   hDummyRatio    = new TH2F("hDummyRatio","hDummyRatio",1000,0.5, PlotenergyHigh,1000,0.9, 1.4);
   SetStyleHistoTH2ForGraphs(hDummyRatio, "#it{E} (GeV)","#nu_{MC}/#nu_{data}", 0.85*textSizeSinglePad,textSizeSinglePad, 0.85*textSizeSinglePad,textSizeSinglePad, 1.1,1.2, 510, 510);
 
-  hDummyCorr    = new TH2F("hDummyCorr","hDummyCorr",1000,0.5, PlotenergyHigh,1000,0., 1.2);
+  hDummyCorr    = new TH2F("hDummyCorr","hDummyCorr",1000,0.5, PlotenergyHigh,1000,0., 1.4);
   SetStyleHistoTH2ForGraphs(hDummyCorr, "#it{E} (GeV)","#rho", 0.85*textSizeSinglePad,textSizeSinglePad, 0.85*textSizeSinglePad,textSizeSinglePad, 1.1,1.2, 510, 510);
 
   hDummyPurity    = new TH2F("hDummyPurity","hDummyPurity",1000,0.5, PlotenergyHigh,1000,-0.05, 1.2);
@@ -943,7 +963,10 @@ void Effi::SetPlotting(){
   SetStyleHistoTH2ForGraphs(hDummyNCellRatio, "#it{E}_{clus} (GeV)","N_{clus}^{data}/N_{clus}^{MC}", 0.85*textSizeSinglePad,textSizeSinglePad, 0.85*textSizeSinglePad,textSizeSinglePad, 1.1,1.2, 510, 510);
 
   hDummyNCellFraction    = new TH2F("hDummyNCellFraction","hDummyNCellFraction",1000,0.4, PlotenergyHigh,1000,0., 1.);
-  SetStyleHistoTH2ForGraphs(hDummyNCellFraction, "#it{E}_{clus} (GeV)","N_{clus}^{Ncell = 1}/N_{clus}", 0.85*textSizeSinglePad,textSizeSinglePad, 0.85*textSizeSinglePad,textSizeSinglePad, 1.1,1.2, 510, 510);
+  SetStyleHistoTH2ForGraphs(hDummyNCellFraction, "#it{E}_{clus} (GeV)","N_{clus}^{Ncell = 1}/N_{clus}", 0.85*textSizeSinglePad,textSizeSinglePad, 0.85*textSizeSinglePad,textSizeSinglePad, 1.1,1., 510, 510);
+
+  hDummyFraction    = new TH2F("hDummyFraction","hDummyFraction",1000,0.4, PlotenergyHigh,1000,0., 1.);
+  SetStyleHistoTH2ForGraphs(hDummyFraction, "#it{E}_{clus} (GeV)","N_{clus}^{specie}/N_{clus}^{all}", 0.85*textSizeSinglePad,textSizeSinglePad, 0.85*textSizeSinglePad,textSizeSinglePad, 1.1,1., 510, 510);
   // gPad->SetLogx();
   hDummyCan = new TCanvas("Can", "", 1200, 1000);
   DrawPaperCanvasSettings(hDummyCan, 0.1, 0.003, 0.003, 0.1);
@@ -1157,7 +1180,7 @@ void Effi::PlotMCClosure(){
   grTB_MC_ratio->Draw("same,p");
 
 
-  TLegend *leg = GetAndSetLegend2(0.4, 0.6, 0.95, 0.8, 40);
+  TLegend *leg = GetAndSetLegend2(0.4, 0.13, 0.95, 0.35, 40);
   leg->AddEntry(hMCClosure3, "P2, rec. = in M_{#pi^{0}}", "p");
   leg->AddEntry(hMCClosure2, "P2, rec. = in M_{#pi^{0}} + RW", "p");
   leg->AddEntry(hMCClosure4, "P2, rec. = in M_{#pi^{0}} + SB sub", "p");
@@ -1166,8 +1189,10 @@ void Effi::PlotMCClosure(){
   leg->Draw("same");
 
   drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
-  drawLatexAdd(StrSelectedGamma(),0.15,0.87,textSizeLabelsRel,kFALSE);
-  drawLatexAdd(StrSelectedRange(),0.15,0.82,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("MC closure",0.7,0.87,textSizeLabelsRel,kTRUE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.87,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(StrSelectedGamma(),0.15,0.82,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(StrSelectedRange(),0.15,0.77,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s_%s/%s/%s/MC_Closure.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
 
 }
@@ -1222,6 +1247,7 @@ void Effi::PlotDataClosure(){
   // func->Draw("same");
 
   drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("data closure",0.7,0.87,textSizeLabelsRel,kTRUE);
   drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
   drawLatexAdd(StrSelectedGamma(),0.15,0.87,textSizeLabelsRel,kFALSE);
   drawLatexAdd(StrSelectedRange(),0.15,0.82,textSizeLabelsRel,kFALSE);
@@ -1293,8 +1319,8 @@ void Effi::PlotEffi_WideWithRWSBSub(){
   grTB_MC->Draw("same,l");
   hNCell_Gammas_Effi_data->Draw("same,p");
   hNCell_Gammas_Effi_MC->Draw("same,histc");
-  hNCell_Gammas_RW_Effi_data->Draw("same,p");
-  hNCell_Gammas_RW_Effi_MC->Draw("same,histc");
+  // hNCell_Gammas_RW_Effi_data->Draw("same,p");
+  // hNCell_Gammas_RW_Effi_MC->Draw("same,histc");
   hNCell_Gammas_RW_SBSub_Effi_data->Draw("same,p");
   hNCell_Gammas_RW_SBSub_Effi_MC->Draw("same,histc");
   hNCell_TrueGammas_MC->Draw("same,histc");
@@ -1373,7 +1399,7 @@ void Effi::PlotRatio_Wide(){
   hNCell_Gammas_RW_MCHadSub_Effi_Ratio->Draw("same,p");
   // hNCell_Gammas_RW_ConvMod10_Effi_Ratio->Draw("same,p");
 
-  TLegend *leg = GetAndSetLegend2(0.65, 0.66, 0.95, 0.84, 40);
+  TLegend *leg = GetAndSetLegend2(0.55, 0.6, 0.95, 0.84, 40);
   leg->AddEntry(hNCell_AllClus_Effi_Ratio, "P2, data, all clus", "p");
   leg->AddEntry(hNCell_Gammas_Effi_Ratio, "P2, data", "p");
   leg->AddEntry(hNCell_Gammas_SBSub_Effi_Ratio, "P2, data, SB", "p");
@@ -1391,6 +1417,26 @@ void Effi::PlotRatio_Wide(){
   hDummyCan->SaveAs(Form("%s_%s/%s/%s/Ratio.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
 }
 
+
+void Effi::PlotRatio_TBAndAll(){
+  hDummyCan->cd();
+  hDummyRatio->Draw();
+  DrawLines(0.5, PlotenergyHigh, 1,1, 2, kGray+2, 2);
+  grTB_Ratio->Draw("same,p");
+
+  hNCell_AllClus_Effi_Ratio->Draw("same,p");
+  // hNCell_Gammas_RW_ConvMod10_Effi_Ratio->Draw("same,p");
+
+  TLegend *leg = GetAndSetLegend2(0.55, 0.6, 0.95, 0.84, 40);
+  leg->AddEntry(hNCell_AllClus_Effi_Ratio, "P2, data, all clus", "p");
+  leg->AddEntry(grTB_Ratio, "TB, e^{#pm} (B=0T)", "l");
+  leg->Draw("same");
+
+  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
+  hDummyCan->SaveAs(Form("%s_%s/%s/%s/Ratio_TBAndAll.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
+}
+
+
 void Effi::PlotRatio_ConvMod(){
   hDummyCan->cd();
   hDummyRatio->Draw();
@@ -1405,7 +1451,7 @@ void Effi::PlotRatio_ConvMod(){
   // hNCell_Gammas_RW_MCHadSub_Effi_Ratio->Draw("same,p");
   hNCell_Gammas_RW_ConvMod10_Effi_Ratio->Draw("same,p");
 
-  TLegend *leg = GetAndSetLegend2(0.65, 0.66, 0.95, 0.84, 40);
+  TLegend *leg = GetAndSetLegend2(0.65, 0.7, 0.95, 0.94, 40);
   leg->AddEntry(hNCell_AllClus_Effi_Ratio, "P2, data, all clus", "p");
   leg->AddEntry(hNCell_Gammas_Effi_Ratio, "P2, data", "p");
   // leg->AddEntry(hNCell_Gammas_SBSub_Effi_Ratio, "P2, data, SB", "p");
@@ -1415,10 +1461,10 @@ void Effi::PlotRatio_ConvMod(){
   leg->AddEntry(grTB_Ratio, "TB, e^{#pm} (B=0T)", "l");
   leg->Draw("same");
 
-  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
-  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
-  drawLatexAdd(StrSelectedGamma(),0.15,0.87,textSizeLabelsRel,kFALSE);
-  drawLatexAdd(StrSelectedRange(),0.15,0.82,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(sEnergy,0.15,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.87,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(StrSelectedGamma(),0.15,0.82,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(StrSelectedRange(),0.15,0.77,textSizeLabelsRel,kFALSE);
   // drawLatexAdd(" #gamma reweighted!",0.15,0.82,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s_%s/%s/%s/Ratio_ConvMod.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
 }
@@ -1436,7 +1482,7 @@ void Effi::PlotCorr_Wide(){
   hNCell_Gammas_SBSub_Effi_Corr->Draw("same,p");
   hNCell_Gammas_RW_SBSub_Effi_Corr->Draw("same,p");
 
-  TLegend *leg = GetAndSetLegend2(0.15, 0.63, 0.4, 0.82, 40);
+  TLegend *leg = GetAndSetLegend2(0.12, 0.76, 0.4, 0.96, 40);
   leg->AddEntry(hNCell_AllClus_Effi_Corr, "P2, data, all clus", "p");
   leg->AddEntry(hNCell_Gammas_Effi_Corr, "P2, data", "p");
   leg->AddEntry(hNCell_Gammas_SBSub_Effi_Corr, "P2, data, SB", "p");
@@ -1445,10 +1491,10 @@ void Effi::PlotCorr_Wide(){
   leg->AddEntry(grTB_Ratio, "TB, e^{#pm} (B=0T)", "l");
   leg->Draw("same");
 
-  drawLatexAdd(sEnergy,0.7,0.92,textSizeLabelsRel,kFALSE);
-  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.15,0.92,textSizeLabelsRel,kFALSE);
-  drawLatexAdd(StrSelectedGamma(),0.15,0.87,textSizeLabelsRel,kFALSE);
-  drawLatexAdd(StrSelectedRange(),0.15,0.82,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(sEnergy,0.55,0.92,textSizeLabelsRel,kFALSE);
+  drawLatexAdd("#gamma identified via. #pi^{0} tagging",0.55,0.87,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(StrSelectedGamma(),0.55,0.82,textSizeLabelsRel,kFALSE);
+  drawLatexAdd(StrSelectedRange(),0.55,0.77,textSizeLabelsRel,kFALSE);
   // drawLatexAdd(" #gamma reweighted!",0.15,0.82,textSizeLabelsRel,kFALSE);
   hDummyCan->SaveAs(Form("%s_%s/%s/%s/Corr.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
   // cout<<Form("%s_%s/%s/Corr.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data())<<endl;
@@ -1833,6 +1879,82 @@ void Effi::PlotNCellVsE(){
   hDummyCan2d->SaveAs(Form("%s_%s/%s/%s/NCellVsE.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
 }
 
+
+void Effi::PlotEffiSources(){
+
+    if(!hNCellVsEAllClusTrueGamma){cout<<"Error loading hNCellVsEAllClusTrueGamma..."; return;}
+
+    TH1D*  hEffiTrueGammas= nullptr;
+    TH1D*  hEffiTrueElec= nullptr;
+    TH1D*  hEffiTrueHadrons= nullptr;
+    GetTrueHists(hNCellVsEAllClusTrueGamma, hEffiTrueGammas);
+    GetTrueHists(hNCellVsEAllClusTrueElec, hEffiTrueElec);
+    GetTrueHists(hNCellVsEAllClusTrueHadrons, hEffiTrueHadrons);
+
+    DrawSetMarker(hEffiTrueGammas, 20, 1.9, kRed + 1, kRed + 1);
+    DrawSetMarker(hEffiTrueElec, 34, 1.9, kBlue + 1, kBlue + 1);
+    DrawSetMarker(hEffiTrueHadrons, 34, 1.9, kGray + 2, kGray + 2);
+
+    hDummyCan->cd();
+    hDummyEffi->Draw();
+
+    hEffiTrueGammas->Draw("same,pe");
+    hEffiTrueElec->Draw("same,pe");
+    hEffiTrueHadrons->Draw("same,pe");
+    grTB_MC->Draw("same,l");
+
+
+
+    TLegend *leg = GetAndSetLegend2(0.5, 0.82, 0.7, 0.96, 40);
+    leg->AddEntry(hEffiTrueGammas, "true #gamma", "p");
+    leg->AddEntry(hEffiTrueElec, "true e^{#pm}", "p");
+    leg->AddEntry(hEffiTrueHadrons, "true hadrons", "p");
+    leg->AddEntry(grTB_MC , "TB e^{#pm} (B=0T), no material", "l");
+    leg->Draw("same");
+
+    drawLatexAdd(sEnergy,0.15,0.92,textSizeLabelsRel,kFALSE);
+    drawLatexAdd("rec. E_{clus} used for P2 MC",0.15,0.87,textSizeLabelsRel,kFALSE);
+
+    DrawLines(0.5, PlotenergyHigh, 1, 1, 2, kGray + 2, 2);
+
+    hDummyCan->SaveAs(Form("%s_%s/%s/%s/Effi_TrueContributions.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
+
+    TH1D*  hEffiTrueGammasAbs= (TH1D*) hNCellVsEAllClusTrueGamma->ProjectionX("hEffiTrueGammasAbs", 1, 10);
+    TH1D*  hEffiTrueElecAbs= (TH1D*) hNCellVsEAllClusTrueElec->ProjectionX("hEffiTrueElecAbs", 1, 10);
+    TH1D*  hEffiTrueHadronsAbs= (TH1D*) hNCellVsEAllClusTrueHadrons->ProjectionX("hEffiTrueHadronsAbs", 1, 10);
+
+    TH1D*  hEffiAllClus = (TH1D*) hEffiTrueHadronsAbs->Clone("hEffiAllClus");
+    hEffiAllClus->Add(hEffiTrueElecAbs);
+    hEffiAllClus->Add(hEffiTrueGammasAbs);
+
+    hEffiTrueGammasAbs->Divide(hEffiAllClus);
+    hEffiTrueElecAbs->Divide(hEffiAllClus);
+    hEffiTrueHadronsAbs->Divide(hEffiAllClus);
+
+    DrawSetMarker(hEffiTrueGammasAbs, 20, 3.5, kRed + 1, kRed + 1);
+    DrawSetMarker(hEffiTrueElecAbs, 34, 3.5, kBlue + 1, kBlue + 1);
+    DrawSetMarker(hEffiTrueHadronsAbs, 34, 3.5, kGray + 2, kGray + 2);
+
+
+    hDummyCan->cd();
+    hDummyFraction->Draw();
+    hEffiTrueGammasAbs->Draw("same,hist");
+    hEffiTrueElecAbs->Draw("same,hist");
+    hEffiTrueHadronsAbs->Draw("same,hist");
+
+    TLegend *leg2 = GetAndSetLegend2(0.7, 0.82, 0.95, 0.93, 40);
+    leg2->AddEntry(hEffiTrueGammas, "true #gamma", "l");
+    leg2->AddEntry(hEffiTrueElec, "true e^{#pm}", "l");
+    leg2->AddEntry(hEffiTrueHadrons, "true hadrons", "l");
+    leg2->Draw("same");
+
+    drawLatexAdd(sEnergy,0.15,0.92,textSizeLabelsRel,kFALSE);
+    drawLatexAdd("rec. E_{clus} used for P2 MC",0.15,0.87,textSizeLabelsRel,kFALSE);
+
+    hDummyCan->SaveAs(Form("%s_%s/%s/%s/Effi_TrueContributions_Fraction.%s", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data(), fsuffix.Data()));
+}
+
+
 void Effi::WriteToFile(){
 
   TFile fout(Form("%s_%s/%s/%s/histos.root", fPeriod.Data(), fMethod.Data(), fSpecialName.Data(), fsuffix.Data()), "Recreate");
@@ -1860,11 +1982,11 @@ void PlottingNCellEffi_Methods(TString period = "13TeVNomB"){
     // std::vector<TString> Method = {"Wide", "Low", "High", "Left"};
     for(auto &i : Method){
 
-      fSpecialName = "Pi0Tagging_13TeV_nom_03_25_NoTRD_1cellFT";
+      fSpecialName = "Pi0Tagging_13TeV_nom_04_26_WithTRD_WithBorderCells_1cellFT";
 
       // Effi plot("Pi0Tagging_13TeV_nom_02_28_TBNL.root", "13TeVNomB", "pdf");
       // Effi plot("Pi0Tagging_13TeV_nom_03_11_Iso02_TBNL_noScale.root", "13TeVNomB", "pdf"); // high stat with std. settings
-      Effi plot("rootFiles/Pi0Tagging_13TeV_nom_03_25_NoTRD_1cellFT.root", "13TeVNomB", "pdf"); // high stat wo fine tuning MC scale (1.00) data scale (1.015)
+      Effi plot("rootFiles/Pi0Tagging_13TeV_nom_04_26_WithTRD_WithBorderCells_1cellFT.root", "13TeVNomB", "pdf"); // high stat wo fine tuning MC scale (1.00) data scale (1.015)
       // Effi plot("rootFiles/Pi0Tagging_13TeV_nom_03_17_Iso02_TBNL_noScale_MCScaled_1cellFT.root", "13TeVNomB", "pdf"); // high stat wo fine tuning MC scale (1.00) data scale (1.015)
       // Effi plot("Pi0Tagging_13TeV_nom_03_11_Iso02_TBNL_NoFT.root", "13TeVNomB", "pdf"); // no Fine tuning
       plot.SetSpecialName(fSpecialName);
@@ -1889,6 +2011,7 @@ void PlottingNCellEffi_Methods(TString period = "13TeVNomB"){
       plot.PlotEffi_TrueVsRecE();
 
       plot.PlotRatio_Wide();
+      plot.PlotRatio_TBAndAll();
       plot.PlotRatio_ConvMod();
 
       plot.PlotCorr_TBAndAll();
@@ -1903,6 +2026,8 @@ void PlottingNCellEffi_Methods(TString period = "13TeVNomB"){
       plot.PlotPurity();
       plot.PlotNCellVsE();
       plot.PlotTrueVsRecE();
+
+      plot.PlotEffiSources();
 
       plot.WriteToFile();
     }

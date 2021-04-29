@@ -1,0 +1,90 @@
+This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: aliceNoteNeutralMeson_allMethods_v4.aux
+A level-1 auxiliary file: PhotonDetection_v2.aux
+A level-1 auxiliary file: PhotonDetection_PCM_v1.aux
+A level-1 auxiliary file: PhotonDetection_EDC_v1.aux
+A level-1 auxiliary file: PhotonDetection_PHOS_v1.aux
+A level-1 auxiliary file: PhotonDetection_hybrids_v1.aux
+A level-1 auxiliary file: VirtualPhoton_v1.aux
+A level-1 auxiliary file: NeutralMesons_v1.aux
+A level-1 auxiliary file: Combination_v1.aux
+A level-1 auxiliary file: appendix.aux
+The style file: ../kp.bst.bst
+Database file #1: ../Bibliography.bib.bib
+Warning--entry type for "TwikiJetJet" isn't style-file defined
+--line 2467 of file ../Bibliography.bib.bib
+Warning--entry type for "AliKFPackage" isn't style-file defined
+--line 2924 of file ../Bibliography.bib.bib
+Warning--entry type for "AliPhysicsPCM2015" isn't style-file defined
+--line 4970 of file ../Bibliography.bib.bib
+Warning--entry type for "ConversionGroup" isn't style-file defined
+--line 5004 of file ../Bibliography.bib.bib
+Warning--entry type for "ConvSoftware" isn't style-file defined
+--line 5013 of file ../Bibliography.bib.bib
+Warning--entry type for "EMCalAlignTwiki" isn't style-file defined
+--line 5030 of file ../Bibliography.bib.bib
+Warning--entry type for "EMCalAnalysisTwiki" isn't style-file defined
+--line 5038 of file ../Bibliography.bib.bib
+Warning--entry type for "EMCalCalibTwiki" isn't style-file defined
+--line 5046 of file ../Bibliography.bib.bib
+Warning--entry type for "EMCalCorrelationTwiki" isn't style-file defined
+--line 5054 of file ../Bibliography.bib.bib
+Warning--entry type for "EMCalTimeCalibTwiki" isn't style-file defined
+--line 5070 of file ../Bibliography.bib.bib
+Warning--I didn't find a database entry for "AliPhysicsPCM2018"
+Warning--I didn't find a database entry for "Kroll:1955zu"
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Warning--empty author in ALICE-PUBLIC-2017-002
+Warning--empty year in TwikiJetJet
+Warning--empty year in AliKFPackage
+Warning--empty year in EMCalAnalysisTwiki
+Warning--empty year in EMCalCorrelationTwiki
+Warning--empty year in EMCalTimeCalibTwiki
+Warning--empty year in AliPhysicsPCM2015
+Warning--empty year in EMCalAlignTwiki
+Warning--empty year in EMCalCalibTwiki
+Warning--empty year in ConversionGroup
+Warning--empty year in ConvSoftware
+You've used 40 entries,
+            3121 wiz_defined-function locations,
+            882 strings with 11802 characters,
+and the built_in function-call counts, 10611 in all, are:
+= -- 1040
+> -- 237
+< -- 28
++ -- 148
+- -- 62
+* -- 890
+:= -- 1578
+add.period$ -- 49
+call.type$ -- 40
+change.case$ -- 82
+chr.to.int$ -- 34
+cite$ -- 60
+duplicate$ -- 604
+empty$ -- 1048
+format.name$ -- 116
+if$ -- 2465
+int.to.chr$ -- 7
+int.to.str$ -- 41
+missing$ -- 58
+newline$ -- 172
+num.names$ -- 62
+pop$ -- 229
+preamble$ -- 1
+purify$ -- 40
+quote$ -- 0
+skip$ -- 430
+stack$ -- 0
+substring$ -- 320
+swap$ -- 174
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 156
+warning$ -- 11
+while$ -- 50
+width$ -- 0
+write$ -- 379
+(There were 23 warnings)

@@ -1,0 +1,870 @@
+\section{Combination}
+\subsection{Combination of Different Measurements}
+% 
+% This chapter is dedicated to describe the combination procedure of the different available measurements of neutral pions, eta mesons and \EtaToPi ratios at \s~=~8~TeV. 
+% First of all, the results from the respective single measurements are summarized and visualized. 
+% Furthermore, invariant mass plots are given for all reconstruction methods and the different triggers used in the respective analyses.
+% All example bins are listed, which are candidates for publication.
+% Then, the determination of correlation factors as well as the actual combination procedure including bin width corrections follow in this chapter which concludes with the obtained weights that are needed to combine the different systems. 
+% The results of the combination and comparisons with available references will be shown in the subsequent chapters, beginning from \hyperref[sec:combMeasure]{Section~\ref*{sec:combMeasure}}.
+% 
+\subsubsection{Input Spectra}
+% 
+% The input spectra for the combination are listed in the following \hyperref[tab:input]{Table~\ref*{tab:input}}. It lists the available measurements for the different reconstruction methods which are subject of this combination note. The covered transverse momentum intervals for the respective measurements are also given as well as links to the respective analysis notes.
+% 
+% 				\begin{table}[h]
+% 						\centering
+% 						\small
+% 				 		\begin{tabular}{l|c|c|c|c}
+% 				 		 	\toprule
+% 				 		 	method & $\pi^{0}$ & $\eta$ & \EtaToPi & reference \\ 
+% 				 		 	\midrule
+% 						\acs{PCM} & 0.3 - 12.0 & 0.5 - 7.0 & 0.5 - 7.0 & analysis note: \cite{anaNotePCM8TeV}\\
+% 						\acs{EMCal} & 1.2 - 20.0 & 2.0 - 35.0 & 2.0 - 20.0 & analysis note: \cite{anaNoteEMC8TeV}\\
+% 						\acs{PCM}-\acs{EMCal} & 0.8 - 35.0 & 1.2 - 25.0 & 1.2 - 25.0 & analysis note: \cite{anaNotePCMEMC8TeV}\\
+% 						\acs{PHOS} & 1.0 - 35.0 & N/A & N/A & analysis note: \cite{anaNotePHOS8TeV}\\
+% 						    \midrule
+%                              &\multicolumn{3}{c|}{available $p_{\rm T}$ reach (GeV/$c$)}&\\
+%   						    \bottomrule
+% 				 		\end{tabular}
+% 						\caption{This table summarizes the input which is used for the combination of all neutral meson measurements at \s~=~8~TeV. The transverse momentum reach for each analysis is given and the corresponding links to the respective analysis notes, which contain detailed descriptions of the single measurements.}
+% 						\label{tab:input}
+% 				\end{table}
+% 				
+%  Detailed information about the respective measurements can be obtained from the linked analysis notes in \hyperref[tab:input]{Table~\ref*{tab:input}}, so that no further details concerning the respective systems will be subject of this note. However, the results of all mentioned measurements are visualized all together in the upcoming figures.
+%  
+%  \hyperref[fig:Mass]{Figure~\ref*{fig:Mass}} shows the mass positions and widths of the two quoted mesons for the different systems, plotted versus transverse momenta of the mesons.
+%  
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_MassAndWidth_incPHOS.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_MassAndWidth.eps}
+% 			\caption{Mass positions and widths for the neutral pion (left) and the eta meson (right) for all the used measurements to be combined in this note, plotted versus meson transverse momenta. The width ordering '\acs{PCM} $<$ \acs{PCM}-\acs{EMCal} $<$ \acs{EMCal}' can nicely be observed, as it is expected from the different resolutions of the systems.}
+% 			\label{fig:Mass}
+% 		\end{figure}
+% 
+%  The acceptance times efficiency, also referred to as ``reconstruction efficiencies'' or ``correction factors'', $\epsilon$, for the different methods is displayed in \hyperref[fig:AccEff]{Figure~\ref*{fig:AccEff}}, while \hyperref[fig:combStatSysErr]{Figure~\ref*{fig:combStatSysErr}} shows the relative statistical and systematic errors for $\pi^0$, $\eta$ and \EtaToPi.
+%  				
+% 		\begin{figure}[h]
+% 			\centering
+% 			\vspace*{-0.2cm}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_AcceptanceTimesEff_incPHOS.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_AcceptanceTimesEff.eps}
+% 			\caption{The 'correction factors' for the neutral pion (left) and eta meson (right) are shown for the different methods, more information can be found in the respective analysis notes.}
+% 			\vspace*{-0.2cm}
+% 			%In case of $\pi^{0}$, the factors drop for \acs{EMCal} due to the small opening angle of the boosted light meson and the consequent merging of clusters while for \acs{PCM}-\acs{EMCal}, the drop is caused by the cluster - V0-track matching, more information can be found in the respective notes \cite{anaNoteEMC8TeV} and \cite{anaNotePCMEMC8TeV}.}
+% 			\label{fig:AccEff}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.40\textwidth]{figures/Combination/Pi0_RelStatErrZoomed.eps}
+% 			\includegraphics[width=0.40\textwidth]{figures/Combination/Pi0_RelSysErrZoomed.eps}\\
+% 			\includegraphics[width=0.40\textwidth]{figures/Combination/Eta_RelStatErrZoomed.eps}
+% 			\includegraphics[width=0.40\textwidth]{figures/Combination/Eta_RelSysErrZoomed.eps}\\
+% 			\includegraphics[width=0.40\textwidth]{figures/Combination/EtaToPi0_RelStatErr.eps}
+% 			\includegraphics[width=0.40\textwidth]{figures/Combination/EtaToPi0_RelSysErr.eps}
+% 			\caption{Relative statistical (left) and systematic errors (right) for $\pi^0$, $\eta$ and \EtaToPi for the different systems used that serve as input for the combination.}
+% 			\label{fig:combStatSysErr}
+% 		\end{figure}
+% \clearpage	
+% All obtained neutral meson spectra from the different systems are superimposed in \hyperref[fig:Pi0_Eta_diff]{Figure~\ref*{fig:Pi0_Eta_diff}} and \hyperref[fig:EtaToPi0_diff]{Figure~\ref*{fig:EtaToPi0_diff}}, showing the final results of the different systems.
+% 	
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_InvXSectionCompAllSystems.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_InvXSectionCompAllSystems.eps}
+% 			\caption{The final invariant cross sections are shown for the neutral pion (left) and the eta meson (right) for pp collisions at \s~=~8~TeV. The superposition shows the results of \acs{PCM}\cite{anaNotePCM8TeV}, \acs{EMCal}\cite{anaNoteEMC8TeV}, \acs{PCM}-\acs{EMCal}\cite{anaNotePCMEMC8TeV} and \acs{PHOS}\cite{anaNotePHOS8TeV} (for neutral pion only).}
+% 			\label{fig:Pi0_Eta_diff}
+% 		\end{figure}
+% 					
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.52\textwidth]{figures/Combination/EtaToPi0_differentSystems.eps}
+% 			\includegraphics[width=0.47\textwidth]{figures/Combination/TriggerRejectionFactors.eps}
+% 			\caption{(left) This figure shows the \EtaToPi-ratios for the different available systems. (right) The different ratios to determine the trigger rejection factors for the PHOS L0 and EMCal L0/L1 triggers are summarized in this figure. The raw spectra of photon candidates for each trigger combination given in the legend are used to obtain the respective ratio of yields. The obtained distributions are then fitted with a constant in the illustrated energy ranges, yielding the quoted $RF$s. The uncertainties of $RF$ determination are indicated in light colored uncertainty bands which are drawn in addition. Further details may be found in the corresponding analysis notes, see \hyperref[tab:input]{Table~\ref*{tab:input}}.}
+% 			\label{fig:EtaToPi0_diff}
+% 		\end{figure}
+% \clearpage
+% 
+\subsubsection{Invariant Mass Plots}
+% This section gives an overview concerning the example invariant mass plots to be used for publication. 
+% Example bins for all reconstruction methods for the $\pi^{0}$ meson are given in \hyperref[fig:pi0_0]{Figure~\ref*{fig:pi0_0}}, \hyperref[fig:pi0_1]{Figure~\ref*{fig:pi0_1}} and \hyperref[fig:pi0_2]{Figure~\ref*{fig:pi0_2}}.
+% For the $\eta$ meson, invariant mass plots are shown in \hyperref[fig:eta_0]{Figure~\ref*{fig:eta_0}} and \hyperref[fig:eta_1]{Figure~\ref*{fig:eta_1}}.
+% 
+% \begin{figure}[bht]
+%   \centering
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPCM_INT7.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinEMC_EMC7.eps}
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPHOS_high_1.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPCMEMC_EGA.eps}  
+%   \caption{Example invariant mass spectra in selected $p_{\rm T}$ slices for PCM (top left), PHOS (top right), EMCal (bottom left) and PCM-EMCal (bottom right) in the $\pi^{0}$ mass region.
+%   The black histograms show invariant mass distributions before any background subtraction.
+%   The grey points show mixed event and remaining background contributions, which have respectively been subtracted from raw real events to obtain the signal displayed with red data points.
+%   The blue curves visualize fits to the background subtracted invariant mass spectra.}
+%   \label{fig:pi0_0}
+% \end{figure}
+% 
+% \begin{figure}[htb]
+% \centering
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPCMEMC_INT7.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinEMC_INT7.eps}\\
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPHOS_low_0.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPCM_Pi0_0.eps}\\
+%   \caption{Example invariant mass distributions in the $\pi^{0}$ peak region for PCM-EMCal (upper left), EMCal (upper right), PHOS (lower left) and PCM (lower right) for the MB trigger.}
+%   \label{fig:pi0_1}
+% \end{figure}
+% 
+% \begin{figure}[htb]
+% \centering
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPHOS_low_1.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPCMEMC_EMC7.eps}\\
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinPHOS_high_0.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Pi0_InvMassBinEMC_EGA.eps}\\
+%   \caption{Example invariant mass distributions in the $\pi^{0}$ peak region for PHOS (upper left) using the MB trigger, EMC-L0 triggered PCM-EMCal (upper right), PHOS (lower left) using PHOS trigger and EMCal (lower right) using the EMC-L1 trigger.}
+%   \label{fig:pi0_2}
+% \end{figure}
+% 
+% \begin{figure}[h]
+%   \centering
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinPCM_INT7.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinPCMEMC_INT7.eps}
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinEMC_EMC7.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinEMC_EGA.eps}  
+%   \caption{Example invariant mass spectra in selected \pT slices in PCM (top left), PCM-EMCal (top right) and EMCal (bottom plots) in the $\eta$ mass region.
+%   The black histograms show invariant mass distributions before any background subtraction.
+%   The grey points show mixed event and remaining background contributions, which have respectively been subtracted from raw real events to obtain the signal displayed with red data points.
+%   The blue curves visualize fits to the background subtracted invariant mass spectra.}
+%   \label{fig:eta_0}
+% \end{figure}
+% 
+% \begin{figure}[htb]
+% \centering
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinEMC_INT7.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinPCM_Eta_1.eps}\\
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinPCMEMC_EMC7.eps}
+%   \hfil
+%   \includegraphics[width=0.49\hsize]{./figures/Combination/Eta_InvMassBinPCMEMC_EGA.eps}\\\
+%   \caption{Example invariant mass distributions in the $\eta$ peak region for EMCal (upper left) and PCM (upper right) using the MB trigger, and PCM-EMCal (lower left and lower right) using the EMC-L0 trigger as well as the EMC-L1 trigger.}
+%   \label{fig:eta_1}
+% \end{figure}
+% 
+% \clearpage
+% 
+\subsubsection{Correlation Factors}
+% As already shown earlier, we have measured neutral meson spectra in four different systems. These are \acs{PCM} (1), \acs{EMCal} (2), \acs{PCM}-\acs{EMCal} (3) and \acs{PHOS} (4). Each of these systems comes with its own set of systematic and statistical uncertainties, which in principle may be largely correlated between the systems. However, a possible correlation only applies to systematics as the statistical errors of all systems are assumed to be completely uncorrelated. Possible statistical correlations between the measurements, for instance due the conversions at low radii, are negligible due to the small conversion probability and the small likelihood of reconstructing the respective electron in the calorimeters leading to a meson candidate which on top ends up in the respective integration window. On the other hand, the correlations of systematic errors need to be properly taken into account in the combination procedure. Since the \acs{PHOS} measurement has no common errors with the other three systems, all systematic errors are considered to be completely uncorrelated in this case. However, a large correlation of systematic errors is especially given (and naturally expected) for the 'hybrid' method compared to the single standalone systems.
+% 
+% In order to combine the results, thus, one has to determine the correlation coefficients for the systematic uncertainties of the 'hybrid' \acs{PCM}-\acs{EMCal} method with respect to single \acs{PCM} and \acs{EMCal} measurements. The full correlation matrix contains 9 elements, which might be momentum dependent, as seen in \hyperref[eq:FullCorrMat]{Equation~\ref*{eq:FullCorrMat}}. In the matrix, the factors to connect \acs{PCM} and \acs{EMCal} ('cPCM\_EMC' and 'cEMC\_PCM') are set to zero since there are no common systematic errors present for that combination.
+% 			\begin{eqnarray} 
+% 				\tiny
+% 				\arraycolsep=1.pt\def\arraystretch{2.5}
+% 				\mathcal{C}(p_{\mbox{\tiny \text{T}}}) =
+% 				\left( \begin{array}{ccc}
+% 				1						& 0	& cPCMEMC\_PCM(p_{\mbox{\tiny T}}) \\
+% 		                            0	&	1						       & cPCMEMC\_EMC(p_{\mbox{\tiny T}}) \\
+% 		cPCM\_PCMEMC(p_{\mbox{\tiny T}})&	cEMC\_PCMEMC(p_{\mbox{\tiny T}})	& 1 \\
+% 				\end{array} \right)
+% 				\label{eq:FullCorrMat}
+% 			\end{eqnarray}
+% 			
+% The full correlation coefficients $\mathcal{C}_{ij}(p_{\text{\tiny T}})$ can then be calculated according to \hyperref[eq:CijCorr]{Equation~\ref*{eq:CijCorr}}. 
+% 			\begin{eqnarray}
+% 				\mathcal{C}_{ij}(p_{\text{\tiny T}}) = \frac{\rho_{ij} S_i(p_{\text{\tiny T}}) ~\rho_{ji} S_j(p_{\text{\tiny T}})}{T_i(p_{\text{\tiny T}}) T_j(p_{\text{\tiny T}})} 
+%         \label{eq:CijCorr}
+% 			\end{eqnarray}
+% 
+% The $T_{x}(p_{\text{\tiny T}})$ represent the total errors, which have been calculated from the quadratic sum of the statistical errors $D_x (p_{\text{\tiny T}})$ and systematic errors $S_{x}(p_{\text{\tiny T}})$, while the two latter errors have been visualized in \hyperref[fig:combStatSysErr]{Figure~\ref*{fig:combStatSysErr}}.
+% The fraction of the correlated systematic error of a system $x$ with respect to $y$ is given by $\rho_{xy}(p_{\text{\tiny T}})$:
+% \begin{equation}
+% \rho_{xy}(p_{\text{\tiny T}}) = \frac{\sqrt{S_{x}^{2}(p_{\text{\tiny T}})-U_{xy}^{2}(p_{\text{\tiny T}})}}{S_{x}(p_{\text{\tiny T}})}
+% \end{equation}
+% where $U_{xy}$ is the uncorrelated systematic error of $x$ with respect to $y$. 
+% It becomes clear that in general $\rho_{xy}\neq\rho_{yx}$ holds.
+% The $\rho_{xy}$ are momentum dependent, hence referred to as $\rho_{xy}(p_{\text{\tiny T}})$.
+% Although it has been found that the dependency is rather mild, we are considering the proper momentum dependence. 
+% In most of the momentum bins, the systematic error will dominate the total errors for the individual and combined measurement, while only for the very first or for the last bins of each trigger this is not the case. 
+% For each system, the full available transverse momentum range has been considered.
+% 
+% The systematic error sources found to be uncorrelated from \acs{PCM} with respect to \acs{PCM}-\acs{EMCal} are partly all the \acs{PCM} related error sources, including half of the size of the material budget error for example, as by construction there are different number of conversion photons entering the two systems.
+% Furthermore, the uncorrelated systematic errors from \acs{PCM}-\acs{EMCal} with respect to \acs{PCM} are with full size all the calorimeter related error sources as well as trigger and efficiency errors.
+% Further details concerning the different systematic error sources are documented in the respective analysis notes quoted in \hyperref[tab:input]{Table~\ref*{tab:input}}.
+% 
+% By careful evaluation of the systematics, the following $\rho_{xy}(p_{\text{\tiny T}})$ have been found as listed in \hyperref[fig:corrFactors]{Figure~\ref*{fig:corrFactors}}, where $\rho_{xy}(p_{\text{\tiny T}})$ can be identified with $\rho_{A\_B}$ from the y-axis description. The three figures show the coefficients for $\pi^0$, $\eta$ and \EtaToPi, respectively. Furthermore, they just contain those combinations of detection systems which are at least overlapping in one transverse momentum bin and have at minimum one correlated systematic error source. Therefore, if no markers are shown, the correlation coefficients are found to be zero and hence, there are no markers shown for those cases.	
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.44\textwidth]{figures/CorrFactors/pp8TeV_Systems_Pi0_corrFactors.eps}
+% 			\includegraphics[width=0.44\textwidth]{figures/CorrFactors/pp8TeV_Systems_Eta_corrFactors.eps}\\
+% 			\includegraphics[width=0.44\textwidth]{figures/CorrFactors/pp8TeV_Systems_Pi0EtaBinning_corrFactors.eps}
+% 			\caption{The momentum dependent factors $\rho_{xy}(p_{\text{\tiny T}})$ (to be identified with: $\rho_{A\_B}$) for the three different combinations of $\pi^0$, $\eta$ and \EtaToPi. The momentum dependence is nicely visualized which is in general rather mild even over broad transverse momentum intervals. The horizontal lines give orientation concerning the momentum dependence and absolute values of the correlation factors. All possible combinations of detection systems which are not shown in the legend show no correlation in between. Therefore, factors have not been visualized since they are anyway '0' in those cases.}
+% 			\label{fig:corrFactors}
+% 		\end{figure}
+% 		
+% \clearpage
+\subsubsection{Combination of Measurements}
+\label{sec:combMeasure}
+% After having derived those correlation coefficients, the combination of the spectra can be calculated based on the standard \ac{BLUE}-algorithm \cite{Lyons1988rp,Valassi2003mu,Lyons1986em,barlow1989statistics,Valassi2013bga}. Here $Q_{a}(p_{\text{\tiny T}})$ represents the $a^{th}$ individual measurements and $0 < a < n$. Each of them comes with an error $T_a (p_{\text{\tiny T}})$, as defined before. The $Q_a$ can be summarized in the vector $\mathbf{Q}$, while the respective weight can be written as vector $\pmb{\omega}$ and its components are written as $\omega_{a}$.
+% 		\begin{eqnarray}
+% 			\pmb{\omega}(p_{\text{\tiny T}})		&=& \mathcal{C}^{-1}\textbf{U}/(\textbf{U}^{T}\mathcal{C}^{-1}\textbf{U}) \hspace{0.5cm}\text{, with } \textbf{U}= \text{ unity vector }\\
+% 			\omega_{a}(p_{\text{\tiny T}})					&\equiv& \frac{\sum_{b=1}^{n} \mathcal{H}_{ab}}{\sum_{a,b=1}^{n} \mathcal{H}_{ab}} \hspace{1.32cm} \text{, with } \mathcal{H} = \mathcal{C}^{-1} \text{ and } \mathcal{H}_{ab} \text{ its elements} \\
+% 			\langle Q (p_{\text{\tiny T}}) \rangle  &=& \pmb{\omega}^{T}(p_{\text{\tiny T}}) \mathbf{Q}(p_{\text{\tiny T}}) \\
+% 																							&=&	\sum_{a=1}^{n} \omega_{a}(p_{\text{\tiny T}}) Q_{a} (p_{\text{\tiny T}})
+% 		\end{eqnarray}
+% 
+% The obtained weights ($\omega_{a}$) for the different measurements are shown in \hyperref[fig:Weights]{Figure~\ref*{fig:Weights}}. The plots from that figure also show the respective ranges in which the spectra of each individual trigger are considered for the final result in the end. The total combined errors as well as combined statistical and systematic errors can be found in \hyperref[fig:combTotErr]{Figure~\ref*{fig:combTotErr}}.
+% 
+% 		\begin{figure}[h]
+% 		\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_WeightsA.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_WeightsA.eps}\\
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_WeightsA.eps}			
+% 			\caption{Obtained weights using the BLUE-algorithm for the neutral pion (top left), eta meson (top right) as well as the \EtaToPi-ratio (bottom plot) for \pp collisions at \s~=~8~TeV. }
+% 			\label{fig:Weights}
+% 		\end{figure}
+% \clearpage
+\subsubsection{Correction for Finite Bin Width}
+\label{sec:BinShift}
+% The neutral meson spectra are binned in transverse momentum while the bin width of those slices increases with rising \pT. The underlying spectrum, however, is steeply falling with increasing transverse momenta.
+% Thus, the yield measured in a \pT interval does not correspond to the yield which is measured at the center of a \pT bin.
+% Therefore, the true \pT value for the yield, which has been measured in the given slice, needs to be determined \cite{Lafferty1994cj}.
+% This can be done with two different approaches. Either shifting the data points horizontally in \pT, such that they correspond to the true \pT for a given bin or by shifting the data points vertically to the true yield for the \pT at the bin center.
+% Both methods depend on the same underlying model assumptions. For the spectra, the points are shifted in the \pT direction (also referred to as 'x'-direction) while for the calculation of \EtaToPi-ratio, they will be shifted in the 'y'-direction. 
+% The shifting in the vertical direction for the \EtaToPi-ratio has been chosen due to the fact that the spectra for the neutral pion and eta meson may have different shapes. Thus, for the same binning the points would shift by a different amount in the \pT direction, making it harder to correctly calculate the \EtaToPi-ratio.
+% 
+% The spectra have been shifted assuming the Tsallis function \cite{Tsallis1987eu} as an approximation of the underlying spectrum. 
+% 		\begin{equation}
+% 		 	\frac{\mbox{d}^2N}{\mbox{d}y \mbox{d}p_{\mbox{\tiny T}}} = \frac{(n_{\mbox{\tiny Tsallis}}-1)(n_{\mbox{\tiny Tsallis}}-2)}{n_{\mbox{\tiny Tsallis}}T [n_{\mbox{\tiny Tsallis}}T + m(n_{\mbox{\tiny Tsallis}}-2)]} \times A \times p_{\mbox{\tiny T}} \times \left(1 + \frac{m_{T}-m}{n_{\mbox{\tiny Tsallis}}T}\right)^{-n_{\mbox{\tiny Tsallis}}}.
+% 			\label{eq:Tsallis}
+% 		\end{equation}
+% The parameters $m$ and $m_{T} = \sqrt{m^2 + p_{T}^2}$ correspond to the particle mass and the transverse mass, while $A$, $T$ and $n_{\mbox{\tiny Tsallis}}$ are the free parameters of the fit function.
+% In order to be able to combine different measurements in \acs{ALICE}, this bin width correction is calculated based on the combined spectra and then applied to the individual spectra based on the combined fit.
+% Moreover, this allows to constrain the fit even more as each individual measurement covers a slightly different transverse momentum region, resulting in smaller correction factors.
+% Hence, the described bin width corrections are already applied for all quantities/spectra shown in the following \hyperref[sec:combResults]{Section~\ref*{sec:combResults}}.
+% 
+% \hyperref[fig:binShift]{Figure~\ref*{fig:binShift}} shows the bin width corrections for the final combined neutral pion and eta meson spectra. Corrections are of the order of 1\% throughout the whole transverse momentum region covered.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/BinShiftCorrection_Pi0.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/BinShiftCorrection_Eta.eps}
+% 			\caption{By diving the 'x'-bin values before and after the bin shift procedure, the size of bin width corrections for the combined final neutral pion and eta meson spectra can be read off from these histograms.}
+% 			\label{fig:binShift}
+% 		\end{figure}
+% \clearpage	
+% The next \hyperref[fig:binShiftEtaPi0]{Figure~\ref*{fig:binShiftEtaPi0}} visualizes the bin width corrections for the final combined \EtaToPi-ratios for \acs{EMCal} as well as \acs{PCM}-\acs{EMCal}. Note that corrections are now positive. Instead of shifting in 'x' as in the cases before, the bin shift for the \EtaToPi-ratio has been performed in 'y'. Thus, bin shift correction factors are now above one. \hyperref[fig:binShiftEtaPi0]{Figure~\ref*{fig:binShiftEtaPi0}} shows that corrections are of the order of 1\% almost throughout the whole transverse momentum region covered and go up to $\approx$2\% for low momenta in the latter case.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_data_CombinedBinShiftCorrection.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_data_CombinedBinShiftCorrection_EMCAL.eps}
+% 			\caption{By diving the 'y'-bin values before and after the bin shift procedure, the size of bin width corrections for the combined final \EtaToPi-ratios can be read off from these histograms. Please note the different applied shift direction (in 'y' instead of in 'x') compared to \hyperref[fig:binShift]{Figure~\ref*{fig:binShift}}.}
+% 			\label{fig:binShiftEtaPi0}
+% 		\end{figure}	
+% 
+% \clearpage
+\subsection{Final Combined Results}			
+\label{sec:combResults}	
+% \hyperref[fig:combTotErr]{Figure~\ref*{fig:combTotErr}} shows the relative combined statistical and systematic errors for $\pi^0$, $\eta$ and \EtaToPi after the combination has been performed according to the procedure described in \hyperref[sec:combMeasure]{Section~\ref*{sec:combMeasure}} using the respective weights shown in \hyperref[fig:Weights]{Figure~\ref*{fig:Weights}}.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_Reldecomp.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_RelMethodAdecomp.eps}\\
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_RelMethodAdecomp.eps}
+% 			\caption{Relative total, statistical and systematic errors for $\pi^0$, $\eta$ and \EtaToPi, after combinations of available measurements in the given system have been performed.}
+% 			\label{fig:combTotErr}
+% 		\end{figure}
+% 		
+% %The following \hyperref[fig:Pi0_Eta_diffComb]{Figure~\ref*{fig:Pi0_Eta_diffComb}} is actually analogue to \hyperref[fig:Pi0_Eta_diff]{Figure~\ref*{fig:Pi0_Eta_diff}}, but shows in addition the combined spectra of all systems which has already been bin-shifted in 'x'-direction according to \hyperref[sec:BinShift]{Section~\ref*{sec:BinShift}}.
+% 
+% The combined spectra have been fitted with the two-component model fit (\acs{TCM}), developed by A. Bylinkin and A. Rostovtsev \cite{Bylinkin2012bz,Bylinkin2011yi,Bylinkin2015xya},
+% 		\begin{eqnarray}
+% 			E \frac{\mbox{d}^3 \sigma}{\mbox{d}p^3} = A_e \exp{\frac{-(\sqrt{p_{\text{\tiny T}}^2 + M^2} - M)}{T_{2}}} + \frac{A}{\left( 1+ \frac{p_{\text{\tiny T}}^2}{T^2 n}\right)^{-n}}
+% 			\label{eq:TwoComponentModel}
+% 		\end{eqnarray}
+% which can be looked at in \hyperref[fig:Fits]{Figure~\ref*{fig:Fits}}. The resulting parameters for the $\pi^0$ and $\eta$ are summarized in the following \hyperref[tab:fitParam]{Table~\ref*{tab:FitParam}}. Moreover, Tsallis functions \cite{Tsallis1987eu} have been fitted to the spectra using \hyperref[eq:Tsallis]{Equation~\ref*{eq:Tsallis}} which may also be found in that table.
+% 
+% \renewcommand{\arraystretch}{1.3}
+% \begin{table}[h!]
+%   \begin{center}
+%   \scalebox{0.92}{
+%     \begin{tabular}{c||cccccc}
+%      \hline
+%      TCM & $A_{e}$ (pb~GeV$^{-2}c^{3}$) & $T_{e}$ (GeV) & $A$ (pb~GeV$^{-2}c^{3}$) & $T$ (GeV) & $n$ & $\chi^2_{\rm red}$ \\
+%      \hline\hline
+%      $\pi^{0}$ & (6.84$\pm$2.79)$\times10^{11}$ & 0.142$\pm$0.020 & (3.68$\pm$0.89)$\times10^{10}$ & 0.597$\pm$0.030 & 3.028$\pm$0.018 & 0.28 \\
+%      \hline
+%      $\eta$ & (1.62$\pm$4.35)$\times10^{9}$ & 0.229$\pm$0.203 & (2.89$\pm$1.81)$\times10^{9}$ & 0.810$\pm$0.103 & 3.043$\pm$0.045 & 0.33\\
+%      \hline
+%      \multicolumn{6}{c}{}\\
+%      %
+%      %
+%      \hline
+%      Tsallis & \multicolumn{2}{c}{$C$ (pb)} & $T$ (GeV) & \multicolumn{2}{c}{$n$} & $\chi^2_{\rm red}$ \\
+%      \hline\hline
+%      $\pi^{0}$ & \multicolumn{2}{c}{(2.46$\pm$0.18)$\times10^{11}$} & 0.121$\pm$0.004 & \multicolumn{2}{c}{6.465$\pm$0.042} & 0.57 \\
+%      \hline
+%      $\eta$ & \multicolumn{2}{c}{(1.56$\pm$0.19)$\times10^{10}$} & 0.221$\pm$0.012 & \multicolumn{2}{c}{6.560$\pm$0.113} & 0.59\\
+%      \hline
+%     \end{tabular}}
+%     \caption{Parameters of the fits to the $\pi^{0}$ and $\eta$ invariant differential cross sections using the TCM fit \cite{Bylinkin2012bz,Bylinkin2011yi,Bylinkin2015xya} from Eq. \ref{eq:TwoComponentModel} as well as using a Tsallis fit \cite{Tsallis1987eu} from Eq.~\ref{eq:Tsallis}.}
+%     \label{tab:FitParam}
+%   \end{center}
+% \end{table}
+% \renewcommand{\arraystretch}{1.0}
+% %		\begin{figure}[h]
+% %			\centering
+% %			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_InvXSectionCompAllSystems_Comb.eps}
+% %			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_InvXSectionCompAllSystems_Comb.eps}
+% %			\caption{The final invariant cross sections are shown for the neutral pion (left) and the eta meson (right) for pp collisions at \s~=~8~TeV. The superposition shows the results of \acs{PCM}\cite{anaNotePCM8TeV}, \acs{EMCal}\cite{anaNoteEMC8TeV}, \acs{PCM}-\acs{EMCal}\cite{anaNotePCMEMC8TeV} and \acs{PHOS}\cite{anaNotePHOS8TeV}. In addition, the combined spectra - taking into account the respective statistical and systematic errors as well as correlations of the single measurements - has been superimposed.}
+% %			\label{fig:Pi0_Eta_diffComb}
+% %		\end{figure}
+% 					
+% 		\begin{figure}[h]
+% 		\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ComparisonWithFitPi0_8TeV.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ComparisonWithFitEta_8TeV.eps}
+% 			\caption{Two-component model (\acs{TCM}) fits for the pion (left) and eta (right) to the fully combined ALICE results at \s~=~8~TeV. The fit parameters are given in the plots as well as in \hyperref[tab:FitParam]{Table~\ref*{tab:FitParam}}. As there are just a limited number of points with relatively bigger errors (in comparison to pion) available for the eta meson, the \acs{TCM} fit ends up with bigger errors in that case, but still converges with physical values. In blue and green, the two different components of \acs{TCM} have been decomposed. The red line displays the full \acs{TCM} fit, which is the sum of blue and green.}
+% 			\label{fig:Fits}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 		\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ComparisonWithFit_Tsallis_Pi0_8TeV.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ComparisonWithFit_Tsallis_Eta_8TeV.eps}
+% 			\caption{Tsallis \cite{Tsallis1987eu} fits for the pion (left) and eta (right) to the fully combined ALICE results at \s~=~8~TeV. The fit parameters are given in the plots as well as in \hyperref[tab:FitParam]{Table~\ref*{tab:FitParam}}.}
+% 			\label{fig:FitsTsallis}
+% 		\end{figure}
+% \clearpage	
+% The ratios of the single measurements to the combined TCM fits are given in \hyperref[fig:SingleRatiosToCombine]{Figure~\ref*{fig:SingleRatiosToCombine}} for the $\pi^0$ and $\eta$ mesons. A good agreement within the respective uncertainties can be stated.
+% 
+% 		\begin{figure}[h]
+% 		\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_RatioOfIndividualMeasToCombFit_PP.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_RatioOfIndividualMeasToCombFit_PP.eps}
+% 			\caption{Ratios of the single measurements to the \acs{TCM} fits of the fully combined results for the neutral pion (left) and the eta meson (right).}
+% 			\label{fig:SingleRatiosToCombine}
+% 		\end{figure}
+% 
+% The ratios of the combined measurements to the combined fits are given in \hyperref[fig:RatioCombine]{Figure~\ref*{fig:RatioCombine}} for the $\pi^0$ and $\eta$, respectively.
+% 		
+% 	\begin{figure}[h]
+% 	\centering
+% 		\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_RatioOfCombToCombFit_PP8TeV.eps}
+% 		\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_RatioOfCombToCombFit_PP8TeV.eps}
+% 		\caption{Ratios of the combined results to the \acs{TCM} fits of the fully combined results for the neutral pion (left) and the eta meson (right).}
+% 		\label{fig:RatioCombine}
+% 	\end{figure}
+% 		
+% \clearpage
+% The ratios of the single measurements to the combined Tsallis fits are given in \hyperref[fig:SingleRatiosToCombineTsallis]{Figure~\ref*{fig:SingleRatiosToCombineTsallis}} for the $\pi^0$ and $\eta$ mesons.
+% 				
+% 	\begin{figure}[h]
+% 	\centering
+% 		\includegraphics[width=0.45\textwidth]{figures/Combination/Pi0_RatioOfIndividualMeasToCombTsallisFit_PP.eps}
+% 		\includegraphics[width=0.45\textwidth]{figures/Combination/Eta_RatioOfIndividualMeasToCombTsallisFit_PP.eps}
+% 		\caption{Ratios of the single measurements to the Tsallis fits of the fully combined results for the neutral pion (left) and the eta meson (right).}
+% 		\label{fig:SingleRatiosToCombineTsallis}
+% 	\end{figure}
+% 				
+% The ratios of the combined measurements to the combined Tsallis fits are given in \hyperref[fig:RatioCombineTsallis]{Figure~\ref*{fig:RatioCombineTsallis}} for the $\pi^0$ and $\eta$, respectively.
+% 						
+% 	\begin{figure}[h]
+% 	\centering
+% 		\includegraphics[width=0.45\textwidth]{figures/Combination/Pi0_RatioOfCombToCombTsallisFit_PP8TeV.eps}
+% 		\includegraphics[width=0.45\textwidth]{figures/Combination/Eta_RatioOfCombToCombTsallisFit_PP8TeV.eps}
+%      	\caption{Ratios of the combined results to the Tsallis fits of the fully combined results for the neutral pion (left) and the eta meson (right).}
+% 		\label{fig:RatioCombineTsallis}
+% 	\end{figure}
+% 						
+% An overview over the ratios of the combined measurements to the combined TCM, Tsallis, mod. Hagedorn and power law fits are given in \hyperref[fig:RatioCombineOverview]{Figure~\ref*{fig:RatioCombineOverview}} for the $\pi^0$ and $\eta$, respectively.
+% 						
+% 		\begin{figure}[h]
+% 		\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_RatioOfCombToDifferentFits_PP8TeV.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_RatioOfCombToDifferentFits_PP8TeV.eps}
+% 			\caption{Ratios of the combined results to TCM, Tsallis, mod. Hagedorn and power law fits of the fully combined results for the neutral pion (left) and the eta meson (right).}
+% 			\label{fig:RatioCombineOverview}
+% 		\end{figure}
+% 						
+% The following \hyperref[fig:Pi0Final]{Figure~\ref*{fig:Pi0Final}} and \hyperref[fig:EtaFinal]{Figure~\ref*{fig:EtaFinal}} show the combined results for $\pi^0$ and $\eta$, together with comparisons to theory calculations and different Monte Carlo generators. The \acs{TCM} fits to the combined results are also plotted.
+% 
+% 		\begin{figure}
+% 		    \vspace{-0.8cm}
+% 			\centering
+% 			\includegraphics[width=0.9\textwidth]{figures/Combination/Pi0_InvXSectionWithRatios_Paper.eps}
+% 			\vspace{-0.2cm}
+% 			\caption{The plot shows the fully combined invariant neutral pion cross section together with the corresponding \acs{TCM} fit as well as ratios to it. Furthermore, the given NLO calculation using \acs{PDF}:MSTW08 and \acs{FF}:DSS14 is compared to the fit as well as predictions from PYTHIA8.210 'Tune 4C' and 'Monash 2013'.}
+% 			\label{fig:Pi0Final}
+% 		\end{figure}
+% 		
+% 		\begin{figure}
+% 		    \vspace{-0.8cm}
+% 			\centering
+% 			\includegraphics[width=0.9\textwidth]{figures/Combination/Eta_InvXSectionWithRatios_Paper.eps}
+% 			\vspace{-0.2cm}
+% 			\caption{The plot shows the fully combined invariant eta meson cross section together with the corresponding \acs{TCM} fit as well as ratios to it. Furthermore, the given NLO calculation using \acs{PDF}:CTEQ6M5 and \acs{FF}:AESSS is compared to the fit as well as predictions from PYTHIA8.210 'Tune 4C' and 'Monash 2013'.}
+% 			\label{fig:EtaFinal}
+% 		\end{figure}
+% 		
+% \clearpage		
+% \hyperref[fig:EtaToPi0Final]{Figure~\ref*{fig:EtaToPi0Final}} visualizes the fully combined \EtaToPi ratio at \s~=~8~TeV and compares with \acs{ALICE} results at two different center of mass energies of \s~=~2.76~TeV (see \cite{anaNoteComb} as well as \cite{anaNoteEMC2760GeV}, \cite{anaNotePCMEMC2760GeV} and \cite{anaNote1052} for references) and \s~=~7~TeV (see \cite{anaNote7TeV2012} for reference) which are found to be consistent within errors.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.9\textwidth]{figures/Combination/EtaToPi0_Paper.eps}
+% 			\caption{Combined \EtaToPi ratio at \s~=~8~TeV compared to the ratios obtained at \s~=~2.76~TeV and \s~=~7~TeV.}
+% 			\label{fig:EtaToPi0Final}
+% 		\end{figure}
+% 		
+% \clearpage		
+\subsection{Comparison to Theory Calculations}
+% \hyperref[fig:Pi0_Theory]{Figure~\ref*{fig:Pi0_Theory}} shows the ratios of the combined neutral pion result, the two different PYTHIA8.210 calculations as well as the NLO calculation using \acs{FF}:DSS14 to the combined fit. An older NLO calculation using the \acs{FF}:DSS07 is also shown together with DSS14 in the same \hyperref[fig:Pi0_Theory]{Figure~\ref*{fig:Pi0_Theory}}.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_RatioTheoryToData_PP.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Pi0_RatioTheoryToData_PP2.eps}
+% 			\caption{\newline (left) This plot shows ratios of the given NLO calculation using \acs{PDF}:MSTW08 and \acs{FF}:DSS14 as well as predictions from PYTHIA8.210 'Tune 4C' and 'Monash 2013' to the combined \acs{TCM} fit. \newline (right) This plot shows ratios of the given NLO calculation using \acs{PDF}:MSTW08 and \acs{FF}:DSS14 as well as a NLO calculation using \acs{PDF}:CTEQ6M5 and \acs{FF}:DSS07 to the combined \acs{TCM} fit.}
+% 			\label{fig:Pi0_Theory}
+% 		\end{figure}
+% 	
+% The next \hyperref[fig:Eta_Theory]{Figure~\ref*{fig:Eta_Theory} (left)} shows the ratios of the combined eta meson result, the two different PYTHIA8.210 calculations as well as the NLO calculation using \acs{PDF}:CTEQ6M5 and \acs{FF}:AESSS to the combined fit.	
+% 
+% The combined \EtaToPi-ratio is shown in \hyperref[fig:EtaToPi0_Theory]{Figure~\ref*{fig:EtaToPi0_Theory} (right)} with ALICE measurements at different center of mass energies and other related experiments, together a $m_{T}$ scaled \EtaToPi-ratio computed from combined neutral pion spectrum at \s~=~8~TeV by applying the empirical scaling law.
+% 
+% The combined \EtaToPi-ratio is shown in \hyperref[fig:EtaToPi0_Paper]{Figure~\ref*{fig:EtaToPi0_Paper}} with PYTHIA~8.210 predictions as well as NLO calculations using \acs{PDF}:CTEQ6M5, together with \acs{FF}:DSS07 for the neutral pion and \acs{FF}:AESSS for the eta meson.
+% 
+% The combined \EtaToPi-ratio alone is shown in \hyperref[fig:EtaToPi0_Combined]{Figure~\ref*{fig:EtaToPi0_Combined}}.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/Eta_RatioTheoryToData_PP.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_mT.eps}
+% 			\caption{\newline (left) This plot shows ratios of the given NLO calculation using \acs{PDF}:CTEQ6M5 and \acs{FF}:AESSS as well as predictions from PYTHIA8.210 'Tune 4C' and 'Monash 2013' to the combined \acs{TCM} fit. \newline (right) This plot displays the combined \EtaToPi-ratio as well as ALICE measurements at different center of mass energies and other related experiments, together a $m_{T}$ scaled \EtaToPi-ratio computed from combined neutral pion spectrum at \s~=~8~TeV by applying the empirical scaling law.}
+% 			\label{fig:Eta_Theory}
+% 			\label{fig:EtaToPi0_Theory}
+% 		\end{figure}		
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_Theory_Paper.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_Theory_Paper_LIN.eps}
+% 			\caption{These plots (left with x-axis in log-scale, right in linear) display the combined \EtaToPi-ratio as well as a NLO prediction using \acs{PDF}:CTEQ6M5, \acs{FF}:DSS07 for the neutral pion and \acs{FF}:AESSS for the eta meson. The predictions from the two different PYTHIA tunes are also shown.}
+% 			\label{fig:EtaToPi0_Paper}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_Combined.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/EtaToPi0_Combined_LIN.eps}
+% 			\caption{The combined \EtaToPi-ratio is shown in log- and linear-scale without any further additions.}
+% 			\label{fig:EtaToPi0_Combined}
+% 		\end{figure}
+%  \clearpage
+%  
+%  The combined $\pi^0$ and $\eta$ spectra are shown in \hyperref[fig:Pi0Eta_Theory]{Figure~\ref*{fig:Pi0Eta_Theory}} together with PYTHIA as well as NLO pQCD predictions. The TCM and Tsallis fits are also plotted. \hyperref[fig:Pi0Eta]{Figure~\ref*{fig:Pi0Eta}} shows comparable figures and contains only selected parts of \hyperref[fig:Pi0Eta_Theory]{Figure~\ref*{fig:Pi0Eta_Theory}}.
+%  
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/InvXSection_Pi0_Eta_Theory.eps}
+% 			\caption{Combined $\pi^0$ and $\eta$ spectra with fits and theory predictions.}
+% 			\label{fig:Pi0Eta_Theory}
+% 		\end{figure}
+% 		
+%  	    \begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/InvXSection_Pi0_Eta_Fits.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/InvXSection_Pi0_Eta.eps}
+% 			\caption{Combined $\pi^0$ and $\eta$ spectra with fits on left side and without on right side.}
+% 			\label{fig:Pi0Eta}
+% 		\end{figure}	
+% 
+% \clearpage
+\subsubsection{\texorpdfstring{Comparison with $m_{\rm T}$ scaling prediction}{Comparison with mT scaling prediction}}
+% The validity of $m_{\rm T}$ scaling was tested by comparing the measured $\eta/\pi^{0}$ ratio with the ratio of the $\eta$ spectrum, derived from the $m_{\rm T}$-scaled TCM parametrization of the $\pi^0$ spectrum, to the fit of the measured $\pi^0$ spectrum, which is shown in \hyperref[fig:mTscaling]{Figure~\ref*{fig:mTscaling}}.
+% The quoted $\pi^0$ fit parameters from \hyperref[tab:FitParam]{Table~\ref*{tab:FitParam}} were used as input for $m_{\rm T}$ scaling, further replacing the $\pi^0$ mass by the $\eta$ mass and using the normalization ratio $C^{\eta}/C^{\pi^0}=0.455$.
+%  
+%  	    \begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.75\textwidth]{figures/Combination/EtaToPi0_mT_ratio.eps}
+% 			\caption{.}
+% 			\label{fig:mTscaling}
+% 		\end{figure}
+% 		
+% For each single point below 3.5~\GeVc in \hyperref[fig:mTscaling]{Figure~\ref*{fig:mTscaling}}, the following deviations in n$\sigma$ have been found:
+% 
+% \begin{itemize}
+% \item \pT: 0.65; ytrue: 1; ymeas: 0.448; y\_sig: 0.214; y\_sig\_rel: 0.479; \textbf{n$\sigma$: 2.56}
+% \item \pT: 0.95; ytrue: 1; ymeas: 0.434; y\_sig: 0.139; y\_sig\_rel: 0.321; \textbf{n$\sigma$: 4.04}
+% \item \pT: 1.25; ytrue: 1; ymeas: 0.702; y\_sig: 0.112; y\_sig\_rel: 0.160; \textbf{n$\sigma$: 2.63}
+% \item \pT: 1.55; ytrue: 1; ymeas: 0.678; y\_sig: 0.089; y\_sig\_rel: 0.132; \textbf{n$\sigma$: 3.57}
+% \item \pT: 1.85; ytrue: 1; ymeas: 0.906; y\_sig: 0.098; y\_sig\_rel: 0.108; \textbf{n$\sigma$: 0.94}
+% \item \pT: 2.20; ytrue: 1; ymeas: 0.755; y\_sig: 0.067; y\_sig\_rel: 0.089; \textbf{n$\sigma$: 3.61}
+% \item \pT: 2.60; ytrue: 1; ymeas: 0.848; y\_sig: 0.068; y\_sig\_rel: 0.080; \textbf{n$\sigma$: 2.21}
+% \item \pT: 3.00; ytrue: 1; ymeas: 0.881; y\_sig: 0.077; y\_sig\_rel: 0.087; \textbf{n$\sigma$: 1.52}
+% \item \pT: 3.40; ytrue: 1; ymeas: 0.933; y\_sig: 0.088; y\_sig\_rel: 0.094; \textbf{n$\sigma$: 0.75}
+% \end{itemize}
+% 
+% In total, a disagreement of measured $\eta/\pi^{0}$ ratio with respect to $m_{\rm T}$ scaling hypothesis of $6.2\sigma$ for \pT~$<$~3.5\GeVc has been found, clearly breaking this empirical scaling law for the quoted momentum region.
+% 			
+% \clearpage
+\subsection{Integrated Yields and Mean Transverse Momenta}
+% 
+% The following paragraph as well as \hyperref[tab:meanPtAndYields]{Table~\ref*{tab:meanPtAndYields}} have been copied from the paper draft belonging to this combination note: (https://aliceinfo.cern.ch/Notes/node/522).
+% 
+% The mean transverse momenta, $\langle p_{\rm T}\rangle$, are determined for the neutral meson spectra shown in \hyperref[fig:Pi0Eta]{Figure~\ref*{fig:Pi0Eta}}.
+% Three different fit functions are used in this context: a TCM, Eq. \hyperref[eq:TwoComponentModel]{Equation~\ref*{eq:TwoComponentModel}}, a Tsallis, Eq. \hyperref[eq:Tsallis]{Equation~\ref*{eq:Tsallis}}, and a modified Hagedorn \cite{PhysRevC.81.034911} fit that is used as the default fit function, since it yields the best agreement with data at lowest \pT measured.
+% The obtained values for $\pi^{0}$ and $\eta$ mesons are listed in \hyperref[tab:meanPtAndYields]{Table~\ref*{tab:meanPtAndYields}}, where statistical and systematic uncertainties are quoted.
+% The additional uncertainty term denoted with ``fit sys'' reflects the choice of the fitting function.
+% Moreover, the introduced fit functions are also used to calculate the integrated yields, $\text{d}N/\text{d}y|_{y\,\,\approx\,\,0}$, for both neutral mesons in inelastic events.
+% The cross section for inelastic pp collisions at $\sqrt{s}=8$~TeV, $\sigma_{\rm INEL} = 74.7 \pm 1.7$~mb \cite{PhysRevLett.111.012001}, is used for this purpose.
+% The obtained yields are given in \hyperref[tab:meanPtAndYields]{Table~\ref*{tab:meanPtAndYields}}, which are based on extrapolation fractions, $F_{\rm extpol}$, of about 45\% for the $\pi^{0}$ and about 34\% for the $\eta$ meson.
+% Additionally, the integrated $\eta/\pi^{0}$ ratio is estimated and can be found in \hyperref[tab:meanPtAndYields]{Table~\ref*{tab:meanPtAndYields}} as well.
+% For the recent paper by ALICE on neutral meson production in pp collisions at $\sqrt{s}=2.76$~TeV \cite{Acharya:2017hyu}, the mean \pT as well as the integrated yields are also calculated for the reported spectra, which are furthermore added to \hyperref[tab:meanPtAndYields]{Table~\ref*{tab:meanPtAndYields}}.
+% The inelastic pp cross section at $\sqrt{s}=2.76$~TeV, quoted in Ref. \cite{Acharya:2017hyu} as well, is used to calculate the integrated yields which include extrapolation fractions of about 59\% for the $\pi^{0}$ and about 52\% for the $\eta$ meson.
+% The obtained values for $\langle p_{\rm T}\rangle$ and $\text{d}N/\text{d}y|_{y\,\,\approx\,\,0}$ for both neutral mesons are compared with measurements of average transverse momenta of charged particles \cite{Abelev:2013bla} and with results concerning charged-particle multiplicity \cite{Adam:2015gka}.
+% Due to a large extrapolation fraction of the $\pi^{0}$ and $\eta$ meson spectra with respect to charged particles and the given systematics for the lowest transverse momenta, the uncertainties of $\langle p_{\rm T}\rangle$ and $\text{d}N/\text{d}y|_{y\,\,\approx\,\,0}$ are found to be larger.
+% Hence, the integrated $\eta/\pi^{0}$ ratios are also affected.
+% Nevertheless, all values quoted in this paragraph are consistent within experimental uncertainties with the results from charged particle measurements.
+% Within their substantial uncertainties, the $\eta/\pi^{0}$ ratios at both pp energies are found to be consistent as well.
+% \renewcommand{\arraystretch}{1.3}
+% 
+% \begin{table}[h]
+%   \begin{center}
+%   \scalebox{0.9}{
+%     \begin{tabular}{c||c|c|c}
+%      \hline
+%      $\sqrt{s}=8$~TeV & $\langle p_{\rm T}\rangle$~(\GeVc) & $\text{d}N/\text{d}y|_{y\,\,\approx\,\,0}$ & $F_{\rm extpol}$ \\
+%      \hline\hline
+%      $\pi^{0}$ & $0.431\pm0.006_{\mbox{\tiny (stat)}}\pm0.020_{\mbox{\tiny (sys)}}\pm0.012_{\mbox{\tiny (fit sys)}}$ & $3.252\pm0.128_{\mbox{\tiny (stat)}}\pm0.918_{\mbox{\tiny (sys)}}\pm0.146_{\mbox{\tiny (fit sys)}}$ & 45\%\\
+%      \hline
+%      $\eta$ & $0.929\pm0.110_{\mbox{\tiny (stat)}}\pm0.126_{\mbox{\tiny (sys)}}\pm0.085_{\mbox{\tiny (fit sys)}}$ & $0.164\pm0.033_{\mbox{\tiny (stat)}}\pm0.052_{\mbox{\tiny (sys)}}\pm0.023_{\mbox{\tiny (fit sys)}}$ & 34\% \\
+%      \hline
+%      \hline
+%      $\eta/\pi^{0}$ & \multicolumn{2}{c|}{$0.050\pm0.010_{\mbox{\tiny (stat)}}\pm0.022_{\mbox{\tiny (sys)}}\pm0.008_{\mbox{\tiny (fit sys)}}$} & \\
+%      \cline{1-3}
+%      \multicolumn{4}{c}{}\\
+%      \hline
+%      $\sqrt{s}=2.76$~TeV & $\langle p_{\rm T}\rangle$~(\GeVc) & $\text{d}N/\text{d}y|_{y\,\,\approx\,\,0}$ & $F_{\rm extpol}$ \\
+%      \hline\hline
+%      $\pi^{0}$ & $0.451\pm0.008_{\mbox{\tiny (stat)}}\pm0.014_{\mbox{\tiny (sys)}}\pm0.152_{\mbox{\tiny (fit sys)}}$ & $1.803\pm0.058_{\mbox{\tiny (stat)}}\pm0.352_{\mbox{\tiny (sys)}}\pm0.646_{\mbox{\tiny (fit sys)}}$ & 59\%\\
+%      \hline
+%      $\eta$ & $0.647\pm0.068_{\mbox{\tiny (stat)}}\pm0.040_{\mbox{\tiny (sys)}}\pm0.140_{\mbox{\tiny (fit sys)}}$ & $0.250\pm0.050_{\mbox{\tiny (stat)}}\pm0.052_{\mbox{\tiny (sys)}}\pm0.063_{\mbox{\tiny (fit sys)}}$ & 52\% \\
+%      \hline
+%      \hline
+%      $\eta/\pi^{0}$ & \multicolumn{2}{c|}{$0.139\pm0.028_{\mbox{\tiny (stat)}}\pm0.040_{\mbox{\tiny (sys)}}\pm0.061_{\mbox{\tiny (fit sys)}}$} & \\
+%      \cline{1-3}
+%     \end{tabular}}
+%     \caption{The mean transverse momenta, $\langle p_{\rm T}\rangle$, and integrated yields, $\text{d}N/\text{d}y|_{y\,\,\approx\,\,0}$, for ALICE measurements of $\pi^{0}$ and $\eta$ mesons at $\sqrt{s}=2.76$ and 8~TeV are summarized. It has to be noted that the uncertainties from the measurements of the inelastic cross sections are not included for the given numbers, which are $^{+3.9\%}_{-6.4\%}(model)\pm2.0(lumi)$\% for $\sqrt{s}=2.76$~TeV \cite{Abelev:2012sea} and $\pm2.3$\% for 8~TeV \cite{PhysRevLett.111.012001}. Moreover, the integrated $\eta/\pi^{0}$ ratios are quoted for the different energies.}
+%     \label{tab:meanPtAndYields}
+%   \end{center}
+% \end{table}
+% \renewcommand{\arraystretch}{1.0}
+% 
+% %The fits used to determine the values from \hyperref[tab:meanPtAndYields]{Table~\ref*{tab:meanPtAndYields}} are shown in the following \hyperref[fig:yieldsNPion8TeV]{Figures~\ref*{fig:yieldsNPion8TeV}}\hyperref[fig:yieldsEta8TeV]{-\ref*{fig:yieldsEta8TeV}}.
+% 
+% 
+%  	    \begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/8TeV/Spectra_NPion.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/8TeV/Spectra_NPion_LinX_LowPt.eps}
+% 			\caption{Combined neutral pion measurement at \s~=~8~TeV with logarithmic x-axis (left) and showing only the low momentum region $<2$~\GeVc with linear scale on x-axis (right). The different fits as described in the previous paragraph are shown which are used to determine the integrated yields and mean transverse momenta.}
+% 			\label{fig:yieldsNPion8TeV}
+% 		\end{figure}
+% 		
+% The measured neutral meson cross sections, shown in \hyperref[fig:Pi0Eta]{Figure~\ref*{fig:Pi0Eta}}, have been transformed into differential yields by dividing with the inelastic cross section and multiplying with $p_{\rm T}$.  
+% The resulting spectra per inelastic collision are shown in left part of \hyperref[fig:yieldsNPion8TeV]{Figure~\ref*{fig:yieldsNPion8TeV}} and \hyperref[fig:yieldsEta8TeV]{Figure~\ref*{fig:yieldsEta8TeV}}. 
+% In order to obtain the integrated yields and mean transverse momenta, the identified particle spectra were fitted with a modified Hagedorn function.
+% Afterwards the spectra were integrated in the measured transverse momentum region using the measured points and uncertainties, whereas the fit function was used to estimate the yield in the unmeasured regions. 
+% The systematic uncertainties were obtained by moving the data points to their maximum and minimum $1~\sigma$ variations of the systematic uncertainties, repeating the fit using the same functional form afterwards. 
+% Doing so, one can obtain the maximum and minimum yield which is still in accordance with the uncertainties given for each transverse momentum slice. 
+% To get an estimate for the extrapolation uncertainty in particular for low transverse momenta, two different parameterizations were taken into account: the Tsallis and the two-component model. 
+% This variation has been kept separate from the other sources of systematic uncertainties as it depends heavily on the choice of fit functions and might improve in the future. 
+% The fits to the spectra using the modified Hagedorn function as well as the fit function variations at low transverse momenta are shown in right parts of \hyperref[fig:yieldsNPion8TeV]{Figure~\ref*{fig:yieldsNPion8TeV}} and \hyperref[fig:yieldsEta8TeV]{Figure~\ref*{fig:yieldsEta8TeV}}. 
+% A similar procedure has been followed to obtain the average transverse momenta of the respective particle species.
+% However, in this case the data points were shifted such that they would represent the hardest or softest possible spectrum to obtain the systematic uncertainties. 
+% Also here, an additional uncertainty from the choice of the functional from has been taken into account as an independent contribution to the systematics. 
+% For consistency, all integrated yields and mean $p_{\rm T}$ values were obtained using the same method.
+% 
+% 	    \begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/8TeV/Spectra_Eta.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/8TeV/Spectra_Eta_LinX_LowPt.eps}
+% 			\caption{Combined $\eta$ meson measurement at \s~=~8~TeV with logarithmic x-axis (left) and showing only the low momentum region $<2$~\GeVc with linear scale on x-axis (right). The different fits as described in the previous paragraph are shown which are used to determine the integrated yields and mean transverse momenta.}
+% 			\label{fig:yieldsEta8TeV}
+% 	    \end{figure}
+% 
+% The values quoted in \hyperref[tab:meanPtAndYields]{Table~\ref*{tab:meanPtAndYields}} can also be read off from \hyperref[fig:yields]{Figure~\ref*{fig:yields}}.
+% 
+%  	    \begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ParticleYield.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ParticleMeanPt.eps}
+% 			\caption{(left) The integrated yields per inelastic collision, $\text{d}N/\text{d}y_{y\,\,\approx\,\,0}$, are plotted for neutral meson measurements in pp collisions at $\sqrt{s}=2.76$ and $8$~TeV. (right) The mean transverse momenta, $\langle \ensuremath{p_{\mbox{\tiny T}}}\rangle$, are plotted for neutral meson measurements in pp collisions at $\sqrt{s}=2.76$ and $8$~TeV. Statistical and systematic uncertainties are given in both plots as well as the systematic uncertainty due to the choice of the fitting function.}
+% 			\label{fig:yields}
+% 		\end{figure}	
+% 
+% \hyperref[fig:yieldsWith7]{Figure~\ref*{fig:yieldsWith7}} shows the latest results from the ongoing neutral meson measurement of pass4 data at $\sqrt{s}=7$~TeV in addition.
+% Furthermore, charged pions and kaons are plotted in the $\text{d}N/\text{d}y_{y\,\,\approx\,\,0}$ as well.
+% 		
+%  	    \begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ParticleYield_with7TeV_pass4.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ParticleMeanPt_with7TeV_pass4.eps}
+% 			\caption{(left) The integrated yields, $\text{d}N/\text{d}y_{y\,\,\approx\,\,0}$, are plotted for neutral meson measurements in pp collisions at $\sqrt{s}=2.76$, $7$ (latest available result from pass4 analysis) and $8$~TeV. Open markers represent charged particles, whereas full markers stand for neutral particles. (right) The mean transverse momenta, $\langle \ensuremath{p_{\mbox{\tiny T}}}\rangle$, are plotted for neutral meson measurements in pp collisions at $\sqrt{s}=2.76$, $7$ (latest available result from pass4 analysis) and $8$~TeV. Statistical and systematic uncertainties are given in both plots as well as the systematic uncertainty due to the choice of the fitting function.}
+% 			\label{fig:yieldsWith7}
+% 		\end{figure}	
+% \clearpage
+\subsection{Comparison to ATLAS Charged Particle Measurement}
+% 
+% \acs{ATLAS} has measured charged particles at \s~=~8~TeV, see \cite{ATLASchPart8TeV}. Of course, a comparison to charged pions would be more suitable, but this measurement by \acs{ATLAS} was the only reference available at the moment of the release of this note which we could compare with the neutral pion results. The quoted invariant cross sections for charged particles, that are used in this note to compare with the ALICE combined $\pi^{0}$ measurement at high transverse momenta, have been obtained for the following conditions
+% \begin{itemize}
+% \item number of charged particles per event: $N_{ch}\geq1$
+% \item minimum transverse momentum of charged particles: $p_{T}>500$ MeV
+% \item measured in: $|\eta|<2.5$
+% \end{itemize}
+% by \acs{ATLAS}. Therefore, we refer to Figure 5 in \cite{ATLASchPart8TeV}. As \acs{ATLAS} only quotes invariant yields, the following comparisons with \acs{ALICE} combined results are given in arbitrary units, as the correct scaling factor for the different trigger condition in \acs{ATLAS} (compared to \acs{ALICE}) is not available yet. 
+% 
+% The measured invariant yield by \acs{ATLAS} has been fitted with a \acs{TCM} and ratios of the respective data points have been computed to the \acs{TCM} fit, which can be found \hyperref[fig:ATLAS_ChPartRatio]{Figure~\ref*{fig:ATLAS_ChPartRatio}}. The found parameters are shown in \hyperref[tab:ATLAS_TCM]{Table~\ref*{tab:ATLAS_TCM}}.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ATLAS_charged_RatioToFit.eps}
+% 			\caption{Ratios of \acs{ATLAS} charged particle measurement \cite{ATLASchPart8TeV} to the \acs{TCM} fit of the same data.}
+% 			\label{fig:ATLAS_ChPartRatio}
+% 		\end{figure}
+% 
+% 		\begin{table}[h]
+% 			\small
+% 			\begin{tabular}{cccccc}
+% 			\toprule
+% 			 \s~=~8~TeV & $A_e$ 																& $T_e$ (GeV) 			& $A$ 														& $T$ (GeV) & $n$ \\ \midrule
+% 			 
+% 			 $h^{+/-}$ & $(7.2 \pm 0.6) \cdot 10^{11}$		& $0.164 \pm 0.006$ & $(5.5 \pm 0.5) \cdot 10^{10}$	& $0.69 \pm 0.02$ & $3.12 \pm 0.02$ \\			 
+% 			 \bottomrule
+% 			\end{tabular}
+% 			\caption{Obtained parameters for the two-component model (\acs{TCM}) fit to the \acs{ATLAS} charged particle result, according to \hyperref[eq:TwoComponentModel]{Equation~\ref*{eq:TwoComponentModel}}.}
+% 			\label{tab:ATLAS_TCM}
+% 		\end{table}
+% 
+% The next \hyperref[fig:ATLAS_ALICE]{Figure~\ref*{fig:ATLAS_ALICE}} shows the ratio of \acs{ATLAS}' charged particle measurement to the \acs{TCM} fit of the \acs{ALICE} combined neutral pion result as well as the ratio of the \acs{ALICE} combined result to the \acs{TCM} fit of \acs{ATLAS} charged particle spectrum.
+% 
+% Ideally, we would expect a flat ratio of around 0.6 at high transverse momenta when comparing neutral pions with charged hadrons. However, as we do not have the proper scaling factor for \acs{ATLAS} yet, we still are able to check if ratio is flat for high momenta. Indeed, this may be verified in the following. Furthermore, the comparison of charged hadrons to neutral pions has been done for \s~=~2.76~TeV and may be followed up in the corresponding combination note in \cite{anaNoteComb}.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ComparisonChargedHadronToNeutralPions_PP8TeV_2017_11_24.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Combination/ComparisonChargedHadronToNeutralPions2_PP8TeV_2017_11_24.eps}
+% 			\caption{This plot shows (left) ratio of \acs{ATLAS} charged particle measurement to \acs{ALICE} combined neutral pion \acs{TCM} fit and (right) ratio of \acs{ALICE} combined neutral pion measurement to the \acs{TCM} fit to \acs{ATLAS} charged particles at \s~=~8~TeV.}
+% 			\label{fig:ATLAS_ALICE}
+% 		\end{figure}
+% \clearpage	
+\subsection{Comparison to PHOS Preliminary Measurement of Neutral Pion Cross Section}
+% 
+% As there has been an approved preliminary of \acs{PHOS} standalone neutral pion measurement, this section contains comparison plots to the final \acs{PHOS} and also final fully combined neutral pion yields.
+% 
+% \hyperref[fig:PHOSprelim]{Figure~\ref*{fig:PHOSprelim}} contains the comparison of the preliminary \acs{PHOS} neutral pion measurement, split in Minimum Bias (MB) and \acs{PHOS} trigger result, to a \acs{TCM} fit to the final \acs{PHOS}-only neutral pion result. From 3 to 8 \GeVc, the final \acs{PHOS} spectrum has been changed up to 20\% compared to the preliminary measurement; for further details see analysis note of \acs{PHOS} \cite{anaNotePHOS8TeV}.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.5\textwidth]{figures/Combination/Pi0_RatioOfPHOSprelimToPHOSfinal_PP.eps}
+% 			\caption{Ratios of preliminary \acs{PHOS}-only neutral pion measurement to the \acs{TCM} fit of final \acs{PHOS}-only neutral pion measurement. The ratios have been computed for Minimum Bias (MB) and \acs{PHOS} triggered result, separately.}
+% 			\label{fig:PHOSprelim}
+% 		\end{figure}
+% 		
+% \hyperref[fig:PHOSprelim_combined]{Figure~\ref*{fig:PHOSprelim_combined}} shows the comparison of the preliminary \acs{PHOS} neutral pion measurement, split in Minimum Bias (MB) and \acs{PHOS} trigger result, to a \acs{TCM} fit to the combined final neutral pion result. Compared to the final combined result there is a difference of 10-20\% visible in most transverse momentum bins, see \cite{anaNotePHOS8TeV} for detailed description of \acs{PHOS} measurements.
+% 
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.5\textwidth]{figures/Combination/Pi0_RatioOfPHOSprelimToCombFit_PP.eps}
+% 			\caption{Ratios of preliminary \acs{PHOS}-only neutral pion measurement to the \acs{TCM} fit of combined final neutral pion measurement. The ratios have been computed for Minimum Bias (MB) and \acs{PHOS} triggered result, separately.}
+% 			\label{fig:PHOSprelim_combined}
+% 		\end{figure}
+% 		
+\subsection{Neutral Meson Measurements in pp collisions by ALICE}
+% 		
+% In this section, the neutral meson spectra measured in pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017} recorded by ALICE during LHC Run1 are summarized.
+% In the following, measured spectra are compared with PYTHIA8.2 Monash2013 calculations as well as NLO predictions as indicated in the plots.
+% The fit parameters are summarized in Tab. \ref{tab:FitParamTCM} for the TCM and in Tab. \ref{tab:FitParamLT} for the Tsallis.
+% 
+% \renewcommand{\arraystretch}{1.3}
+% \begin{table}[h!]
+%   \begin{center}
+%   \scalebox{0.93}{
+%     \begin{tabular}{l||cccccc}
+%      \hline
+%      $\pi^{0}$ & \multicolumn{5}{c}{TCM fit parameters}\\
+%      \hline
+%      pp, $\sqrt{s}$ & $A_{e}$ (pb~GeV$^{-2}c^{3}$) & $T_{e}$ (GeV) & $A$ (pb~GeV$^{-2}c^{3}$) & $T$ (GeV) & $n$ & $\chi^2_{\rm red}$ \\
+%      \hline\hline
+%      0.9 TeV & (2.96$\pm$2.57)$\times10^{11}$ & 0.136$\pm$0.034 & (1.48$\pm$0.73)$\times10^{10}$ & 0.577$\pm$0.060 & 3.435$\pm$0.137 & 0.92 \\
+%      \hline
+%      2.76 TeV & (7.87$\pm$3.50)$\times10^{8}$ & 0.566$\pm$0.035 & (7.43$\pm$1.30)$\times10^{10}$ & 0.441$\pm$0.021 & 3.083$\pm$0.027 & 0.45 \\
+%      \hline
+%      7 TeV & (3.36$\pm$0.96)$\times10^{11}$ & 0.166$\pm$0.022 & (2.76$\pm$1.01)$\times10^{10}$ & 0.626$\pm$0.048 & 3.103$\pm$0.039 & 0.31 \\
+%      \hline
+%      8 TeV & (6.84$\pm$2.79)$\times10^{11}$ & 0.142$\pm$0.020 & (3.68$\pm$0.89)$\times10^{10}$ & 0.597$\pm$0.030 & 3.028$\pm$0.018 & 0.28 \\
+%      \hline
+%      \multicolumn{6}{c}{}\\
+%      \hline
+%      $\eta$ & \multicolumn{5}{c}{TCM fit parameters}\\
+%      \hline
+%      pp, $\sqrt{s}$ & $A_{e}$ (pb~GeV$^{-2}c^{3}$) & $T_{e}$ (GeV) & $A$ (pb~GeV$^{-2}c^{3}$) & $T$ (GeV) & $n$ & $\chi^2_{\rm red}$ \\
+%      \hline\hline
+%      0.9 TeV & - & - & - & - & - & - \\
+%      \hline
+%      2.76 TeV & (1.85$\pm$2.21)$\times10^{10}$ & 0.149$\pm$0.071 & (1.39$\pm$1.05)$\times10^{9}$ & 0.852$\pm$0.136 & 3.319$\pm$0.123 & 0.32 \\
+%      \hline
+%      7 TeV & (6.40$\pm$6.88)$\times10^{9}$ & 0.181$\pm$0.210 & (3.67$\pm$5.66)$\times10^{9}$ & 0.762$\pm$0.268 & 3.045$\pm$0.253 & 0.20 \\
+%      \hline
+%      8 TeV & (1.62$\pm$4.35)$\times10^{9}$ & 0.229$\pm$0.203 & (2.89$\pm$1.81)$\times10^{9}$ & 0.810$\pm$0.103 & 3.043$\pm$0.045 & 0.33\\
+%      \hline
+%     \end{tabular}}
+%     \caption{Fit parameters for the $\pi^{0}$ and $\eta$ invariant differential cross sections using TCM fits.}
+%     \label{tab:FitParamTCM}
+%   \end{center}
+% \end{table}
+% \renewcommand{\arraystretch}{1.0}
+% 
+% \renewcommand{\arraystretch}{1.3}
+% \begin{table}[h!]
+%   \begin{center}
+%     \begin{tabular}{l||cccccc}
+%      \hline
+%      $\pi^{0}$ & \multicolumn{5}{c}{Tsallis fit parameters}\\
+%      \hline
+%      pp, $\sqrt{s}$ & \multicolumn{2}{c}{$C$ (pb)} & $T$ (GeV) & \multicolumn{2}{c}{$n$} & $\chi^2_{\rm red}$ \\
+%      \hline\hline
+%      0.9 TeV & \multicolumn{2}{c}{(0.80$\pm$0.16)$\times10^{11}$} & 0.133$\pm$0.015 & \multicolumn{2}{c}{7.863$\pm$0.525} & 0.69 \\
+%      \hline
+%      2.76 TeV & \multicolumn{2}{c}{(1.29$\pm$0.10)$\times10^{11}$} & 0.128$\pm$0.004 & \multicolumn{2}{c}{7.046$\pm$0.068} & 1.52 \\
+%      \hline
+%      7 TeV & \multicolumn{2}{c}{(1.79$\pm$0.12)$\times10^{11}$} & 0.138$\pm$0.005 & \multicolumn{2}{c}{6.865$\pm$0.078} & 0.44 \\
+%      \hline
+%      8 TeV & \multicolumn{2}{c}{(2.46$\pm$0.18)$\times10^{11}$} & 0.121$\pm$0.004 & \multicolumn{2}{c}{6.465$\pm$0.042} & 0.57 \\
+%      \hline
+%      \multicolumn{6}{c}{}\\
+%      \hline
+%      $\eta$ & \multicolumn{5}{c}{Tsallis fit parameters}\\
+%      \hline
+%      pp, $\sqrt{s}$ & \multicolumn{2}{c}{$C$ (pb)} & $T$ (GeV) & \multicolumn{2}{c}{$n$} & $\chi^2_{\rm red}$ \\
+%      \hline\hline
+%      0.9 TeV & \multicolumn{2}{c}{(2.33$\pm$2.44)$\times10^{10}$} & 0.148$\pm$0.053 & \multicolumn{2}{c}{7.900 (fixed)} & -\\
+%      \hline
+%      2.76 TeV & \multicolumn{2}{c}{(1.12$\pm$0.26)$\times10^{10}$} & 0.207$\pm$0.024 & \multicolumn{2}{c}{7.133$\pm$0.335} & 0.52\\
+%      \hline
+%      7 TeV & \multicolumn{2}{c}{(1.57$\pm$0.20)$\times10^{10}$} & 0.229$\pm$0.021 & \multicolumn{2}{c}{6.979$\pm$0.475} & 0.17\\
+%      \hline
+%      8 TeV & \multicolumn{2}{c}{(1.56$\pm$0.19)$\times10^{10}$} & 0.221$\pm$0.012 & \multicolumn{2}{c}{6.560$\pm$0.113} & 0.59\\
+%      \hline
+%     \end{tabular}
+%     \caption{Fit parameters for the $\pi^{0}$ and $\eta$ invariant differential cross sections using Tsallis fits.}
+%     \label{tab:FitParamLT}
+%   \end{center}
+% \end{table}
+% \renewcommand{\arraystretch}{1.0}	
+% 	
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_XSec.eps}
+% 			\caption{Neutral pion (left) and $\eta$ meson (right) spectra measured in pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017} by ALICE. Two-component model fits as well as Tsallis fits to data are plotted in addition.}
+% 			\label{fig:overviewXSec}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec_Pythia.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_XSec_Pythia.eps}
+% 			\caption{Neutral pion (left) and $\eta$ meson (right) spectra measured in pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017} by ALICE. Two-component model fits as well as Tsallis fits to data are plotted in addition. The PYTHIA8.2 Monash 2013 prediction is also shown.}
+% 			\label{fig:overviewXSec_Pythia}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec_Pythia_TheoryDSS07.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_XSec_Pythia_TheoryAESSS.eps}
+% 			\caption{Neutral pion (left) and $\eta$ meson (right) spectra measured in pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017} by ALICE. Two-component model fits as well as Tsallis fits to data are plotted in addition. The PYTHIA8.2 Monash 2013 prediction is also shown together with predictions from NLO calculations.}
+% 			\label{fig:overviewXSec_Pythia_Theo}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec_Pythia_TheoryDSS14.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_FullRatios_Pythia_DSS14.eps}
+% 			\caption{Neutral pion (left) spectra measured in pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017} by ALICE. A NLO calculation based on FF:DSS14 is compared to the data. (right) Ratios of the two-component model fits to data and theory predictions.}
+% 			\label{fig:overviewXSec_Pythia_Theo14}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_FullRatios.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_FullRatios.eps}
+% 			\caption{Ratios of two-component model fits to data for the neutral pion (left) and $\eta$ meson (right) for pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:overviewRatios}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_FullRatios_Pythia.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_FullRatios_Pythia.eps}
+% 			\caption{Ratios of two-component model fits to data and PYTHIA predictions for the neutral pion (left) and $\eta$ meson (right) for pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:overviewRatios_Pythia}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_FullRatios_Pythia_DSS07.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_FullRatios_Pythia_AESSS.eps}
+% 			\caption{Ratios of two-component model fits to data, PYTHIA predictions and NLO calculations for the neutral pion (left) and $\eta$ meson (right) for pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:overviewRatios_Pythia_Theo}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec_FullRatios.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_XSec_FullRatios.eps}
+% 			\caption{Neutral meson spectra and ratios of data to fits of the measured spectra for the neutral pion (left) and $\eta$ mesons (right) for pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:overviewXSecFullratios}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec_FullRatios_Pythia.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_XSec_FullRatios_Pythia.eps}
+% 			\caption{Neutral meson spectra and ratios of data and PYTHIA predictions to fits of the measured spectra for the neutral pion (left) and $\eta$ mesons (right) for pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:overviewXSecFullRatios_Pythia}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec_FullRatios_Pythia_TheoryDSS07.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Eta_XSec_FullRatios_Pythia_TheoryAESSS.eps}
+% 			\caption{Neutral meson spectra and ratios of data, PYTHIA predictions as well as NLO calculations to fits of the measured spectra for the neutral pion (left) and $\eta$ mesons (right) for pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:overviewXSecFullRatios_Pythia_Theo}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/Pi0_XSec_FullRatios_Pythia_TheoryDSS14.eps}
+% 			\caption{Neutral meson spectra and ratios of data, PYTHIA predictions as well as NLO calculations to fits of the measured spectra for the neutral pion for pp collisions at $\sqrt{s}=$0.9 \cite{Abelev:2012cn}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:overviewXSecFullRatios_Pythia_Theo14}
+% 		\end{figure}
+% 		
+% 		\begin{figure}[h]
+% 			\centering
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/EtaToPi0.eps}
+% 			\includegraphics[width=0.49\textwidth]{figures/Overview/EtaToPi0_mT.eps}
+% 			\caption{(left) $\eta/\pi^{0}$ ratios measured in pp collision at energies of $\sqrt{s}=$0.9 \cite{Abelev:2012cn,0954-3899-38-12-124076}, 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}. (right) The plot shows the ratios of the measured $\eta/\pi^0$ ratios over the $\eta/\pi^0$ ratios obtained with $m_{\rm T}$ scaling for the different pp collision energies quoted. Below $3.5~\ensuremath{\mbox{GeV}/c}$, the disagreement from $m_{\rm T}$ scaling hypotheses are found to be $2.1\sigma$, $5.7\sigma$ and $6.2\sigma$ for pp collision at 2.76 \cite{Acharya:2017hyu}, 7 \cite{Abelev:2012cn} and 8~TeV \cite{Acharya:2017}.}
+% 			\label{fig:etaToPi0}
+% 		\end{figure}

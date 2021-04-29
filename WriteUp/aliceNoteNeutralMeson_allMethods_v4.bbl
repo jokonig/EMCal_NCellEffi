@@ -1,0 +1,226 @@
+\begingroup\raggedright\begin{thebibliography}{40}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem{anaNoteEMC8TeV}
+D.~Mühlheim {\em et~al.}, ``{Neutral meson measurements with EMCal in ALICE in
+  pp collisions at $\sqrt{s} = 8 TeV$}'', ALICE Analysis Note, May
+  2016{\natexlab{a}}, unpublished.
+\newline\url{https://aliceinfo.cern.ch/Notes/node/489}
+
+\bibitem{anaNotePCMEMC8TeV}
+D.~Mühlheim {\em et~al.}, ``{Neutral meson measurements with PCM-EMCal in
+  ALICE in pp collisions at $\sqrt{s} = 8 TeV$}'', ALICE Analysis Note, May
+  2016{\natexlab{b}}, unpublished.
+\newline\url{https://aliceinfo.cern.ch/Notes/node/411}
+
+\bibitem{anaNotePCMEMC2760GeV}
+F.~Bock {\em et~al.}, ``{Neutral meson measurements with PCM-EMCal in ALICE in
+  pp collisions at $\sqrt{s} = 2.76$ TeV}'', ALICE Analysis Note, February
+  2016{\natexlab{a}}, unpublished.
+\newline\url{https://aliceinfo.cern.ch/Notes/node/387}
+
+\bibitem{anaNoteEMC2760GeV}
+F.~Bock {\em et~al.}, ``{Neutral meson measurements with EMCal in ALICE in pp
+  collisions at $\sqrt{s} = 2.76$ TeV}'', ALICE Analysis Note, April
+  2016{\natexlab{b}}, unpublished.
+\newline\url{https://aliceinfo.cern.ch/Notes/node/468}
+
+\bibitem{anaNote1052}
+F.~Bock {\em et~al.}, ``{Neutral meson measurements with conversions in ALICE
+  in pp and PbPb collisions at 2.76 TeV}'', ALICE Analysis Note, November 2013,
+  unpublished.
+\newline\url{https://aliceinfo.cern.ch/Notes/node/217}
+
+\bibitem{vanderMeer1968zz}
+S.~van~der Meer, ``{Calibration of the Effective Beam Height in the ISR}'',
+1968.
+%%CITATION = CERN-ISR-PO-68-31 ETC.;%%.
+
+\bibitem{Oyama2011pj}
+{\bfseries ALICE Collaboration}, K.~Oyama, ``{Cross section normalization in
+  proton-proton collisions at $\sqrt{s}$ = 2.76 TeV and 7 TeV, with ALICE at
+  LHC}'', {\em J.Phys.} {\bfseries G38} (2011) 124131,
+ \href{http://xxx.lanl.gov/abs/1107.0692}{{\ttfamily arXiv:1107.0692}}.
+%%CITATION = ARXIV:1107.0692;%%.
+
+\bibitem{Abelev2012sja}
+{\bfseries ALICE Collaboration}, B.~Abelev {\em et~al.}, ``{Measurement of
+  inelastic, single- and double-diffraction cross sections in proton--proton
+  collisions at the LHC with ALICE}'', {\em Eur. Phys. J. C}, 2012
+ \href{http://xxx.lanl.gov/abs/1208.4968}{{\ttfamily arXiv:1208.4968}}.
+%%CITATION = ARXIV:1208.4968;%%.
+
+\bibitem{ALICE-PUBLIC-2017-002}
+{\bfseries ALICE Collaboration}, ``{ALICE luminosity determination for pp
+  collisions at $\sqrt{s}=8$ TeV}'', Mar 2017.
+
+\bibitem{Alner1986xu}
+{\bfseries UA5 Collaboration}, G.~Alner {\em et~al.}, ``{Scaling of
+  Pseudorapidity Distributions at c.m. Energies Up to 0.9-TeV}'', {\em Z.Phys.}
+  {\bfseries C33} (1986)
+1--6.
+%%CITATION = ZEPYA,C33,1;%%.
+
+\bibitem{TwikiJetJet}
+G.~Conesa~Balbastre, ``{Cross section scaling factors for MC productions with
+  jet-jet and gamma-jet events}''.
+\newline\url{https://twiki.cern.ch/twiki/bin/viewauth/ALICE/JetMCProductionsCrossSections}
+
+\bibitem{alessandro2006alice}
+B.~Alessandro, F.~Antinori, J.~Belikov, C.~Blume, A.~Dainese, P.~Foka,
+  P.~Giubellino, B.~Hippolyte, C.~Kuhn, G.~Mart{\'i}nez, {\em et~al.},
+  ``{ALICE: Physics performance report, volume II}'', {\em Journal of Physics
+  G: Nuclear and Particle Physics} {\bfseries 32} (2006) 1295--2040.
+
+\bibitem{Bourrion2012vn}
+{\bfseries ALICE EMCal}, O.~Bourrion {\em et~al.}, ``{The ALICE EMCal L1
+  trigger first year of operation experience}'', {\em JINST} {\bfseries 8}
+  (2013) C01013,
+ \href{http://xxx.lanl.gov/abs/1210.8078}{{\ttfamily arXiv:1210.8078}}.
+%%CITATION = ARXIV:1210.8078;%%.
+
+\bibitem{Bock2010}
+F.~Bock, ``{ALICE Capabilities for Studying Photon Physics with the Conversion
+  Method at LHC Energies}'', bachelor's thesis, University of Heidelberg, June
+  2010.
+\newline\url{http://www.physi.uni-heidelberg.de//Publications/Bock-Bachelorthesis.pdf}
+
+\bibitem{Koch2012}
+K.~Koch, ``Measurement of $\pi^0$ and $\eta$ mesons with photon conversions in
+  alice in proton-proton collisions at $\sqrt{s}$ = 0.9, 2.76, 7 tev'', PhD
+  thesis, University of Heidelberg, February 2012.
+\newline\url{http://www.ub.uni-heidelberg.de/archiv/13113}
+
+\bibitem{Bock2012}
+F.~Bock, ``{Neutral Pion and Eta Meson Production in pp and Pb--Pb Collisions
+  at the LHC with the ALICE Detector}'', Master's thesis, University
+  Heidelberg, December 2012.
+\newline\url{http://www.physi.uni-heidelberg.de//Publications/Bock-Masterthesis.pdf}
+
+\bibitem{AliKFPackage}
+S.~Gorbunov and I.~Kisel, ``{AliKF Package}''.
+\newline\url{{http://alisoft.cern.ch/viewvc/branches/v4-18-Release/STEER/AliKFParticle.h}}
+
+\bibitem{podolanski1954analysis}
+J.~Podolanski and R.~Armenteros, ``Analysis of v-events'', {\em Phil. Mag.}
+  {\bfseries 7} (1954).
+
+\bibitem{Cortese2008zza}
+{\bfseries ALICE Collaboration}, P.~Cortese {\em et~al.}, ``{ALICE
+  electromagnetic calorimeter technical design report}'',
+2008.
+%%CITATION = CERN-LHCC-2008-014 ETC.;%%.
+
+\bibitem{anaNote589}
+G.~Conesa~Balbastre {\em et~al.}, ``{$\pi^{0}$ identification with EMCAL via
+  shower shape and cluster splitting analysis methods in ALICE: 2011 data, pp
+  and Pb-Pb collisions Feasibility studies}'', ALICE Analysis Note, April 2015,
+  unpublished.
+\newline\url{https://aliceinfo.cern.ch/Notes/node/145}
+
+\bibitem{anaNote1025}
+J.~Kamin {\em et~al.}, ``{$\pi^{0}$ measured by the EMCal in p+p collisions at
+  $\sqrt(s) = 2.76$ TeV}'', ALICE Analysis Note, April 2015, unpublished.
+\newline\url{https://aliceinfo.cern.ch/Notes/node/211}
+
+\bibitem{EMCalAnalysisTwiki}
+``{EMCal Analysis recommendations twiki}''. {\natexlab{a}}.
+\newline\url{https://twiki.cern.ch/twiki/bin/viewauth/ALICE/EMCalAnalysisRecommendations}
+
+\bibitem{EMCalCorrelationTwiki}
+``{EMCal Correlations Analysis twiki}''. {\natexlab{b}}.
+\newline\url{https://twiki.cern.ch/twiki/bin/viewauth/ALICE/PhotonHadronCorrelations#Presentations}
+
+\bibitem{EMCalTimeCalibTwiki}
+``{EMCal time calibration twiki}''. {\natexlab{c}}.
+\newline\url{https://twiki.cern.ch/twiki/bin/view/ALICE/EMCALTimeCalibration}
+
+\bibitem{AliPhysicsPCM2015}
+``{AliPhysics-Software, directory of PCM-software}''.
+\newline\url{https://github.com/alisw/AliPhysics/tree/master/PWGGA/GammaConv}
+
+\bibitem{EMCalAlignTwiki}
+``{EMCal alignment twiki}''. {\natexlab{a}}.
+\newline\url{https://twiki.cern.ch/twiki/bin/view/ALICE/EMCalAlignment}
+
+\bibitem{EMCalCalibTwiki}
+``{EMCal calibration twiki}''. {\natexlab{b}}.
+\newline\url{https://twiki.cern.ch/twiki/bin/view/ALICE/EMCalCalibrationPage}
+
+\bibitem{ConversionGroup}
+``{Conversion Group}''.
+\newline\url{https://twiki.cern.ch/twiki/bin/viewauth/ALICE/PWGGA#Conversions}
+
+\bibitem{Aamodt2011th}
+K.~Aamodt, ``Photon, $\pi^{0}$ and $\eta$ measurements in proton-proton
+  collisions at $\sqrt{s}$ = 7 tev with the alice tpc at the lhc'', phd thesis,
+  University of Oslo, 2011.
+
+\bibitem{Lyons1988rp}
+L.~Lyons, D.~Gibaut, and P.~Clifford, ``{How to Combine Correlated Estimates of
+  a Single Physical Quantity}'', {\em Nucl.Instrum.Meth.} {\bfseries A270}
+  (1988)
+110.
+%%CITATION = NUIMA,A270,110;%%.
+
+\bibitem{Valassi2003mu}
+A.~Valassi, ``{Combining correlated measurements of several different physical
+  quantities}'', {\em Nucl.Instrum.Meth.} {\bfseries A500} (2003)
+391--405.
+%%CITATION = NUIMA,A500,391;%%.
+
+\bibitem{Lyons1986em}
+L.~Lyons, ``Statistics for nuclear and particle physicists'', Cambridge, Uk:
+  Univ. Pr., 1986.
+
+\bibitem{barlow1989statistics}
+R.~J. Barlow, ``Statistics: a guide to the use of statistical methods in the
+  physical sciences'', John Wiley \& Sons, 1989.
+
+\bibitem{Valassi2013bga}
+A.~Valassi and R.~Chierici, ``{Information and treatment of unknown
+  correlations in the combination of measurements using the BLUE method}'',
+  {\em Eur.Phys.J.} {\bfseries C74} (2014) 2717,
+ \href{http://xxx.lanl.gov/abs/1307.4003}{{\ttfamily arXiv:1307.4003}}.
+%%CITATION = ARXIV:1307.4003;%%.
+
+\bibitem{Lafferty1994cj}
+G.~D. Lafferty and T.~R. Wyatt, ``{Where to stick your data points: The
+  treatment of measurements within wide bins}'', {\em Nucl.Instrum.Meth.}
+  {\bfseries A355} (1995)
+541--547.
+%%CITATION = NUIMA,A355,541;%%.
+
+\bibitem{Bylinkin2012bz}
+A.~Bylinkin and A.~Rostovtsev, ``{Parametrization of the shape of
+  hadron-production spectra in high-energy particle interactions}'', {\em
+  Phys.Atom.Nucl.} {\bfseries 75} (2012){\natexlab{a}}
+999--1005.
+%%CITATION = PANUE,75,999;%%.
+
+\bibitem{Bylinkin2011yi}
+A.~Bylinkin and A.~Rostovtsev, ``{Anomalous behavior of pion production in high
+  energy particle collisions}'', {\em Eur.Phys.J.} {\bfseries C72}
+  (2012){\natexlab{b}} 1961,
+ \href{http://xxx.lanl.gov/abs/1112.5734}{{\ttfamily arXiv:1112.5734}}.
+%%CITATION = ARXIV:1112.5734;%%.
+
+\bibitem{Bylinkin2015xya}
+A.~Bylinkin, N.~S. Chernyavskaya, and A.~A. Rostovtsev, ``{Predictions on the
+  transverse momentum spectra for charged particle production at LHC-energies
+  from a two component model}'', {\em Eur.Phys.J.} {\bfseries C75} (2015),
+  no.~4, 166,
+ \href{http://xxx.lanl.gov/abs/1501.05235}{{\ttfamily arXiv:1501.05235}}.
+%%CITATION = ARXIV:1501.05235;%%.
+
+\bibitem{Tsallis1987eu}
+C.~Tsallis, ``{Possible Generalization of Boltzmann-Gibbs Statistics}'', {\em
+  J.Statist.Phys.} {\bfseries 52} (1988)
+479--487.
+%%CITATION = JSTPB,52,479;%%.
+
+\bibitem{ConvSoftware}
+``{ALICE Conversion Afterburner Software}''.
+\newline\url{https://gitlab.cern.ch/alice-pcg/AnalysisSoftware}
+
+\end{thebibliography}\endgroup

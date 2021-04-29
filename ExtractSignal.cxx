@@ -45,7 +45,8 @@ void ExtractSignal(){
   hNoNCell_Ratio->Divide(hNCell2, hNoNCell, 1, 1, "B");
 
 
-  TFile *f = TFile::Open("InvMassCorrected_13TeV_nom_03_25_TBNL.root");
+  TFile *f = TFile::Open("rootFiles_InvMass/InvMassCorrected_13TeV_nom_04_28_MConly.root");
+  TFile *f_data = TFile::Open("rootFiles_InvMass/InvMassCorrected_13TeV_nom_04_28.root");
 
   std::vector<TH2F*> vecSignal;
   std::vector<TH2F*> vecBack;
@@ -68,21 +69,31 @@ void ExtractSignal(){
   }
 
 
+  // get with and without NCell cut from data fileFile
+  TH2F* hdata_2NCell_Signal = (TH2F*) f_data->Get("hInvMassVsPt_0_data");
+  TH2F* hdata_2NCell_Back = (TH2F*) f_data->Get("hInvMassVsPtBack_0_data");
+  TH2F* hdata_NoNCell_Signal = (TH2F*) f_data->Get("hInvMassVsPt_1_data");
+  TH2F* hdata_NoNCell_Back = (TH2F*) f_data->Get("hInvMassVsPtBack_1_data");
+
+
   const int numBins = 14;
   const double pTArr[numBins + 1] = {1.4, 1.6, 1.8, 2.0, 2.5,     3.0, 3.5, 4.0, 5.0, 6.0,
                                      8.0, 10., 12., 16, 20};
   std::vector<TH1F*> vecHistYields;
   vecHistYields.clear();
-  vecHistYields.push_back( new TH1F("hRawYieldNCell2", "hRawYieldNCell2", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNoNCell", "hRawYieldNoNCell", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCEAllClus", "hRawYieldNCEAllClus", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCETB", "hRawYieldNCETB", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCEGammaAndElecGaus", "hRawYieldNCEGammaAndElecGaus", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCETBAndElec", "hRawYieldNCETBAndElec", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCEGammaAndElec", "hRawYieldNCEGammaAndElec", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCEGammaAndElec2", "hRawYieldNCEGammaAndElecAll2", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCEGammaAndElec3", "hRawYieldNCEGammaAndElecAll3", numBins, pTArr));
-  vecHistYields.push_back( new TH1F("hRawYieldNCEGammaLin", "hRawYieldNCEGammaLin", numBins, pTArr));
+  vecHistYields.push_back( new TH1F("hRawYieldNCell2", "hRawYieldNCell2", numBins, pTArr)); //0
+  vecHistYields.push_back( new TH1F("hRawYieldNoNCell", "hRawYieldNoNCell", numBins, pTArr)); //1
+  vecHistYields.push_back( new TH1F("hRawYieldNCEAllClus", "hRawYieldNCEAllClus", numBins, pTArr)); //2
+  vecHistYields.push_back( new TH1F("hRawYieldNCETB", "hRawYieldNCETB", numBins, pTArr));  //3
+  vecHistYields.push_back( new TH1F("hRawYieldNCE_PCMEMC_TBFT_all", "hRawYieldNCE_PCMEMC_TBFT_all", numBins, pTArr)); //4
+  vecHistYields.push_back( new TH1F("hRawYieldNCE_PCMEMC_TB_all", "hRawYieldNCE_PCMEMC_TB_all", numBins, pTArr)); //5
+  vecHistYields.push_back( new TH1F("hRawYieldNCE_PCMEMC_TBFT_GammaClus", "hRawYieldNCE_PCMEMC_TBFT_GammaClus", numBins, pTArr)); //6
+  vecHistYields.push_back( new TH1F("hRawYieldNCE_EMC_TBFT_all", "hRawYieldNCE_EMC_TBFT_all", numBins, pTArr)); //7
+  vecHistYields.push_back( new TH1F("hRawYieldNCE_EMC_TB_all", "hRawYieldNCE_EMC_TB_all", numBins, pTArr)); //8
+  vecHistYields.push_back( new TH1F("hRawYieldNCE_EMC_TBFT_GammaClus", "hRawYieldNCE_EMC_TBFT_GammaClus", numBins, pTArr)); //9
+
+  TH1F* hdataYield_noNCell = new TH1F("hdataYield_noNCell", "hdataYield_noNCell", numBins, pTArr);
+  TH1F* hdataYield_2NCell = new TH1F("hdataYield_2NCell", "hdataYield_2NCell", numBins, pTArr);
 
 
   for(int i = 0; i < numBins - 1; ++i){
@@ -92,8 +103,22 @@ void ExtractSignal(){
       vecHistYields.at(j)->SetBinContent(i+1, yield);
       vecHistYields.at(j)->SetBinError(i+1, err);
     }
+    double err = 0;
+    float yield = GetYield(hdata_NoNCell_Signal, hdata_NoNCell_Back, pTArr[i], pTArr[i+1], err);
+    hdataYield_noNCell->SetBinContent(i+1, yield);
+    hdataYield_noNCell->SetBinError(i+1, err);
 
+    yield = GetYield(hdata_2NCell_Signal, hdata_2NCell_Back, pTArr[i], pTArr[i+1], err);
+    hdataYield_2NCell->SetBinContent(i+1, yield);
+    hdataYield_2NCell->SetBinError(i+1, err);
   }
+  // ratio for no ncell cut  (data1/MC1)/(data2/MC2)
+  hdataYield_noNCell->Divide(vecHistYields.at(1));
+  hdataYield_2NCell->Divide(vecHistYields.at(0));
+
+  TH1F* hNoNCellCutRatio = (TH1F*) hdataYield_2NCell->Clone("hNoNCellCutRatio");
+  hNoNCellCutRatio->Divide(hdataYield_noNCell);
+
 
   // make ratios to std ncell = 2
   for(int i = 1; i < vecHistYields.size(); ++i){
@@ -102,37 +127,47 @@ void ExtractSignal(){
   }
 
 
+
   // Plotting
   StyleSettingsPaper();
   TCanvas *Can = new TCanvas("Can", "", 1200, 1000);
   DrawPaperCanvasSettings(Can, 0.1, 0.003, 0.003, 0.12);
-  TH2F* hDummy    = new TH2F("hDummy","hDummy",1000,0.4, 20,1000,0.9, 1.4);
+  TH2F* hDummy    = new TH2F("hDummy","hDummy",1000,1., 8,1000,0.95, 1.4);
   SetStyleHistoTH2ForGraphs(hDummy, "#it{p}_{T} (GeV/#it{c})","ratio to NCell #geq 2", 0.85*0.044,0.044, 0.85*0.044,0.044, 1.1,1.2, 510, 510);
   Can->cd();
   hDummy->Draw();
 
   DrawSetMarker(hNoNCell_Ratio, 25, 2, kBlack, kBlack);
+  DrawSetMarker(hNoNCellCutRatio, 33, 3, kBlack, kBlack);
   // DrawSetMarker(vecHistYields.at(1), 24, 3, kBlue + 2, kBlue + 2);
   DrawSetMarker(vecHistYields.at(2), 20, 2, kRed + 2, kRed + 2);
   DrawSetMarker(vecHistYields.at(3), 24, 2, kBlue + 2, kBlue + 2);
-  DrawSetMarker(vecHistYields.at(9), 28, 3, kOrange + 2, kOrange + 2);
+  DrawSetMarker(vecHistYields.at(4), 28, 3, kOrange + 2, kOrange + 2);
+  DrawSetMarker(vecHistYields.at(5), 25, 3, kOrange - 2, kOrange - 2);
+  DrawSetMarker(vecHistYields.at(7), 25, 3, kGray + 2, kGray + 2);
   // DrawSetMarker(vecHistYields.at(5), 34, 2, kBlack, kBlack);
   // DrawSetMarker(vecHistYields.at(9), 34, 2, kCyan + 2, kCyan + 2);
 
-  DrawLines(0.5, 20, 1,1, 2, kGray+2, 2);
+  DrawLines(1, 8, 1,1, 2, kGray+2, 2);
   // vecHistYields.at(1)->Draw("same,pe");
   hNoNCell_Ratio->Draw("same,pe");
+  hNoNCellCutRatio->Draw("same,pe");
   vecHistYields.at(2)->Draw("same,pe");
   vecHistYields.at(3)->Draw("same,pe");
-  vecHistYields.at(9)->Draw("same,pe");
+  vecHistYields.at(4)->Draw("same,pe");
+  vecHistYields.at(5)->Draw("same,pe");
+  vecHistYields.at(7)->Draw("same,pe");
   // vecHistYields.at(5)->Draw("same,pe");
   // vecHistYields.at(6)->Draw("same,pe");
 
-  TLegend *leg = GetAndSetLegend2(0.3, 0.92, 0.95, 0.92 - 0.05*3, 40);
+  TLegend *leg = GetAndSetLegend2(0.3, 0.92, 0.95, 0.92 - 0.05*6, 40);
   leg->AddEntry(hNoNCell_Ratio, "no N_{cell} cut (from train)", "p");
+  leg->AddEntry(hNoNCellCutRatio, "no N_{cell} cut (locally)", "p");
   leg->AddEntry(vecHistYields.at(2), "N_{cell} func: All clus", "p");
   leg->AddEntry(vecHistYields.at(3), "N_{cell} func: TB", "p");
-  leg->AddEntry(vecHistYields.at(9), "N_{cell} func: linear fit to tagged #gamma", "p");
+  leg->AddEntry(vecHistYields.at(4), "N_{cell} func: PCM-EMC tagged, TB+FT", "p");
+  leg->AddEntry(vecHistYields.at(5), "N_{cell} func: PCM-EMC tagged, TB", "p");
+  leg->AddEntry(vecHistYields.at(7), "N_{cell} func: EMC tagged, TB+FT", "p");
   // leg->AddEntry(vecHistYields.at(5), "N_{cell} func: TB for #gamma and elec for e^{#pm}", "p");
   // leg->AddEntry(vecHistYields.at(6), "N_{cell} func: GammaAndElec3", "p");
   leg->Draw("same");

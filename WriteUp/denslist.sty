@@ -1,0 +1,19 @@
+% Prevent infinite loops
+\let\Otemize =\itemize
+\let\Onumerate =\enumerate
+\let\Oescription =\description
+% Zero the vertical spacing parameters
+\def\Nospacing{\itemsep=2pt\topsep=1pt\partopsep=1pt\parskip=0pt\parsep=2pt}
+%\def\Nospacing{itemsep=2pt\topsep=0pt\partopsep=0pt\parskip=0pt\parsep=2pt}
+% Redefine the environments in terms of the original values
+\renewenvironment{itemize}{\vspace*{-1pt}\Otemize\Nospacing}
+                          {\endlist\vspace*{-1pt}}
+\renewenvironment{enumerate}{\vspace*{-1pt}\Onumerate\Nospacing}
+                            {\endlist\vspace*{-1pt}}
+%\renewenvironment{description}{\vspace*{-3mm}\Oescription\Nospacing}
+%                              {\endlist\vspace*{-3mm}}
+\renewcommand\labelitemi{\normalfont\textendash}
+\renewcommand\labelitemii{\normalfont\textendash}
+\renewcommand\labelitemiii{\textasteriskcentered}
+\renewcommand\labelitemiv{\textperiodcentered}
+
