@@ -473,64 +473,64 @@ DataTree::DataTree(bool mc, TString Period, bool light, int skipping){
 void DataTree::CreateHistos(){
 
   cerr<<__LINE__<<endl;
-  hNCellVsEGammas = new TH2F("EvsNCell", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNL = new TH2F("EvsNCellNL", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrue = new TH2F("hNCellVsEGammasNLTrue", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElec = new TH2F("hNCellVsEGammasNLTrueElec", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammas = new TH2F("EvsNCell", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNL = new TH2F("EvsNCellNL", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrue = new TH2F("hNCellVsEGammasNLTrue", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElec = new TH2F("hNCellVsEGammasNLTrueElec", "", nBinsE, arrEbins , 20, -0.5, 19.5);
 
-  hNCellVsEGammasNLTrue_TrueE = new TH2F("hNCellVsEGammasNLTrue_TrueE", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrue_RecE = new TH2F("hNCellVsEGammasNLTrue_RecE", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasNLTrue_TrueE = new TH2F("hNCellVsEGammasNLTrue_TrueE", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrue_RecE = new TH2F("hNCellVsEGammasNLTrue_RecE", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   cerr<<__LINE__<<endl;
-  hNCellVsEGammasLeft = new TH2F("EvsNCellLeft", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLLeft = new TH2F("EvsNCellNLLeft", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueLeft = new TH2F("hNCellVsEGammasNLTrueLeft", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecLeft = new TH2F("hNCellVsEGammasNLTrueElecLeft", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasLeft = new TH2F("EvsNCellLeft", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLLeft = new TH2F("EvsNCellNLLeft", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueLeft = new TH2F("hNCellVsEGammasNLTrueLeft", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElecLeft = new TH2F("hNCellVsEGammasNLTrueElecLeft", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   cerr<<__LINE__<<endl;
-  hNCellVsEGammasWide = new TH2F("EvsNCellWide", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLWide = new TH2F("EvsNCellNLWide", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueWide = new TH2F("hNCellVsEGammasNLTrueWide", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecWide = new TH2F("hNCellVsEGammasNLTrueElecWide", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasWide = new TH2F("EvsNCellWide", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLWide = new TH2F("EvsNCellNLWide", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueWide = new TH2F("hNCellVsEGammasNLTrueWide", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElecWide = new TH2F("hNCellVsEGammasNLTrueElecWide", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   cerr<<__LINE__<<endl;
-  hNCellVsEGammasSideBand = new TH2F("EvsNCellSideBand", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLSideBand = new TH2F("EvsNCellNLSideBand", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueSideBand = new TH2F("hNCellVsEGammasNLTrueSideBand", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecSideBand = new TH2F("hNCellVsEGammasNLTrueElecSideBand", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasSideBand = new TH2F("EvsNCellSideBand", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLSideBand = new TH2F("EvsNCellNLSideBand", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueSideBand = new TH2F("hNCellVsEGammasNLTrueSideBand", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElecSideBand = new TH2F("hNCellVsEGammasNLTrueElecSideBand", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   cerr<<__LINE__<<endl;
-  hNCellVsEGammasOnlyHighClus = new TH2F("hNCellVsEGammasOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLOnlyHighClus = new TH2F("hNCellVsEGammasNLOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasOnlyHighClus = new TH2F("hNCellVsEGammasOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLOnlyHighClus = new TH2F("hNCellVsEGammasNLOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElecOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   cerr<<__LINE__<<endl;
-  hNCellVsEGammasOnlyLowClus = new TH2F("hNCellVsEGammasOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLOnlyLowClus = new TH2F("hNCellVsEGammasNLOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasOnlyLowClus = new TH2F("hNCellVsEGammasOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLOnlyLowClus = new TH2F("hNCellVsEGammasNLOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElecOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueElecOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   cerr<<__LINE__<<endl;
-  hNCellVsEGammasSideBandOnlyHighClus = new TH2F("hNCellVsEGammasSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueElecSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasSideBandOnlyHighClus = new TH2F("hNCellVsEGammasSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElecSideBandOnlyHighClus = new TH2F("hNCellVsEGammasNLTrueElecSideBandOnlyHighClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   cerr<<__LINE__<<endl;
-  hNCellVsEGammasSideBandOnlyLowClus = new TH2F("hNCellVsEGammasSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEGammasNLTrueElecSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueElecSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEGammasSideBandOnlyLowClus = new TH2F("hNCellVsEGammasSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEGammasNLTrueElecSideBandOnlyLowClus = new TH2F("hNCellVsEGammasNLTrueElecSideBandOnlyLowClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
 
-  hNCellVsENL = new TH2F("hNCellVsENL_AllClus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNL = new TH2F("hNCellVsETMNL_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsENoExotic50 = new TH2F("hNCellVsENoExotic50_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsENoExotic75 = new TH2F("hNCellVsENoExotic75_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS500A100 = new TH2F("hNCellVsETMNLS500A100_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS500A105 = new TH2F("hNCellVsETMNLS500A105_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS525A105 = new TH2F("hNCellVsETMNLS525A105_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS550A110 = new TH2F("hNCellVsETMNLS550A110_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS510A102 = new TH2F("hNCellVsETMNLS510A102_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETMNLS500A110 = new TH2F("hNCellVsETMNLS500A110_AllCLus", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsENL = new TH2F("hNCellVsENL_AllClus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETMNL = new TH2F("hNCellVsETMNL_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsENoExotic50 = new TH2F("hNCellVsENoExotic50_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsENoExotic75 = new TH2F("hNCellVsENoExotic75_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETMNLS500A100 = new TH2F("hNCellVsETMNLS500A100_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETMNLS500A105 = new TH2F("hNCellVsETMNLS500A105_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETMNLS525A105 = new TH2F("hNCellVsETMNLS525A105_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETMNLS550A110 = new TH2F("hNCellVsETMNLS550A110_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETMNLS510A102 = new TH2F("hNCellVsETMNLS510A102_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETMNLS500A110 = new TH2F("hNCellVsETMNLS500A110_AllCLus", "", nBinsE, arrEbins , 20, -0.5, 19.5);
 
 
-  hNCellVsETrueGamma = new TH2F("hNCellVsETrueGamma", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETrueElec = new TH2F("hNCellVsETrueElec", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsETrueHadr = new TH2F("hNCellVsETrueHadr", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsETrueGamma = new TH2F("hNCellVsETrueGamma", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETrueElec = new TH2F("hNCellVsETrueElec", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsETrueHadr = new TH2F("hNCellVsETrueHadr", "", nBinsE, arrEbins , 20, -0.5, 19.5);
 
   hRecVsTrueE = new TH2F("hRecVsTrueE", "", 100, 0, 10, 100, 0, 10);
   hRecDivTrueE = new TH2F("hRecDivTrueE", "", 100, 0, 10, 200, -2, 2);
@@ -579,9 +579,9 @@ void DataTree::CreateHistos(){
   hClusE = new TH1F("hClusE", "", nBinsE, arrEbins );
   hClusENL = new TH1F("hClusENL", "", nBinsE, arrEbins );
 
-  hNCellVsEelec = new TH2F("hNCellVsEelec", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEelecNL = new TH2F("hNCellVsEelecNL", "", nBinsE, arrEbins , 20, 0, 20);
-  hNCellVsEelecNLTrue = new TH2F("hNCellVsEelecNLTrue", "", nBinsE, arrEbins , 20, 0, 20);
+  hNCellVsEelec = new TH2F("hNCellVsEelec", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEelecNL = new TH2F("hNCellVsEelecNL", "", nBinsE, arrEbins , 20, -0.5, 19.5);
+  hNCellVsEelecNLTrue = new TH2F("hNCellVsEelecNLTrue", "", nBinsE, arrEbins , 20, -0.5, 19.5);
   hEOverPElec = new TH2F("hEOverPElec", "" , 100, 0, 10, 100, 0.5, 2);
   hEOverPElecTrueElec = new TH2F("hEOverPElecTrueElec", "" , 100, 0, 10, 100, 0.5, 2);
 
@@ -652,21 +652,21 @@ void DataTree::Process(unsigned int maxNumClus){
   while(currEvt < maxNumClus && currEvt < T->GetEntries()*0.99){
     // counter++;
     if(currEvt%10000 == 0) cerr<<currEvt<<" events processed..."<<endl;
-    if(fdebug == 2) cerr<<__LINE__<<endl;
+    // if(fdebug == 2) cerr<<__LINE__<<endl;
     NextEvt();
     if(Evt.NClus < 2) continue;
-    if(fdebug)cout<<"energy: "<<energy<<endl;
-    if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
+    // if(fdebug)cout<<"energy: "<<energy<<endl;
+    // if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
     GetGammasViaPi0();
-    if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
+    // if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
     FillNCellVsEGammas();
-    if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
+    // if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
     FillHitmap();
-    if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
+    // if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
     FillElectronHist();
-    if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
+    // if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
     FillAllCLusterHist();
-    if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
+    // if(fdebug == 2) cerr<<"In Process: "<<__LINE__<<endl;
   }
 
 }
@@ -1157,7 +1157,7 @@ bool DataTree::IsTrackMatched(unsigned int clus){
   // T->GetEvent(clus);
   for(int i = 0; i <Evt.clus[clus]->NsurrTracks; ++i){
     // if(Surrounding_Tracks_P[i] > 0.1){
-      if(Evt.clus[clus]->surrTracksR[i] < 0.05){
+      if(Evt.clus[clus]->surrTracksR[i] < 0.08){
         return true;
       // }
     }
@@ -1635,7 +1635,7 @@ void DataTree::WriteToFile(){
 void MakeNCellEffiPureGammas(bool isMC = 1, TString period = "13TeVNomB", bool light = false, int skip = 0){
   TStopwatch watch;
   watch.Start();
-  unsigned int nEvt = 5e6;
+  unsigned int nEvt = 1e7;
   if(isMC){
     DataTree myAna(true, period, light, skip);
     // myAna.SetDoNoTRD(1);

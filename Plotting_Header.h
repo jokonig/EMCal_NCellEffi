@@ -372,3 +372,29 @@ TLegend *GetAndSetLegend2(
     if (header.CompareTo("")!= 0) legend->SetHeader(header);
     return legend;
 }
+
+
+
+
+struct LegLeft{
+
+	LegLeft(double xmin, double ymin, double xmax, double ymax, Size_t size){
+		leg = GetAndSetLegend2(xmin, ymin, xmax, ymax, size);
+		leg->SetNColumns(2);
+		leg->SetTextAlign(32);
+	}
+
+	TLegend* Leg()			{return leg;};
+
+	void AddEntry(TObject* h, TString s = "", TString p = ""){
+		leg->AddEntry((TObject*)0,s,"");
+		leg->AddEntry(h,"#color[0]{i}",p);
+	}
+
+	void Draw(TString s = ""){
+		leg->Draw(s);
+	}
+
+	TLegend *leg = nullptr;
+
+};
